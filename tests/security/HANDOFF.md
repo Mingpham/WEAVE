@@ -31,7 +31,7 @@ Seed and metrics changes are deferred: there is no current schema/runtime to val
 
 Audit regression harness: `python3 tests/security/test_catalog.py -v`, 18/18 passing on real PostgreSQL 17. These are tests of the catalog validator with intentionally minimal isolated fixtures; they do not complete any acceptance test or DB business invariant. Docker context `default` works; the earlier desktop-linux socket failure is not evidence that Docker is unavailable.
 
-Next unblocked integration requires the API owner's canonical contracts and CODEX-A's first migration. Then run the catalog audit on Supabase local, and build the positive/negative direct PostgREST matrix against actual fixture contracts. Do not use the linked hosted production project for this test harness.
+The enum/policy contracts and CODEX-A's first enum-only migration are now available. Behavioral integration still requires the business-table migration and canonical RPC/request contracts. Then run the catalog audit on Supabase local, and build the positive/negative direct PostgREST matrix against actual fixture contracts. Do not use the linked hosted production project for this test harness.
 
 ## Supporting environment continuation
 
@@ -55,3 +55,17 @@ reported as NOT RUN rather than passed. The HTTP-client and catalog regressions
 remain independently verified. A fresh runtime run is required after the image
 is available; full business security tests additionally require actual schema
 and canonical contracts.
+
+## CODEX-A enum slice incorporated
+
+`database` includes contracts `cd57f3b` and migration `8d9c1ee`. The six enum
+checks are now tracked at `tests/security/test_domain_enums.py`, included in the
+standard 25-test security regression command. No migration or contracts source
+was changed by CODEX-B. This replaces reliance on `/tmp/weave-domain-enums-test.py`.
+
+CODEX-A has finished enum groundwork only, not WP-0-DB or the DB workstream.
+Next paired slice: projects/members/areas tables, cross-project keys and membership
+helpers with RLS. Supply actual fixture fields and RPC/read contracts before
+CODEX-B writes positive/negative cross-project, PENDING and REMOVED tests. The
+pending-member title projection and removed-author matrix gaps remain open.
+Keep contracts review by Mingpham as a prerequisite to merging into main.

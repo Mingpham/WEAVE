@@ -30,7 +30,7 @@ The 18 cases cover a passing baseline plus missing tables, disabled RLS, anon/au
 
 - Before the audit correction: 18 executed, 13 passed, 5 failed, reproducing missed anon writes, missed worker-table reads, missed settable BYPASSRLS, and a false failure for unusable membership.
 - After correction: 18 executed, 18 passed on a disposable PostgreSQL 17 container. This includes parsing and executing `catalog.sql` against real PostgreSQL.
-- Application security tests, Supabase local tests, transaction invariants and AT-05/06/07/23 remain NOT RUN: schema, canonical contracts, RPC signatures and Vitest setup are still absent.
+- Application security tests, Supabase local tests, transaction invariants and AT-05/06/07/23 remain NOT RUN: the full schema and RPC signatures are still absent. Enum/policy contracts have since become available (see the enum checkpoint below).
 - User explicitly selected the shared `database` branch. Initial audit commit `5cc039b` was incorporated as `776fd9c`; only `tests/security/` is changed by this work package.
 
 ## Subordinate reviews
@@ -84,7 +84,7 @@ Run all dependency-free supporting regressions with:
 python3 -m unittest discover -s tests/security -p 'test_*.py' -v
 ```
 
-Latest result: 19/19 passed (18 PostgreSQL catalog cases and one HTTP-client
+Earlier result before enum integration: 19/19 passed (18 PostgreSQL catalog cases and one HTTP-client
 security case). The three standalone Supabase smoke cases have not executed:
 local setup failed because the core stack was not ready. They are not included
 in that 19-test pass count.
@@ -97,3 +97,21 @@ reported as NOT RUN rather than passed. The HTTP-client and catalog regressions
 remain independently verified. A fresh runtime run is required after the image
 is available; full business security tests additionally require actual schema
 and canonical contracts.
+
+## Enum migration integration checkpoint
+
+CODEX-A completed the first migration slice, incorporated on `database` as
+`8d9c1ee`, following canonical enum/policy contracts `cd57f3b` (identical contract
+content to the API workstream commit `5a15c77`). The tracked
+`test_domain_enums.py` replaces the temporary handoff harness. It runs the real
+migration and compares PostgreSQL catalog names and ordered values with canonical
+contracts, accepts every valid value, rejects unknown values for all 49 enums,
+checks application-role ALTER denial for every enum, verifies rollback and
+confirms this slice creates no business tables. Prerequisites: Node with native
+TypeScript stripping and the same local Docker image as the catalog tests.
+
+The full supporting suite now contains 25 tests. These checks support §7.2 and
+INV-07 but do not complete a product FR, AT or gate. The full-schema catalog audit
+is still expected to reject an enum-only database for missing business tables.
+Tables, RLS and RPC signatures remain CODEX-A's next implementation slice; API
+request/response contracts beyond enums and policy constants are still pending.
