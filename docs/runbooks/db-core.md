@@ -208,3 +208,50 @@ cross-project current_area_id and decided_by FK rejection; direct write denial;
 no policy recursion. Pair these tests with the table migration in the same final
 PR. The existing 33-table catalog audit is expected to fail until full WP-0 schema
 exists and must not be weakened merely to pass an incremental slice.
+
+
+## WP-0-DB implemented foundation slice
+
+Migration `20261114060000_membership_foundation.sql` adds `projects`, `members`
+and `areas` with §7.1 defaults, canonical enum columns, normalized nickname/area
+names, uniqueness indexes, at most one approved owner per project, and project-scoped
+foreign keys for area/reviewer references. RLS is enabled on all three tables.
+Only SELECT is granted to authenticated/service roles; direct writes are revoked
+and no application write policy exists. Mutation RPCs are not supplied here.
+
+The non-exposed `weave_private` schema contains `is_member(uuid)`,
+`is_owner(uuid)` and `can_read_member(uuid)`. These stable definer helpers pin an
+empty search path, inspect auth.uid(), exclude soft-deleted projects and avoid
+recursive RLS. Future DB policies should reuse these schema-qualified helpers.
+The explicit §12.2 own-membership exception permits pending/removed users to
+read their own membership row, while project and area reads remain denied.
+Pending-project title access still needs a narrowly authorized RPC contract.
+
+Security coverage accompanies the migration:
+`tests/security/test_membership_foundation.py` supplies direct SQL role/session
+checks and consumes CODEX-B's unchanged `foundation_security.sql` patch. The
+collected SQL patch SHA-256 is
+`aa519153be9b3f7c9954f3243cd6239a2257be72fc1041886f6d44d5f3eab837`.
+Both test files must remain with the migration in any final PR.
+
+Validation uses disposable PostgreSQL 17 with no network, published ports or
+persistent data. Its minimal auth.users/auth.uid fixture is not Supabase Auth.
+The initial schema assertion failed (zero protected tables before implementation).
+Coverage includes exact row IDs across projects, positive reads, pending/removed
+self rows, anonymous/missing-UID denial, immediate removal, soft deletion,
+normalized uniqueness, valid and invalid project-scoped FKs, app write denial,
+service-role write grants, helper security and generated-column nullability.
+Review found a symmetric-fixture count weakness; exact-ID and explicit
+other-project queries were added before the final run.
+
+Command: `python3 -m unittest discover -s tests/security -p 'test_*.py' -v`.
+Final result: 44/44 passed, including 19 foundation checks and the prior 25
+supporting regressions. SQL review found no remaining actionable issues.
+This supports INV-01/07, DB-11, FR-EVT-01, FR-MEM-02/04/06 and FR-RES-06 groundwork;
+AT-05/06/07, full FR completion and G0 are not claimed. No hosted changes ran.
+Supabase/PostgREST JWT acceptance and CODEX-B's final migration-PR review remain.
+
+Next: remaining WP-0 schema groups, starting with event_log/idempotency storage
+and the transactional mutation framework. Future RPCs must validate IANA zones,
+policy caps, availability, consent, versions, transitions and idempotency, append
+events and increment state_version exactly once. Do not add SQL business inference.
