@@ -1,10 +1,10 @@
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { Screen } from '@/components/screen';
 import { Welcome } from '@/features/events/event-screens';
-
+import { useMobilePresentation } from '@/features/navigation/presentation';
 export default function WelcomeRoute() {
-  const enabled = process.env.EXPO_PUBLIC_APP_MODE === 'demo' || (__DEV__ && process.env.EXPO_PUBLIC_ENABLE_UI_PREVIEW === 'true');
-  const demo = process.env.EXPO_PUBLIC_APP_MODE === 'demo';
-  return <Screen topInset demo={demo}><Welcome onJoin={() => router.push(demo ? '/preview/auth' : '/connection')} onOrganize={() => router.push(demo ? '/preview/auth' : '/connection')}
-    onPreview={enabled ? () => router.push('/preview/events') : undefined} /></Screen>;
+  const presentation = useMobilePresentation();
+  if (presentation?.session === 'signed-in') return <Redirect href="/events" />;
+  return <Screen topInset state={presentation?.session === 'loading' ? {phase: 'loading', refresh: () => {}} : undefined}>
+    <Welcome onJoin={() => router.push('/join')} onOrganize={() => router.push('/auth')} /></Screen>;
 }

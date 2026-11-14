@@ -1,4 +1,6 @@
-# Mobile source handoff — 2026-11-14
+# Historical mobile build handoff — 2026-11-14
+
+> Historical record of the stopped native build. The later UI task removed product demo routes and changed all build modes to product UI. Use [README.md](README.md) for current commands and [FRONTEND_STATUS.md](FRONTEND_STATUS.md) for current coverage. No new native build or APK has been produced.
 
 Branch: `mob/wp-0-mobile-foundation`. Frontend commit: `9b2a391`. Prototype-only commit: `1ea4289`. Both were pushed to origin. The subsequent build configuration changes are committed separately.
 

@@ -19,6 +19,5 @@ export default function Layout() {
       <Stack.Screen name="index" options={{headerShown: false}} />
       <Stack.Screen name="events" options={{title: en.events}} />
       <Stack.Screen name="connection" options={{title: en.brand}} />
-      <Stack.Screen name="preview/[screen]" options={{title: en.demo}} />
     </Stack>}</SafeAreaProvider>;
 }

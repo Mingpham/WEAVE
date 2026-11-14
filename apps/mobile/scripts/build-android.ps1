@@ -13,8 +13,8 @@ $env:JAVA_HOME = $JavaHome
 $env:GRADLE_USER_HOME = Join-Path $mobileRoot '.cache/gradle'
 $env:EXPO_NO_TELEMETRY = '1'
 $env:NODE_ENV = if ($Mode -eq 'development') {'development'} else {'production'}
-$env:EXPO_PUBLIC_APP_MODE = if ($Mode -eq 'preview') {'demo'} else {'live'}
-$env:EXPO_PUBLIC_ENABLE_UI_PREVIEW = if ($Mode -eq 'release') {'false'} else {'true'}
+$env:EXPO_PUBLIC_APP_MODE = 'live'
+$env:EXPO_PUBLIC_ENABLE_UI_PREVIEW = 'false'
 if (-not (Test-Path -LiteralPath (Join-Path $JavaHome 'bin/java.exe'))) {throw 'Java was not found. Supply -JavaHome.'}
 if (-not (Test-Path -LiteralPath (Join-Path $AndroidSdk 'platform-tools/adb.exe'))) {throw 'Android SDK was not found. Supply -AndroidSdk.'}
 if ($Mode -ne 'development') {
@@ -71,7 +71,7 @@ if ($Mode -ne 'development') {
     try {
       $stream.CopyTo($memory)
       $hasFixture = [Text.Encoding]::GetEncoding(28591).GetString($memory.ToArray()).Contains('WEAVE_UI_FIXTURE_ONLY')
-      if ($hasFixture -ne ($Mode -eq 'preview')) {throw 'APK contains the wrong live/demo JavaScript bundle.'}
+      if ($hasFixture) {throw 'Product APK contains test fixture data.'}
     } finally {$stream.Dispose(); $memory.Dispose()}
   } finally {$archive.Dispose()}
 }

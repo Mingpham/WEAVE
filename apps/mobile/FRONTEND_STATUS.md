@@ -1,16 +1,16 @@
-﻿# Mobile frontend status and team handoff
+# Mobile frontend status and team handoff
 
 Updated: 2026-11-14. Branch: `mob/wp-0-mobile-foundation`.
 
-The expanded task supplies Mobile presentation screens, fixture-backed interactions, and Android build preparation. **Source present** below means a native component or local demo flow exists. It does not mean all screen acceptance criteria, real integration, device behavior, or P0 requirements are complete. No G0–G6 gate is signed off.
+Scope confirmed by dkozTA: finish Mobile UI and preserve the existing team ownership split. The 29 Mobile-owned native screen components and their product route registry are present. This records UI source coverage, not backend integration, device acceptance, all-P0 completion or G0?G6 sign-off.
 
-All business mutations in the preview are local simulations. Camera, QR, sharing, and notification permission controls can use the device, but no business service is connected. Live mode has no production data adapter and never falls back to mock success. The central shell now mounts the feature groups and reserves the four integration slots; interactive route verification and final aggregate checks remain pending at this snapshot.
+Product routes no longer include the fixture-backed preview. Missing session/data providers show unavailable/error states; mutations never fall back to local simulated success. Tests retain fixtures outside the application graph. Camera/QR/gallery/share and OS permission controls are native implementations awaiting phone verification.
 
 ## Screen and route inventory
 
-Preview IDs are mounted through `/preview/[screen]`. `/` is Welcome; `/events` and `/connection` are live integration shells. `auth`, `task-editor`, and `ask-probe` are supporting views, not additional specification screens.
+Entry routes are `/`, `/auth`, `/events`, `/join`, `/join/consent`, `/join/profile`, and `/create-event`. Event views use `/p/{projectId}/{screen}?item={entityId}`. The screen keys below map to the typed route registry. `auth`, `task-editor`, `ask-probe`, and `direct-answer` are supporting views.
 
-| Spec screen | Preview ID / entry | Presentation source and current coverage | Remaining real interface |
+| Spec screen | Screen key / entry | Presentation source and current coverage | Remaining real interface |
 |---|---|---|---|
 | SCR-01 Welcome | `/`; supporting `auth` | `events` + `onboarding`: Welcome, Google/guest sign-in presentation | Auth/session/link-account adapter; authenticated routing |
 | SCR-02 My Events | `events` | `events`: role/status cards; join/create/sign-out callbacks | #1 membership/project summaries and sign-out cleanup |
@@ -34,8 +34,8 @@ Preview IDs are mounted through `/preview/[screen]`. `/` is Welcome; `/events` a
 | SCR-20 Settlement | `settlement` integration slot | **Mingpham-owned; owner source absent** | #52–53 ledger/CSV route |
 | SCR-21 Submission Review | `submission-review` | `work`: photos, source-linked AI checks, human assessments, request changes | #35–36 revisioned review; #31 authorized media URLs |
 | SCR-22 Incident | `incident` | `incidents`: decision cards, evidence, uncertainty, stale/conflict guards | #39–41, #43, #46, #48; role-filtered incident/proposal data |
-| SCR-23 Manual Decision | `manual` | `incidents`: parameterized action builder, dry-run checks, apply confirmation | #47 server checks and revisioned apply; navigation verification pending |
-| SCR-24 New Incident | `new-incident` | `incidents`: type/subject/affected tasks/blocking form | #38 create; navigation verification pending |
+| SCR-23 Manual Decision | `manual` | `incidents`: parameterized action builder, dry-run checks, apply confirmation | #47 server checks and revisioned apply |
+| SCR-24 New Incident | `new-incident` | `incidents`: type/subject/affected tasks/blocking form | #38 create |
 | SCR-25 Participant Home | `home` | `events`: questions/offers/current and next tasks, arrival callback | #4, #12; real inbox/deep-link routing |
 | SCR-26 Inbox | `inbox` integration slot | **Mingpham-owned; owner source absent** | #50 read/list hooks, pagination and owner route |
 | SCR-27 Me | `me` | `onboarding`: profile, availability, presence/area, leave/sign-out | #12/#14; session cleanup and role-sensitive capabilities |
@@ -44,13 +44,15 @@ Preview IDs are mounted through `/preview/[screen]`. `/` is Welcome; `/events` a
 | SCR-30 Answer Probe | `probe`; supporting `ask-probe` | `probes` + `incidents`: choices/text/photos, cannot-check/decline; manual question form | #42–45; real deadline expiry and recipient permissions |
 | SCR-31 Resource Report | `resource-report` | `planning`: working/failed/missing/low/moved choices, note/photos | #32 `RESOURCE_REPORT`; claims determine condition/location |
 | SCR-32 Offer | `offer` | `tasks`: criteria, due/response deadline, accept/decline and recovery context | #24 assignment response and authoritative expiration/version |
-| SCR-33 Evidence Detail | `evidence` (`source` is a legacy fixture view) | `work`: author/time/text/photos, claims, source and related links | Authorized observation read contract still needed; #31 media URLs |
+| SCR-33 Evidence Detail | `evidence`  | `work`: author/time/text/photos, claims, source and related links | Authorized observation read contract still needed; #31 media URLs |
 
 The four integration-slot IDs are navigation reservations. They are not implementations and do not transfer ownership from Mingpham. The settings close confirmation does not implement the separate close/report or settlement screens.
 
 ## Presentation interface contract
 
-`OnboardingPreview` and `PlanningPreview` take `{screen: string; navigate: (screen: string) => void; offline: boolean}`. `WorkPreview` takes those props plus optional `owner: boolean`; the shared shell supplies the current preview role. They belong to the demo only. Real integration should import the underlying prop-driven components and supply query-derived view models. `directory` is the route catalog; `more` contains organizer destinations.
+`MobilePresentationProvider` in `src/features/navigation/presentation.tsx` accepts `MobilePresentation`: session state, a pure `read(route)` lookup, and optional owner screen components. `MobileBinding` contains `ScreenState`, authoritative `EventAccess`, and a discriminated `MobileView` pairing the screen name with its props. Put team query/mutation hooks in the provider; `read` must not execute hooks or requests. Missing bindings remain unavailable.
+
+Role/pending guards and product paths live in `navigation/routes.ts`. Adapters select the initial event destination with `eventDestination`, and bind navigation callbacks with `eventPath`. These client display guards do not replace server authorization. Owner screens are supplied for `timeline`, `inbox`, `close`, and `settlement` without modifying their source.
 
 | Component family | Existing interface to adapt |
 |---|---|
@@ -89,37 +91,38 @@ Paths and endpoint numbers refer to specification §9.3. Mingpham owns #1–36 a
 
 The team data layer must also provide private `project:{project_id}` and `user:{user_id}` Broadcast subscriptions, foreground/reconnect refetch, cached last snapshot and timestamp, persisted evidence drafts, token registration, push destination decoding, and membership invalidation. Realtime payloads trigger refetch; they are not trusted replacement snapshots. Source/claim visibility and media permissions remain enforced by the API/RLS.
 
-## Remaining gaps and verification checklist
+## UI delivery and remaining integration
 
-- [x] Reuse the native theme, English string modules, 48dp controls, shell state presentation, and injected asynchronous callbacks.
-- [x] Keep scenario data and simulated transitions under `tests/fixtures/mobile`; keep live and demo bundle modes distinct.
-- [x] Add source components for the 29 Mobile-owned screens and supporting editors/forms. This item records source coverage only.
-- [x] Mount feature groups and owner-role restrictions in the central preview shell; reserve the four Mingpham-owned screen slots.
-- [ ] Verify each route and role transition interactively after integration.
-- [ ] Supply canonical contracts and adapters above. No real authentication, API mutation, database write, upload, AI job, realtime event, push, or durable draft has been integrated.
-- [x] Add planning source-opening controls for messages/questions/items, editor, review gaps/assumptions/timeline, and resources. The preview reuses `EvidenceDetail` in a native modal with the matching raw fixture brief, organizer entry, AI reply, or resource report/photos. Plan review now formats 24-hour project-local dates/times with relative deadlines against a clearly labeled demo clock.
-- [ ] Reconcile remaining presentation differences during adapter integration: assignment batches now show each result, retain failed selections, and exclude successful offers from retries. Published and draft task editors both expose category/required resource choices; their adapter mapping still needs canonical validation.
-- [ ] Define SCR-33's authorized observation-detail read interface: §9.3 names media URL and submission/incident detail routes, but no standalone observation GET. Do not invent an undocumented endpoint.
-- [ ] Clarify AI-disabled finalization: §9.3 names `plan/compose` with `FINALIZE` while FR-PLAN-07 requires a manual path. The API owner must supply the behavior; the demo's manual review callback is not a substitute contract.
-- [ ] Complete real `weave://join?code=…` and `weave://p/{project_id}/…` routing, permission denial flows, actual deadlines/timezone formatting, and ≤4-tap participant journeys.
-- [ ] Verify applicable UX-01 states, TalkBack, keyboard/small-screen behavior, photo/QR/share behavior, evidence source access, and cold restart on Android.
-- [ ] Complete artifact/signature/hash and device checks for development and standalone demo APKs. Native compilation awaits the official NDK/platform/CMake downloads; interrupted transfers are being resumed. Success is not recorded.
-- [ ] Run repository-required security, RPC, API, integration, and end-to-end checks when real data paths exist. Do not mark an FR/AT complete solely because a component or simulated success exists.
+- [x] Shared native theme, English strings, 48dp controls and loading/empty/error/offline shell.
+- [x] Source coverage for all 29 Mobile-owned screens, supporting editors and role-aware product routes.
+- [x] Local date/time picker, field validation, optional selections and accessible multi-select controls.
+- [x] Plan/resource filtering, source-opening callbacks, revision-bound publish/delete confirmations and unsaved-change protection.
+- [x] Work terminal/stale/read-only states, per-item assignment results, evidence URL recovery and review validation.
+- [x] Direct answers, probe/offer expiry display, version-scoped ACK feedback, stale proposal locks and separate RECOVERING/RESOLVED presentation.
+- [x] Product graph excludes scenario fixtures; no fake successful request fallback.
+- [ ] Integrate team auth/session, contracts, query/mutation/upload hooks, durable drafts, realtime and push registration.
+- [ ] Integrate SCR-17/19/20/26 from Mingpham; source remains absent in inspected branches.
+- [ ] Supply SCR-33 authorized observation-detail read interface; the spec does not name a standalone observation GET.
+- [ ] Supply canonical manual-finalization behavior when AI is disabled; Mobile exposes the callback without inventing an endpoint.
+- [ ] Adapters provide zoned timestamps, runtime policy limits, server validation, authoritative access and version values. The local date picker is not the authoritative 72-hour/DST validator.
+- [ ] Verify authenticated deep links, role transitions and participant journeys with actual providers.
+- [ ] Verify Android layout, TalkBack, small-screen/keyboard behavior, camera/QR/share, cold restart and phone API access.
+- [ ] Resume native build only when separately authorized; the last authorized attempt failed and produced no APK.
+- [ ] Run required security/integration/release gates once team data paths exist. No gate is waived by UI checks.
 
-### Check evidence at this snapshot
+### Verification recorded for this UI task
 
-| Check | Recorded result / limitation |
+| Check | Result / limitation |
 |---|---|
-| Planning scoped ESLint | Passed: `eslint src/features/planning src/strings/planning.en.ts`, exit 0 after planning changes |
-| Foundation type/static/export/guard checks | Prior foundation checks exist; they are not evidence for the newly expanded tree |
-| Aggregate TypeScript / ESLint / focused tests | Final integrated TypeScript and ESLint passed after all screen changes (exit 0). The earlier 10 guard/draft tests passed; three focused manual-decision/partial-offer regression cases also passed |
-| Android live JS export | Root reported success with 1,608 modules before the final planning source/time change; this is not an APK |
-| Live/demo export boundary | Live (1,608 modules) and standalone demo (2,030 modules) exports passed; paired fixture-boundary check passed. Final source-opening/partial-result changes await native bundling |
-| Native APK build | Awaiting official native tool downloads; no final successful artifact or installation recorded |
-| Device acceptance | No attached Android device in the earlier ADB check; no camera/QR/TalkBack/cold-start pass recorded |
-| Browser visual QA | Earlier pass stopped before a trustworthy result; no visual acceptance claimed |
-| Real integration/security/gates | Not run: required team contracts/data layer and services absent |
+| NativeWind web color scheme | Focused delayed-CSS check reproduced the media-mode exception; class-mode fix passed (`6f66481`) |
+| TypeScript | Passed after final product access/notification/expiry changes |
+| ESLint | Full app/source/tests pass before final small edits; targeted navigation/probe/offer/device/expiry lint passed after those edits |
+| Focused behavior tests | 16 tests passed in 6 files: interaction, ACK, composer, manual decision, assignment and navigation |
+| Web product artifact | Exported web artifact present; fixture-boundary check passed. This is not an Android APK or browser visual acceptance |
+| Android build | Not rerun in this UI task. Last authorized attempt failed at worklets CMake; details in BUILD_HANDOFF.md |
+| Phone/browser visual acceptance | Not completed. No camera/QR/TalkBack/cold-start or complete route acceptance claim |
+| Real integration/security | Blocked on team providers/services and owner screens; not run |
 
-Supabase account login/link is **deferred by explicit user request**, not the next automatic task. Inspected auth settings had Google and anonymous sign-in disabled; the Edge API request ending in `/api/v1/me` returned 404. The Supabase HTTPS URL was reachable from the PC only. Do not describe the environment as integrated or phone-ready.
+Supabase login/link remains explicitly deferred. Earlier PC-only observations found Google/anonymous auth disabled and `/api/v1/me` returning 404; no new service check or configuration change was made in this UI task.
 
-No backend, DB, canonical contracts, `src/lib`, shared CI, or ownership transfer is introduced by these presentation files. See [README.md](README.md) for exact existing run/export/build commands.
+No backend, DB, canonical contracts, `src/lib`, shared dependency/CI change or ownership transfer is included. See [README.md](README.md) for current run commands and [MOBILE_UI_TASKS.md](MOBILE_UI_TASKS.md) for task commits.
