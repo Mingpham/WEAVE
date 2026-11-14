@@ -1,0 +1,16 @@
+# Secret scan config (SEC-01). Keeps every default gitleaks rule; only allows values that are
+# known not to be secrets:
+# - the mock API's fixture bearer tokens (tests/fixtures/mock-api/seed.json, README examples)
+# - bare UUIDs (test ids and X-Idempotency-Key values)
+# Anything else — Supabase keys, JWTs, model keys — still fails CI.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "WEAVE fixture tokens and UUIDs"
+regexTarget = "secret"
+regexes = [
+  '''^mock-(organizer|participant|pending|guest)$''',
+  '''^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$''',
+]
