@@ -5,6 +5,7 @@
     "allowImportingTsExtensions": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
+      "zod": ["./node_modules/zod"],
       "@/*": [
         "./src/*"
       ]

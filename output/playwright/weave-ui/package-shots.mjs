@@ -1,7 +1,8 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const crypto = require('node:crypto');
-const root = __dirname;
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+const root = path.dirname(fileURLToPath(import.meta.url));
 const names = fs
   .readdirSync(root)
   .filter((n) => /^SCR-\d+.*\.png$/.test(n))
@@ -39,7 +40,7 @@ const manifest = {
 };
 fs.writeFileSync(path.join(root, 'manifest.json'), JSON.stringify(manifest, null, 2));
 const escape = (s) =>
-  s.replace(/[&<>\"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const tile = (r) =>
   `<article><h2>${escape(r.screen)} — ${escape(r.file.replace(/^SCR-\d+-/, '').replace(/-BLOCKED|\.png/g, ''))}</h2><p>${escape(r.status)}</p><a href="${r.file}"><img src="${r.file}" loading="lazy" alt="${escape(r.status)}"></a></article>`;
 const visible = rows.filter((r) =>
