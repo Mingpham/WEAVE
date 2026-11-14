@@ -26,6 +26,7 @@ export type PlanningView = {
 };
 export type PlanningEditorOptions = {
   areas: PlanningChoice[]; roles: PlanningChoice[]; tasks: PlanningChoice[]; resources: PlanningChoice[];
+  custodians?: PlanningChoice[];
   inventory: PlanningChoice[]; resourceKinds: PlanningChoice[]; resourceCategories?: PlanningChoice[]; acquisitionKey?: string;
 };
 export type ResourceCardView = {
