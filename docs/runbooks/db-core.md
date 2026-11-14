@@ -255,3 +255,71 @@ Next: remaining WP-0 schema groups, starting with event_log/idempotency storage
 and the transactional mutation framework. Future RPCs must validate IANA zones,
 policy caps, availability, consent, versions, transitions and idempotency, append
 events and increment state_version exactly once. Do not add SQL business inference.
+
+
+## Planned next slice: WP-0 event log / idempotency storage
+
+Implement `20261114070000_event_log_idempotency.sql` against existing foundation.
+`event_log` follows §7.3: project/created_at, bigserial ID, version, text event type,
+canonical actor/visibility enums, composite actor FK, payload and involved-member
+array. Timeline and actor indexes; array integrity checks must reject unknown or
+cross-project members and preserve historical removed-member references. Reads
+require a live project and approved membership, then ALL/owner/INVOLVED scope.
+`idempotency_keys` has created_at and PK(user_id,key), operation/hash and stored
+response, no project or synthetic ID. No application read/write policies.
+Revoke direct writes/sequence usage for app and service roles; service SELECT is
+for trusted backend inspection only. No public mutation RPC, replay/TTL worker,
+state-version increment or event-type inference is implemented by storage alone.
+
+LEADER-B was successfully queued via the default Codex account (thread
+01a1d81a-af7d-7650-a957-e9e4acdf2a0a) with this schema and a test-first assignment.
+Tests belong to its isolated worktree; collect its patch before the migration PR.
+Execution plan: observe missing-table regression, implement storage/constraints,
+run B's isolation and integrity checks, independent SQL review, full supporting
+suite, commit and fast-forward local database. No push or hosted migration.
+
+
+### Storage implementation review checkpoint
+
+The missing-table regression failed before implementation (0 instead of 2).
+Both tables subsequently applied with RLS on disposable PostgreSQL 17. No
+mutation/replay/TTL behavior is claimed by this storage check.
+
+Review reproduced a stale-snapshot defect in reverse array-reference checks:
+a REPEATABLE READ snapshot taken before another transaction commits an event
+could miss the reference and delete the involved member. The trigger now raises
+40001 on actual member DELETE/id/project changes outside READ COMMITTED; normal
+profile/status updates or unchanged identities are unaffected. At READ COMMITTED,
+forward KEY SHARE locks and the reverse trigger's fresh lookup protect references.
+
+Spec gap: §7.1 permits trigger checks for scoped references but does not specify
+isolation requirements for array references. Proposed clarification for §17:
+member hard deletion/identity changes use READ COMMITTED with scoped reference
+checks, or require equivalent native-FK protection before stronger snapshots are
+supported. Future project purge must delete event rows before referenced members.
+No public delete RPC exists in this slice; no existing app behavior is changed.
+
+LEADER-B owns accompanying test collection; no migration PR or hosted apply is
+authorized by this local checkpoint. Final test results will be recorded after
+its patch and independent review are collected.
+
+
+### Candidate validation / pending security integration
+
+The storage candidate was independently checked using
+`/tmp/weave-storage-precheck.py` against all three migrations. Final run:
+23/23 checks passed (19 inherited foundation checks plus four storage checks).
+These cover scoped event visibility and soft deletion, cache key scoping and
+app read denial, write/sequence privileges, cross-project/unknown/NULL member
+references, and historical removed-member references. The earlier presence
+check failed before migration creation. The independent concurrency artifact
+`/tmp/weave-event-reference-review.py` passed all four race/order checks after
+reproducing the stale-snapshot defect before the guard.
+
+These are local validation artifacts, not a replacement for LEADER-B's tracked
+security suite. Its test assignment and both artifact paths were successfully
+queued to the peer thread through the default-account CLI; no response/patch
+has arrived at this checkpoint. Keep this as a local candidate: do not submit
+its migration PR until B's accompanying security tests are collected in the same
+PR and permanent regressions cover the isolation guard. No FR, AT, G0 or
+transaction/idempotency replay behavior is claimed complete. No remote changes.
