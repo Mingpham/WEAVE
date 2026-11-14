@@ -6,6 +6,9 @@ export type ValidationContext<M extends ModuleName = ModuleName> = Readonly<{
   aliases: AliasMap;
   snapshot: Readonly<Record<string, unknown>>;
   now: string;
+  project_id?: string;
+  subject_id?: string;
+  basis_revision?: number | null;
 }>;
 export type ValidationCode =
   | 'SCHEMA_INVALID'

@@ -20,7 +20,7 @@
     "test:ai": "vitest run --config vitest.ai.config.ts",
     "typecheck:ai": "tsc --noEmit -p tsconfig.ai.json",
     "typecheck:engine": "tsc --noEmit -p packages/engine/tsconfig.type-tests.json",
-    "ai:check": "deno check --config supabase/functions/ai-worker/deno.json supabase/functions/ai-worker/index.ts tests/ai-evals/live-smoke.ts"
+    "ai:check": "deno check --config supabase/functions/ai-worker/deno.json supabase/functions/ai-worker/index.ts supabase/functions/_shared/ai/plan-compose.ts tests/ai-evals/live-smoke.ts"
   },
   "devDependencies": {
     "typescript": "6.0.3",

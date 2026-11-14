@@ -6,6 +6,7 @@ import type {
 } from '../../../packages/contracts/src/ai/index.ts';
 import type { InferenceLog } from '../_shared/ai/logging.ts';
 import type { AliasMap } from '../_shared/ai/aliases.ts';
+import type { PlanDraft } from '../../../packages/contracts/src/plan.ts';
 import type {
   ModelPort,
   ModelRequest,
@@ -22,7 +23,25 @@ export type JobContext = {
   snapshot: Readonly<Record<string, unknown>>;
   now: string;
 };
-export type DerivedChanges = { kind: 'NONE' }; // Extend only with reviewed engine→RPC domain deltas.
+/** Internal proposal; the DB lane must review its atomic persistence mapping before deployment. */
+export type DerivedChanges =
+  | { kind: 'NONE' }
+  | {
+      kind: 'PLAN_DRAFT';
+      draft_id: string;
+      expected_revision: number;
+      status: 'EDITING';
+      draft: PlanDraft;
+      reply: string;
+      change_summary: ModuleOutput<'plan_compose'>['change_summary'];
+      prompt_version: string;
+    };
+export class ModulePreparationError extends Error {
+  constructor(readonly code: 'PLAN_CONTEXT_INVALID' | 'PLAN_MODE_INVALID' | 'PLAN_TURN_LIMIT') {
+    super(code);
+    this.name = 'ModulePreparationError';
+  }
+}
 export type ValidatedResult = {
   [M in ModuleName]: { module: M; output: ModuleOutput<M> };
 }[ModuleName];
@@ -76,7 +95,10 @@ export interface WorkerStore {
 export interface ModuleHandler {
   module: ModuleName;
   promptVersion: string;
-  prepare(context: JobContext): { request: ModelRequest; context: ValidationContext };
+  prepare(
+    context: JobContext,
+    job: AnalysisJob,
+  ): { request: ModelRequest; context: ValidationContext };
   validators: ModuleValidators;
   derive(
     value: ModuleOutput<ModuleName>,

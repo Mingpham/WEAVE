@@ -22,7 +22,7 @@ Approved scope: remaining tasks in the progress report, executed inline on `ai/w
 
 ## Outstanding work
 
-Fake-model plan composition is next. DB worker RPCs are absent at the audited SHA; private member mutation helpers do not implement WorkerStore. Production entrypoint remains `INTEGRATION_PENDING` until that dependency is satisfied and tested.
+Real worker DB integration remains pending. DB worker RPCs are absent at the audited SHA; private member mutation helpers do not implement WorkerStore. Production entrypoint remains `INTEGRATION_PENDING` until that dependency is satisfied and tested.
 
 ## Task 3 — Draft validation and gaps
 
@@ -31,3 +31,14 @@ Fake-model plan composition is next. DB worker RPCs are absent at the audited SH
 - Due offsets include -20,160 minutes and event duration +1,440 minutes; start must precede due. Empty manual drafts remain valid. Existing gaps are ignored and all five gap kinds rebuilt from validated data without mutating the input.
 - Category-based contention is a conservative warning about possible shared allocation, not a resource-capacity optimizer; supply quantity and alternatives are not treated as an automatic reservation. Adjacent windows do not overlap. Area names are unique ignoring case after canonical trimming. Caller must still validate custodians against the complete project member snapshot/DB before persistence.
 - RED: targeted test import failed before implementation. GREEN: **29 focused tests**, full `pnpm check` **192/192 in 19 files**, format, Deno engine and diff checks passed. These are engine tests; publication transaction/route and Android review acceptance are not claimed.
+
+## Task 4 — Plan composition with the fake worker flow
+
+- Pre-task fetch: fullstack `b18271d`, DB `4a1603a`, mobile `078f9f3` unchanged; Task 3 was pushed first.
+- Added opt-in `planComposeHandler`, module validators, snapshot builder and prompt `plan-compose-wp1-v1`. Production registry remains empty. The handler verifies project/draft/revision against the claimed job; validation preserves that scope when reloading after a version conflict.
+- Model snapshots project only required event/draft fields, exclude DB identity/custodian IDs/stipend amounts/unknown metadata, keep untrusted text in user data, and retain at most the latest 12 messages. Existing draft keys are local draft identifiers, not entity UUID aliases. Snapshot caps: 4 questions, 8 assumptions, 4,000 characters per message/answer and 500 per assumption; omissions set `truncated`. These are provisional snapshot bounds requiring quality evaluation before live rollout. Provider/model/token settings are unchanged.
+- Locked areas/tasks/resources are restored before references/business validation. Existing origin/inventory/custodian/stipend fields survive; new resources are UNVERIFIED and new tasks have no stipend. Change summaries and gaps are recomputed from actual merged drafts. Question IDs are deterministic per next revision; matching existing questions retain answer/status.
+- FINALIZE permits text normalization (including criterion wording) and missing area completion only; item sets, scheduling, requirements, quantities and criterion flags remain unchanged, with no new questions. DRAFT requires no prior tasks; 12 prior AI turns prevents another call. The future adapter must supply the number of turns used before this job, so a retry is not counted as another user turn.
+- The internal `PLAN_DRAFT` delta carries draft ID, expected revision, EDITING status, validated draft, reply, computed summary and prompt version. DB persistence is not implemented. Expected preparation failures terminate without model/budget use; plan business failures retry within three job attempts. Schema/ID retry limits remain unchanged. Failed output leaves the existing draft untouched; unrelated state-version changes do not re-call the model.
+- RED: module/worker tests failed before implementation. The first GREEN attempt exposed a full-project-versus-projection mismatch; explicit `projectForDraft` fixed that boundary without relaxing engine validation. GREEN: **31 focused tests**, full `pnpm check` **223/223 in 21 files**, format/diff and Deno worker/module/CLI checks passed. Existing fixture handlers were updated only to forward the newly supplied claimed job argument.
+- [Versioned offline evaluation](./plan-compose-wp1-eval.json) records prompt source hash, all case names/results and **zero live inference calls**. This establishes business-rule and worker behavior with synthetic data; it does not establish live model quality, RPC atomicity or publication acceptance.

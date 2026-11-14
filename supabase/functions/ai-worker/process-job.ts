@@ -5,6 +5,7 @@ import type { ModelResponse } from '../_shared/ai/types.ts';
 import { nextRetry, type RetryClass } from './retry.ts';
 import { POL } from '../../../packages/contracts/src/policy.ts';
 import type { QueueMessage, WorkerDeps, ProcessOutcome, ValidatedResult } from './ports.ts';
+import { ModulePreparationError } from './ports.ts';
 
 export async function processJob(message: QueueMessage, deps: WorkerDeps): Promise<ProcessOutcome> {
   const { store } = deps;
@@ -33,7 +34,13 @@ export async function processJob(message: QueueMessage, deps: WorkerDeps): Promi
   // Use the claimed (fenced) attempt, never the non-atomic peek, to protect inference.
   if (job.attempts > POL.JOB_MAX_ATTEMPTS) return finish('ATTEMPTS_EXHAUSTED');
   let current = await store.loadContext(identity);
-  const prepared = handler.prepare(current);
+  let prepared;
+  try {
+    prepared = handler.prepare(current, job);
+  } catch (error) {
+    if (error instanceof ModulePreparationError) return finish(error.code);
+    throw error;
+  }
   if (prepared.request.module !== handler.module || prepared.context.module !== handler.module)
     throw new Error('INVALID_MODULE_HANDLER');
   const budget = await store.reserveInference({ ...identity, attempt: job.attempts });
@@ -104,7 +111,9 @@ export async function processJob(message: QueueMessage, deps: WorkerDeps): Promi
           ? 'SCHEMA'
           : validated.code === 'ID_NOT_ALLOWED'
             ? 'ID'
-            : 'PERMANENT';
+            : handler.module === 'plan_compose' && validated.code === 'BUSINESS_REJECTED'
+              ? 'TRANSIENT'
+              : 'PERMANENT';
       const outcome =
         kind === 'SCHEMA' ? 'SCHEMA_INVALID' : kind === 'ID' ? 'ID_NOT_ALLOWED' : 'POLICY_REJECTED';
       return failed(

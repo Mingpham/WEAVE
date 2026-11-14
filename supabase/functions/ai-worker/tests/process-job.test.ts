@@ -207,8 +207,8 @@ it('retains original alias identities when recomputing against a newer project v
   deps.registry = {
     EVENT_SUMMARIZE: {
       ...fixtureHandler,
-      prepare: (c) => {
-        const prepared = fixtureHandler.prepare(c);
+      prepare: (c, job) => {
+        const prepared = fixtureHandler.prepare(c, job);
         prepared.context = { ...prepared.context, aliases };
         return prepared;
       },
@@ -243,9 +243,9 @@ it('INV-08 recovery after the final crashed attempt cannot spend budget or call 
   deps.registry = {
     EVENT_SUMMARIZE: {
       ...fixtureHandler,
-      prepare: (context) => {
+      prepare: (context, job) => {
         prepared++;
-        return fixtureHandler.prepare(context);
+        return fixtureHandler.prepare(context, job);
       },
     },
   };
