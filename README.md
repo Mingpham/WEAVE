@@ -108,3 +108,7 @@ State resets on restart. Set `MOCK_FIXTURE=/path/to/seed.json` or `PORT` to over
 - Test names carry the requirement ID: `it('FR-TASK-05 concurrent accept …')`.
 - No reference-scenario names, IDs or text in `apps/`, `packages/`, `supabase/functions/`.
 - PR titles: `[WP-1-API] FR-MEM-02 invite routes`. Describe what you actually ran and the results.
+
+## AI & Engine lane
+
+See `docs/ai/premerge-verification.md` for worker/engine verification and remaining RPC integration dependencies.

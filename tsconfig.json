@@ -2,6 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "types": ["node"],
+    "lib": ["ES2023", "DOM"],
     "isolatedModules": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
@@ -9,10 +10,21 @@
     "resolveJsonModule": true
   },
   "include": [
-    "packages/contracts/src/**/*.ts",
+    "packages/*/src/**/*.ts",
+    "packages/*/tests/**/*.ts",
     "tools/*/src/**/*.ts",
     "supabase/functions/api/**/*.ts",
-    "vitest.config.ts"
+    "supabase/functions/_shared/ai/**/*.ts",
+    "supabase/functions/ai-worker/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts",
+    "vitest.ai.config.ts"
   ],
-  "exclude": ["supabase/functions/api/index.ts", "node_modules", "**/node_modules"]
+  "exclude": [
+    "supabase/functions/api/index.ts",
+    "supabase/functions/ai-worker/index.ts",
+    "tests/ai-evals/live-smoke.ts",
+    "node_modules",
+    "**/node_modules"
+  ]
 }

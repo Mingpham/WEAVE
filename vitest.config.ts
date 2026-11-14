@@ -1,15 +1,27 @@
 import { defineConfig } from 'vitest/config';
+import ai from './vitest.ai.config.ts';
 
-// API & integration lane tests plus the shared contracts tests. The AI lane keeps its own
-// suite in vitest.ai.config.ts (`pnpm test:ai`).
 export default defineConfig({
   test: {
-    include: [
-      'packages/contracts/src/**/*.test.ts',
-      'packages/contracts/tests/**/*.test.ts',
-      'tools/*/src/**/*.test.ts',
-      'supabase/functions/api/**/*.test.ts',
+    projects: [
+      {
+        test: {
+          name: 'core',
+          include: [
+            'packages/*/src/**/*.test.ts',
+            'tools/*/src/**/*.test.ts',
+            'supabase/functions/api/**/*.test.ts',
+            'tests/**/*.test.ts',
+          ],
+          exclude: [
+            '**/node_modules/**',
+            'tests/e2e/**',
+            'tests/ai-evals/**',
+            '**/*.integration.test.ts',
+          ],
+        },
+      },
+      { test: { ...ai.test, name: 'ai' } },
     ],
-    exclude: ['**/node_modules/**'],
   },
 });

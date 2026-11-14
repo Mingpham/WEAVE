@@ -1,0 +1,41 @@
+{
+  "module": "incident_assess",
+  "name": "smoke",
+  "schema_version": "wp0-v1",
+  "prompt_version": "fixture-only-v1",
+  "snapshot": {
+    "event_kind": "neighborhood book exchange",
+    "now": "2026-11-14T00:00:00Z",
+    "aliases": ["T1", "M1", "R1", "A1", "C1", "I1", "K1", "P1"]
+  },
+  "output": {
+    "summary": "The optional book display is delayed.",
+    "extra_unknowns": [],
+    "proposed_options": [
+      {
+        "key": "ai_1",
+        "actions": [
+          {
+            "type": "DEFER_TASK",
+            "task_id": "T1"
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      {
+        "option_key": "ai_1",
+        "tradeoffs": ["The display will open later."],
+        "assumptions": [],
+        "evidence_claim_refs": ["C1"]
+      }
+    ],
+    "recommended_option_key": "ai_1",
+    "probe": null,
+    "what_changed": null,
+    "injection_suspected": false
+  },
+  "expected": {
+    "schema_valid": true
+  }
+}

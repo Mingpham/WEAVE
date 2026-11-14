@@ -7,19 +7,12 @@ export default tseslint.config(
     ignores: [
       '**/node_modules/**',
       '.agents/**',
+      '.superpowers/**',
+      '.worktrees/**',
       'docs/**',
       'coverage/**',
       'apps/mobile/android/**',
       'apps/mobile/.expo/**',
-      // Other lanes' files (kept byte-identical to their branches); linting them is their call.
-      'packages/contracts/tests/**',
-      'packages/contracts/src/ai/**',
-      'packages/engine/**',
-      'supabase/functions/ai-worker/**',
-      'supabase/functions/_shared/**',
-      'tests/security/**',
-      'tests/ai-evals/**',
-      'vitest.ai.config.ts',
     ],
   },
   js.configs.recommended,
@@ -37,7 +30,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['supabase/functions/**/*.ts'],
+    files: ['supabase/functions/**/*.ts', 'tests/ai-evals/live-smoke.ts'],
     languageOptions: {
       globals: { Deno: 'readonly', EdgeRuntime: 'readonly' },
     },

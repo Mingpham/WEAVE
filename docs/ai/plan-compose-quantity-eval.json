@@ -1,0 +1,158 @@
+{
+  "recorded_at": "2026-11-14T07:16:37.832200+00:00",
+  "commit_at_run": "8bff2f5befa1dbb76b37df30f585ac6884eb1252",
+  "dirty_scope": "ITEM quantity regression fix",
+  "prompt_version": "plan-compose-wp1-v1",
+  "prompt_source_sha256": "7eaaad2dc5c03ef3b7bac5f99821f92cc0209607c81bd52bd1d39ce3b077a852",
+  "mode": "offline_fake_model",
+  "live_inference_calls": 0,
+  "num_total_tests": 36,
+  "num_passed_tests": 36,
+  "success": true,
+  "cases": [
+    {
+      "name": "FR-PLAN-02 produces a validated EDITING draft delta and recomputes a model change summary",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-03 restores every locked object when AI modifies or omits it",
+      "status": "passed"
+    },
+    {
+      "name": "\u00a710.3 preserves inventory/custodian/stipend and defaults new resources to UNVERIFIED",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 creates new tasks without human-owned amounts",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 rejects invalid model graph/keys/windows before a derived write",
+      "status": "passed"
+    },
+    {
+      "name": "INV-02 rejects injected human fields and engine gaps at the schema boundary",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE rejects structural/business changes",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-05 FINALIZE permits text normalization and filling only missing area keys",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-02 enforces mode/turn/revision/job scope before inference",
+      "status": "passed"
+    },
+    {
+      "name": "INV-12 excludes identity, money and unknown metadata and bounds history while keeping injection text as data",
+      "status": "passed"
+    },
+    {
+      "name": "plan context rejects cross-project reloads against the original validation scope",
+      "status": "passed"
+    },
+    {
+      "name": "FR-RES-01 rejects model ITEM quantities before deriving a write",
+      "status": "passed"
+    },
+    {
+      "name": "FR-RES-01 preserves model SUPPLY quantity null",
+      "status": "passed"
+    },
+    {
+      "name": "FR-RES-01 preserves model SUPPLY quantity 0",
+      "status": "passed"
+    },
+    {
+      "name": "FR-RES-01 preserves model SUPPLY quantity 3",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-03 restores locked ITEM before validating model quantity",
+      "status": "passed"
+    },
+    {
+      "name": "WP-1 fake-model worker passes the validated plan delta to commit exactly once",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-01 retries invalid plan business output within three attempts and preserves the old draft",
+      "status": "passed"
+    },
+    {
+      "name": "FR-PLAN-02 invalid preparation terminates safely without model or budget consumption",
+      "status": "passed"
+    },
+    {
+      "name": "INV-04 an unrelated version conflict recomputes without another inference; stale drafts never commit",
+      "status": "passed"
+    }
+  ]
+}
