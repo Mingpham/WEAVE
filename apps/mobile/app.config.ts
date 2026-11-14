@@ -7,6 +7,6 @@ export default ({config}: ConfigContext): ExpoConfig => {
     name: preview ? 'WEAVE UI Preview' : 'WEAVE',
     slug: 'weave',
     android: {...config.android, package: preview ? 'com.weave.mobile.preview' : 'com.weave.mobile'},
-    plugins: [...(config.plugins ?? []), './plugins/with-local-release-signing.cjs'],
+    plugins: [...(config.plugins ?? []), './plugins/with-local-release-signing.cjs', './plugins/with-native-build-inputs.cjs'],
   };
 };

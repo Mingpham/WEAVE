@@ -2,6 +2,13 @@ const path = require('node:path');
 const { getDefaultConfig } = require('expo/metro-config');
 const { withNativeWind } = require('nativewind/metro');
 const config = getDefaultConfig(__dirname);
+// These folders contain toolchains and package stores, never app source.
+const existingBlocks = config.resolver.blockList;
+const escapedRoot = __dirname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+config.resolver.blockList = [
+  ...(Array.isArray(existingBlocks) ? existingBlocks : existingBlocks ? [existingBlocks] : []),
+  new RegExp('^' + escapedRoot + '[/\\\\](?:\\.cache|\\.expo|dist|dist-demo|artifacts)[/\\\\]'),
+];
 const fixtureRoot = path.resolve(__dirname, '../../tests/fixtures/mobile');
 // Temporary standalone package until Mingpham lands the pnpm workspace.
 config.watchFolders = [fixtureRoot];

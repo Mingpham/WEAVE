@@ -1,6 +1,7 @@
 param(
   [ValidateSet('development','preview','release')][string]$Mode = 'development',
   [string]$Architecture = 'arm64-v8a',
+  [int]$GradleHeapMb = 4096,
   [string]$AndroidSdk = 'D:/Android/Sdk',
   [string]$JavaHome = 'D:/Android/Studio/jbr'
 )
@@ -11,6 +12,7 @@ $env:ANDROID_HOME = $AndroidSdk
 $env:JAVA_HOME = $JavaHome
 $env:GRADLE_USER_HOME = Join-Path $mobileRoot '.cache/gradle'
 $env:EXPO_NO_TELEMETRY = '1'
+$env:NODE_ENV = if ($Mode -eq 'development') {'development'} else {'production'}
 $env:EXPO_PUBLIC_APP_MODE = if ($Mode -eq 'preview') {'demo'} else {'live'}
 $env:EXPO_PUBLIC_ENABLE_UI_PREVIEW = if ($Mode -eq 'release') {'false'} else {'true'}
 if (-not (Test-Path -LiteralPath (Join-Path $JavaHome 'bin/java.exe'))) {throw 'Java was not found. Supply -JavaHome.'}
@@ -50,7 +52,7 @@ try {
   $tasks = if ($Mode -eq 'development') { @(':app:assembleDebug') } else { @(':app:createBundleReleaseJsAndAssets', '--rerun', ':app:assembleRelease') }
   # Environment mode is not an input of the React Native bundle task. Always rebundle
   # for standalone builds so a cached demo bundle cannot enter the live APK.
-  & ./gradlew.bat @tasks ('-PreactNativeArchitectures=' + $Architecture) --no-daemon --console=plain
+  & ./gradlew.bat @tasks ('-PreactNativeArchitectures=' + $Architecture) ('-Dorg.gradle.jvmargs=-Xmx' + $GradleHeapMb + 'm -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8') --max-workers=2 --no-parallel --no-daemon --console=plain
   if ($LASTEXITCODE -ne 0) {throw 'Gradle build failed.'}
 } finally {Pop-Location}
 $apkSource = Join-Path $mobileRoot ('android/app/build/outputs/apk/' + $variant.ToLower() + '/app-' + $variant.ToLower() + '.apk')
