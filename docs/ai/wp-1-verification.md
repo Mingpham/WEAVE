@@ -84,3 +84,5 @@ Post-review verification on the final source tree:
 - Final diff contains only eligibility implementation/regressions, plan correction and this evidence. `AGENTS.md` and `.env` remain untouched. No extra live call, SQL migration, merge or deployment was performed.
 
 The two Important findings are covered by failing-then-passing regressions; no second review was requested. Four implementation tasks are delivered. The fifth task's audit/review is done, but its real adapter remains blocked on DB-owned worker RPCs. G0/G1/G2 and production acceptance are not claimed.
+
+Remote verification: `31ad69ca8031e5b2792937217a346340079385cd` is present on `origin/ai/wp-0-foundation`; [post-review CI](https://github.com/lh6104/WEAVE/actions/runs/43568683478) completed successfully. Final fetch found no further commits beyond database `ac537fa`, fullstack `b18271d` and mobile `078f9f3`. Only the pre-existing untracked `AGENTS.md` remains outside Git.

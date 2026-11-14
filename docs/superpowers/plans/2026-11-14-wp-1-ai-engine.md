@@ -79,4 +79,6 @@
 
 - [x] Fetch latest DB branch and inspect migrations/runbook/signatures; compare each WorkerStore operation and plan delta requirement.
 - [ ] If supplied: add failing adapter/integration tests against local DB, implement typed mapping, verify rollback/concurrency/retry/stale/budget before binding production registry. If absent: record exact missing contracts and keep Task 5 explicitly dependency-blocked; no invented SQL or fake success.
-- [ ] Run all applicable checks, fresh final review, commit/push evidence and any verified fixes. Confirm remote SHA and CI. Report completed tasks separately from external dependencies; never claim G0 or full MVP acceptance.
+- [x] Run all applicable checks, fresh final review, commit/push evidence and any verified fixes. Confirm remote SHA and CI. Report completed tasks separately from external dependencies; never claim G0 or full MVP acceptance.
+
+**Final status:** Tasks 1–4 delivered and reviewed; Task 5 history audit and handoff delivered, real adapter still blocked on missing DB-owned RPCs at `ac537fa`. See `docs/ai/wp-1-verification.md` for exact checks, review fixes and remote CI.
