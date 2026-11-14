@@ -323,3 +323,80 @@ has arrived at this checkpoint. Keep this as a local candidate: do not submit
 its migration PR until B's accompanying security tests are collected in the same
 PR and permanent regressions cover the isolation guard. No FR, AT, G0 or
 transaction/idempotency replay behavior is claimed complete. No remote changes.
+
+
+## WP-0-DB private mutation framework candidate
+
+`20261114080000_mutation_framework.sql` adds four private SECURITY INVOKER
+helpers, all pinned to an empty search path, with EXECUTE revoked from PUBLIC,
+anon, authenticated and service_role. These are not public mutation RPCs:
+
+```sql
+weave_private.lock_project_for_mutation(
+  p_project_id uuid, p_expected_state_version bigint,
+  p_require_owner boolean DEFAULT false
+) RETURNS public.projects
+weave_private.begin_idempotent_request(
+  p_key uuid, p_operation text, p_request_hash text
+) RETURNS public.idempotency_keys
+weave_private.save_idempotent_response(
+  p_key uuid, p_operation text, p_request_hash text,
+  p_response_status integer, p_response_body jsonb
+) RETURNS public.idempotency_keys
+weave_private.finish_project_mutation(
+  p_project_id uuid, p_expected_state_version bigint, p_event_type text,
+  p_visibility public.log_visibility, p_payload jsonb DEFAULT '{}',
+  p_involved_member_ids uuid[] DEFAULT '{}', p_entity_type text DEFAULT NULL,
+  p_entity_id uuid DEFAULT NULL
+) RETURNS bigint
+```
+
+The project lock authenticates auth.uid(), requires approved membership on a
+live/open project, optionally owner authorization, and compares the required
+nonnegative expected state version under row lock. A missing/inaccessible project
+returns NOT_FOUND. VERSION_CONFLICT includes JSON DETAIL with current version.
+The cache helpers validate UUIDv4 keys and nonempty operation/hash, serialize by
+transaction-level advisory lock of user/key, compare operation+hash, and preserve
+the first stored response. Cache miss returns a NULL composite. The finalizer
+rechecks the project, derives its MEMBER actor from auth.uid(), increments version
+and inserts the event in one function. Event failure rolls that operation back.
+
+Required guarded-endpoint order: authenticate/authorize endpoint scope before
+revealing any cached response; obtain key lock/check replay; lock project;
+validate source state and domain permissions; apply main change plus validated
+engine delta; call finalizer exactly once; save response; return in the same
+transaction. Do not catch an error and commit partial business data. Never pass
+client-authoritative event types, actors or engine validity through unchecked.
+
+Both entry helpers require READ COMMITTED (40001 otherwise), preventing stale
+cache snapshots after advisory-lock waits. Parent endpoints remain responsible
+for scope authorization on replay, exactly one finalization per mutation, and
+source-state checks. Worker writes, project creation/closure, self-leave and
+closed-project ledger changes need dedicated guarded paths: ordinary finalizer
+requires the actor still be APPROVED and project still open. No public endpoint,
+worker actor path, TTL cleanup, three-attempt engine retry loop or complete
+FR/AT behavior is provided by this candidate. D-17 inference remains TypeScript.
+
+P0001 MESSAGE codes: UNAUTHENTICATED, NOT_FOUND, FORBIDDEN, PROJECT_CLOSED,
+VERSION_CONFLICT, VALIDATION_FAILED and IDEMPOTENCY_KEY_REUSED. Future API mapping
+must use §9.2. SQL reference constraints retain their native SQLSTATEs.
+
+Test handoff: exact signatures/error semantics were queued to LEADER-B before
+implementation. `/tmp/weave-framework-presence.py` recorded missing helper RED
+(0 instead of 4), then passed migration application and six focused private-helper
+checks: authorization/version/closed guards, atomic version+event+cache, immutable
+cache replay/conflicts, rollback of delta/version/cache after bad event, private
+execute/isolation guards, competing expected versions and concurrent same-key
+replay. Permanent framework tests remain B-owned; candidate PR remains gated on
+those tests and review. No hosted changes or main merge have been performed.
+
+
+Framework validation checkpoint: 26/26 full-chain local checks passed using
+`python3 /tmp/weave-framework-presence.py /path/to/WEAVE` (19 foundation plus
+presence and six targeted framework tests). The tracked regression command
+`python3 -m unittest discover -s tests/security -p 'test_*.py' -v` independently
+passed 52/52, including B's direct PostgREST/JWT cases. The fixture is not Supabase
+Auth, so these are not full product AT/G0 results. Final SQL review found no
+remaining actionable issue. Existing tracked tests do not replace B's pending
+permanent framework regressions: keep this local candidate out of a migration PR
+until that test handoff is collected. No public write route was exposed.
