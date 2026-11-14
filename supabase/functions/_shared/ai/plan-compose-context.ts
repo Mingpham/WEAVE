@@ -78,16 +78,14 @@ export function buildPlanComposeRequest(value: unknown): ModelRequest {
     resources: context.draft.resources.map(
       ({ custodian_member_id: _custodian, ...resource }) => resource,
     ),
-    questions: context.draft.questions
-      .slice(0, 4)
-      .map((q) => ({
-        text: q.text,
-        why: q.why,
-        suggested_answers: q.suggested_answers,
-        about_keys: q.about_keys,
-        status: q.status,
-        answer: q.answer === null ? null : clip(q.answer, 4000),
-      })),
+    questions: context.draft.questions.slice(0, 4).map((q) => ({
+      text: q.text,
+      why: q.why,
+      suggested_answers: q.suggested_answers,
+      about_keys: q.about_keys,
+      status: q.status,
+      answer: q.answer === null ? null : clip(q.answer, 4000),
+    })),
     assumptions: context.draft.assumptions.slice(0, 8).map((a) => clip(a, 500)),
   };
   return {
