@@ -60,6 +60,10 @@ class FoundationPostgrestTests(unittest.TestCase):
         result = cls.backend.sql(storage.read_text())
         if result.returncode:
             raise RuntimeError('Storage migration bootstrap failed')
+        framework = foundation.ROOT / 'supabase/migrations/20261114080000_mutation_framework.sql'
+        result = cls.backend.sql(framework.read_text())
+        if result.returncode:
+            raise RuntimeError('Private framework migration bootstrap failed')
         r = cls.backend.docker('network', 'disconnect', 'none', cls.backend.container)
         if r.returncode:
             raise RuntimeError(r.stderr)
@@ -272,6 +276,23 @@ class FoundationPostgrestTests(unittest.TestCase):
         status, rows = self.http('GET', '/idempotency_keys?select=*', 0)
         self.assertEqual(status, 200)
         self.assertEqual(rows, [])
+
+
+    def test_INV07_private_mutation_helpers_not_exposed_http(self):
+        """INV-07: no private transaction primitive becomes a public write RPC."""
+        self.rows('projects', 0, [self.fixture.projects[0]])
+        key = str(uuid.uuid4())
+        calls = {
+            'lock_project_for_mutation': {'p_project_id': self.fixture.projects[0], 'p_expected_state_version': 0},
+            'begin_idempotent_request': {'p_key': key, 'p_operation': 'POST /fixture', 'p_request_hash': 'hash'},
+            'save_idempotent_response': {'p_key': key, 'p_operation': 'POST /fixture', 'p_request_hash': 'hash', 'p_response_status': 200, 'p_response_body': {}},
+            'finish_project_mutation': {'p_project_id': self.fixture.projects[0], 'p_expected_state_version': 0, 'p_event_type': 'FIXTURE_UPDATED', 'p_visibility': 'ALL'}}
+        for name, body in calls.items():
+            for actor in (0, 2):
+                status, _ = self.http('POST', '/rpc/' + name, actor, body)
+                self.assertEqual(status, 404)
+        self.assertEqual(self.fixture.ok('SELECT count(*) FROM public.event_log;'), '0')
+        self.assertEqual(self.fixture.ok('SELECT count(*) FROM public.idempotency_keys;'), '0')
 
 
 if __name__ == '__main__':

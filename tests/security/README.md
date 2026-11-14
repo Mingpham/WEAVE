@@ -221,3 +221,37 @@ FR/AT/gate acceptance. Migration and matching tests belong in the same PR.
 Latest combined storage checkpoint: 62 tests executed in 109 seconds, 62 passed
 (52 preceding checks plus four storage, four race, and two new HTTP checks).
 No RPC replay/atomicity or full Supabase/AT/gate completion is claimed.
+
+## Private mutation/idempotency framework
+
+`test_mutation_framework.py` covers the exact four invoker-helper signatures in
+`3a20a02`, applied after the first three real migrations. Eleven checks execute
+these helpers as a trusted administrative caller with fixture session UID;
+this is the intended privilege context of a future guarded definer endpoint,
+not direct access granted to an app user. They cover pinned empty search paths,
+revoked EXECUTE, approved/live project and owner guards, current-version detail,
+closed/deleted projects, missing UID, malformed UUIDv4/NULL/empty arguments,
+response validation, immutable first response and hash/operation conflicts,
+per-user key scope, one version/event/cache commit, rollback after a bad event,
+repeated finalization failure, stronger-isolation rejection and actual concurrent
+project/advisory-lock waits. The race checks reuse the permanent session driver
+and observed pg_stat_activity lock-wait technique.
+
+One additional PostgREST case loads the fourth migration and verifies all four
+private helper names stay unavailable as public RPCs for owner/participant JWTs.
+The existing HTTP matrix now runs against these four specific migrations. The
+new subsets passed 11/11 plus 1/1 independently. No public write RPC, endpoint
+source-state/permission guard, engine delta, three-attempt retry, closed-project
+ledger exception, TTL cleanup or complete FR/AT/G0 result is claimed.
+
+Future endpoints must authorize scope before returning a cached response,
+obtain the key lock before the project lock, stop on a valid replay, validate
+business changes, finalize once and save the response in one transaction. These
+are caller requirements beyond the private primitives; their real endpoint
+contracts must receive separate regression coverage. Associations: INV-01/05/07,
+DB-09/10 and the corresponding §9.1/§11.0 groundwork.
+
+Latest private-framework checkpoint: full security discovery executed 74 tests
+in 130 seconds; 74 passed (the preceding 62 plus eleven private-framework
+cases and one HTTP nonexposure case). No full public-RPC, Supabase Auth, FR/AT
+or gate acceptance is claimed.

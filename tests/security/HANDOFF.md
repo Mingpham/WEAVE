@@ -162,3 +162,26 @@ remain outstanding.
 Latest combined storage checkpoint: 62 tests executed in 109 seconds, 62 passed
 (52 preceding checks plus four storage, four race, and two new HTTP checks).
 No RPC replay/atomicity or full Supabase/AT/gate completion is claimed.
+
+## Private-framework regression collection
+
+B collected permanent tests for A's `3a20a02`: eleven private-helper cases in
+`test_mutation_framework.py`, plus a private-RPC-nonexposure HTTP case. These
+replace reliance on `/tmp/weave-framework-presence.py`. The independent subsets
+passed 11/11 and 1/1. No migration file was changed, and no actionable defect was
+found by these checks. Actual project/advisory lock waits precede the competing
+commit, avoiding scheduler-based guesses about concurrency.
+
+The private framework's atomicity/replay primitives are now exercised; this is
+not public mutation acceptance. Parent endpoints still own scope authorization
+before cache replay (including removed/deleted access), source-state checks,
+actor-specific permissions, exactly-once finalizer invocation, and domain/engine
+delta validation. Public creation/closure/self-leave/worker and closed-project
+ledger paths need their dedicated contracts. TTL cleanup and the full Supabase
+Auth/SEC-09/AT/gate runs remain outstanding. Ask for real public RPC signatures
+before writing those endpoint tests; do not invent them from these private names.
+
+Latest private-framework checkpoint: full security discovery executed 74 tests
+in 130 seconds; 74 passed (the preceding 62 plus eleven private-framework
+cases and one HTTP nonexposure case). No full public-RPC, Supabase Auth, FR/AT
+or gate acceptance is claimed.
