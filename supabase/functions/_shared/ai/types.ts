@@ -15,3 +15,17 @@ export type ModuleValidators<M extends ModuleName = ModuleName> = {
 export type ValidationStage = 'configuration' | 'schema' | 'references' | 'policy' | 'business';
 export type ValidationResult<T> = { ok: true; value: T; warnings: ValidationWarning[] }
   | { ok: false; stage: ValidationStage; code: ValidationCode };
+
+export type UserContent = string | readonly (
+  { type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }
+)[];
+export type ModelRequest = Readonly<{
+  module: ModuleName; promptVersion: string; system: string; userContent: UserContent; jsonSchema: Readonly<Record<string, unknown>>;
+}>;
+export type ModelResponse = Readonly<{
+  rawContent: string; requestedModel: string; actualModel: string | null; requestId: string | null;
+  usage: { inputTokens: number; outputTokens: number } | null; latencyMs: number;
+}>;
+export interface ModelPort {
+  complete(request: ModelRequest, signal?: AbortSignal): Promise<ModelResponse>;
+}

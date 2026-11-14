@@ -44,3 +44,10 @@ DB worker RPC signatures and canonical shared domain definitions remain unprovid
 - RED: three new test suites failed on missing modules. GREEN: `pnpm test` — 46/46; Node typecheck, engine typecheck, upstream consumer-type assertions and Deno checks passed.
 - Pipeline requires all three post-schema hooks; absent hooks return MODULE_NOT_READY. No production module validator was registered. Stage failures do not echo exception payloads; wrong aliases stop the entire response.
 - Primitive condition aggregation is not complete recovery validation. Empty conditions are rejected. Alias generation is deterministic, project-scoped and leaves its input unchanged.
+
+## Task 4 — OpenRouter transport and safe logging
+
+- Branch audit: reviewed `7237137` and `8f8dfc8` on database; enum/security groundwork only. Fullstack unchanged; no worker RPC supplied.
+- RED: adapter and logging test imports failed before implementation. GREEN: `pnpm test` — 63/63; `pnpm typecheck:ai` and `deno check --config supabase/functions/ai-worker/deno.json supabase/functions/_shared/ai/openrouter.ts supabase/functions/_shared/ai/logging.ts` passed.
+- Fetch fixture tests verify schema routing, single attempt, HTTP/error envelopes, truncated output, missing usage, cancellation, fetch/body timeout and redirect refusal. Logs exclude raw content/error bodies and never invent cost.
+- OpenRouter request shape checked against the official chat-completions reference. Actual key access/model capabilities are still NOT RUN; no inference request was made in this task.
