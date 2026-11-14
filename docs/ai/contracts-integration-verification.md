@@ -10,3 +10,11 @@ Base AI commit: `6e5ccb5`. Shared upstream: `origin/fullstack` at `e85f07a`; dat
 - RED: four consumer tests failed on missing API-compatible exports. GREEN: `pnpm test` 124/124 across 16 files; `pnpm typecheck:ai`; consumer `tsc` assertions; Deno check of contracts root and worker entrypoint all passed.
 - Serialized JSON schemas for all four AI modules compared byte-for-byte equal before/after using `modelJsonSchema`. No prompt/schema version bump or live eval is needed for unchanged model schemas.
 - Owner review remains required. This is compatible source contribution, not evidence that remote branches have merged.
+
+## Task 2 — WP-1 engine input types
+
+- Pre-task fetch: database advanced to `4829191`, adding real PostgREST/JWT checks over the foundation migration (handoff reports 52 security tests); inspected commit and handoff. No worker RPC was added. Fullstack remains `e85f07a`.
+- `EligibilityInput` uses explicit project scope and caller-supplied time. Member fields derive from `MemberSelf` with credentials/consent excluded; tasks from `TaskView`; assignments from `AssignmentView` with historical statuses retained. Presence claims carry status and expiry from §7.3, so the engine can compute freshness itself.
+- `DraftValidationInput` uses canonical `PlanDraft` and project time/role boundaries. Both inputs are deeply readonly. These are compile-time internal projections; they neither validate raw DB responses nor assert completeness/project isolation at runtime. Snapshot builders must enforce those boundaries when implemented.
+- RED: compile-only consumer checks failed on missing input exports. GREEN: `pnpm exec tsc --noEmit -p packages/engine/tsconfig.type-tests.json`; `pnpm typecheck:ai`; full tests 124/124; Deno check of engine entrypoint passed. Assertions cover missing availability/status/history/freshness and attempted mutations of nested windows, tags and draft criteria.
+- Next business work: §11.3 eligibility/ranking and draft validation/gaps. No algorithm, real snapshot adapter or full future engine input is claimed here.
