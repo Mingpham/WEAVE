@@ -440,3 +440,45 @@ until those tests are paired; no hosted migration or public write RPC was run.
 Scope supports FR-RES-01/03/06 and INV-01/07/DB-11 groundwork only. No full FR,
 AT or gate completion is claimed. Future write RPCs enforce row/project versions,
 limits and authorized projection deltas through the existing private framework.
+
+
+## WP-0-DB plan storage candidate
+
+Migration `20261114100000_plan_storage.sql` adds `plan_drafts` and
+`plan_messages` from §7.3. Drafts are unique per project, with revision >= 1,
+canonical EDITING default, nonnegative AI-turn count and opaque required JSON.
+Messages reference the draft through a composite project FK and index the draft
+conversation timeline. Message roles are ORGANIZER/AI/SYSTEM as declared in §7.3;
+payload is nullable. Both tables use UUID/project/created_at defaults from §7.1.
+
+Both tables permit authenticated SELECT only through the existing live-approved
+owner helper. Participants, pending/removed users and outsiders have no rows;
+soft deletion hides rows from the owner too. Direct INSERT/UPDATE/DELETE/TRUNCATE
+are revoked from app/service roles and no write policies are added. Message
+append-only requirements are enforced through these grants until guarded RPCs
+arrive. No engine inference, compose job, JSON schema validation, locked-field
+merge, revision transition or publish RPC is invented in this storage slice.
+
+Execution plan and local evidence: a real enum/foundation/storage/framework/
+resource baseline first failed the missing-plan-table assertion (0 rather than 2).
+Five targeted checks passed after implementation: table RLS, exact owner-only row
+IDs and soft deletion, project uniqueness/defaults/revision bounds, scoped draft
+references/valid roles/delete restriction, and direct-write/append-only privileges.
+`python3 /tmp/weave-plan-storage-check.py /path/to/WEAVE` validates the entire
+migration chain using disposable PostgreSQL with minimal auth fixtures. Final
+full-chain result: 24/24 (19 foundation plus five plan-storage cases).
+
+B was queued with exact schema constraints and artifact path before collection;
+its resource validation remains first priority, then permanent plan SQL/HTTP
+checks. No B-owned file is changed by this candidate. The migration PR remains
+blocked until its paired permanent security tests are collected. This is
+FR-PLAN-01/05/06/07 storage groundwork and INV-06/07, DB-06/11 support, not full
+FR, AT, G0 or Supabase Auth acceptance. No hosted migration has been applied.
+
+
+Plan candidate completion check: the complete tracked supporting command
+`python3 -m unittest discover -s tests/security -p 'test_*.py' -v` passed 78/78
+in 235.969 seconds. Its existing fixtures validate their named migration slices;
+the separate 24-case full-chain run exercises all migrations including plan
+storage. Independent review found no actionable schema/security issue. Permanent
+plan-specific SQL/HTTP tests are still pending B's handoff before migration PR.
