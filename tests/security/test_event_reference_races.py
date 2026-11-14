@@ -63,18 +63,35 @@ class EventReferenceRaces(fixture.StorageFixture):
 
     def test_DB11_stronger_snapshot_identity_changes_rejected(self):
         for isolation in ('REPEATABLE READ', 'SERIALIZABLE'):
-            for change in ('DELETE', 'REKEY'):
+            for change in ('DELETE', 'REKEY', 'PROJECT_MOVE'):
                 with self.subTest(isolation=isolation, change=change):
                     session = Session(self)
                     session.query('BEGIN ISOLATION LEVEL ' + isolation + '; SELECT count(*) FROM public.members')
                     self.ok(self.event_sql(self.members[2]))
-                    sql = ("DELETE FROM public.members WHERE id='%s'" % self.members[2] if change == 'DELETE' else
-                           "UPDATE public.members SET id='%s' WHERE id='%s'" % (str(uuid.uuid4()), self.members[2]))
+                    if change == 'DELETE':
+                        sql = "DELETE FROM public.members WHERE id='%s'" % self.members[2]
+                    elif change == 'REKEY':
+                        sql = "UPDATE public.members SET id='%s' WHERE id='%s'" % (str(uuid.uuid4()), self.members[2])
+                    else:
+                        sql = "UPDATE public.members SET project_id='%s' WHERE id='%s'" % (self.projects[1], self.members[2])
                     session.expect_error(self, sql, '40001')
                     self.assertEqual(self.ok("SELECT count(*) FROM public.members WHERE id='%s';" % self.members[2]), '1')
 
     def test_DB11_read_committed_unreferenced_delete_allowed(self):
         self.assertEqual(self.ok("DELETE FROM public.members WHERE id='%s' RETURNING id;" % self.members[2]), self.members[2])
+
+    def test_DB11_read_committed_unreferenced_identity_changes_allowed(self):
+        new_id = str(uuid.uuid4())
+        self.assertEqual(self.ok("UPDATE public.members SET id='%s' WHERE id='%s' RETURNING id;" % (new_id, self.members[2])), new_id)
+        self.assertEqual(self.ok("UPDATE public.members SET project_id='%s' WHERE id='%s' RETURNING project_id;" % (self.projects[1], new_id)), self.projects[1])
+        self.assertEqual(self.ok('SELECT count(*) FROM public.event_log;'), '0')
+
+    def test_DB11_stronger_profile_and_noop_identity_changes_allowed(self):
+        self.ok(self.event_sql(self.members[2]))
+        for isolation in ('REPEATABLE READ', 'SERIALIZABLE'):
+            result = self.ok("BEGIN ISOLATION LEVEL %s; UPDATE public.members SET id=id,project_id=project_id,nickname='Isolation profile',status='REMOVED',presence='UNAVAILABLE' WHERE id='%s' RETURNING status::text||'|'||presence::text; COMMIT;" % (isolation, self.members[2]))
+            self.assertEqual(result, 'REMOVED|UNAVAILABLE')
+        self.assertEqual(self.ok('SELECT count(*) FROM public.event_log;'), '1')
 
     def test_DB11_event_first_delete_waits_then_rejects(self):
         event = Session(self)
