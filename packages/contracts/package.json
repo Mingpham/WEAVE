@@ -1,13 +1,17 @@
 {
   "name": "@weave/contracts",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "Single source of truth for WEAVE enums, Zod schemas, API DTOs and POL.* policy constants (spec \u00a77.2, \u00a79, Appendix B).",
   "exports": {
     ".": "./src/index.ts",
     "./ai": "./src/ai/index.ts",
     "./enums": "./src/enums.ts",
     "./policy": "./src/policy.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "zod": "4.6.7"
