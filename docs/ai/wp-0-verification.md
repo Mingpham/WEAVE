@@ -69,3 +69,13 @@ DB worker RPC signatures and complete engine input projections remain unprovided
 - Entrypoint deliberately has no production store binding and returns `503 INTEGRATION_PENDING` to authorized calls. No dummy successful adapter, invented RPC names, migration, Cron registration or gateway configuration was added.
 - Local Supabase integration/bundle checks NOT RUN: reviewed DB interfaces and an integrated shared configuration are absent. Task 6 is partial, not complete; worker deploy is not ready. Queue-only sweep is explicitly labeled and does not implement R1–R5.
 - Integration follow-up: reconcile root package/lockfile/TypeScript/Vitest configuration with fullstack; retain the AI test target because upstream excludes `tests/ai-evals`. Reconcile `recovery.ts` value exports (`Action`, `ConditionCheck`, `ProposalOption` upstream vs `*Schema` here), rank positivity, and datetime/bounds policy. API read models must not be substituted for full engine input without review. No merge/rebase or upstream overwrite performed.
+
+## Task 7 — Bounded live smoke and handoff
+
+- Pre-task audit: database `e4f5bd1` unchanged; fullstack advanced to `e85f07a`. Reviewed the esbuild build approval and fixture secret-scan allowlist. No new worker contracts.
+- RED: smoke tests failed on missing runner. The first implementation run exposed an incorrectly spread parameterized test row and an `unknown` narrowing error; both were corrected before any live request. GREEN: smoke 11/11, full suite 101/101; Node AI/engine typechecks and Deno CLI check passed.
+- On 2026-11-14, exactly two inference requests ran: one text and one 64×64 synthetic PNG. Requested and actual model both `anthropic/claude-haiku-5.5`; prompt/schema `wp0-smoke-v1`; timeout 35,000ms, output cap 256, no retry or model fallback. Cost remains unknown.
+- Text: PASS, 3,386ms, input/output tokens 233/9. Image: PASS, 3,608ms, tokens 281/10. These validate bounded transport and diagnostic schemas, not business module accuracy or full eval coverage.
+- [Machine-readable evidence](./live-smoke-2026-11-14.json) includes timestamps, commit/dirty state, tool versions, fixture hashes and request IDs. Exact reproduction commands are in [eval README](../../tests/ai-evals/README.md). Re-running spends additional calls; it is never part of unit CI.
+- Official [model catalog](https://openrouter.ai/anthropic/claude-haiku-5.5) was checked again and lists text/image inputs; actual request outcomes above provide the account-level smoke evidence.
+- Current status: `LOCAL_PASS`, `LIVE_SMOKE_PASS`, `INTEGRATION_PENDING`. Task 6 SQL integration and shared API/tooling reconciliation remain required before WP-0/G0 acceptance. No deployment or hosted database mutation occurred.
