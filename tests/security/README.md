@@ -154,7 +154,7 @@ its tests together in the same PR. Supabase Auth acceptance remains separate.
 
 Run `python3 tests/security/test_foundation_postgrest.py -v`, or the full
 `python3 -m unittest discover -s tests/security -p 'test_*.py' -v` suite.
-The eight HTTP tests execute the real enum/foundation migrations using the
+The HTTP tests execute the real enum/foundation/storage migrations using the
 existing foundation fixtures. They use cached `postgres:17-alpine`,
 `public.ecr.aws/supabase/postgrest:v16.5`, and `python:3.13-slim` images with
 `--pull=never`. The Python image is only an ephemeral standard-library HTTP
@@ -188,3 +188,36 @@ Combined verification checkpoint: the full security discovery command executed
 52 tests in 82 seconds, all passed. This includes 25 original supporting checks,
 19 foundation SQL checks and eight direct PostgREST/JWT checks. Supabase Auth
 and complete FR/AT/gate acceptance remain unverified.
+
+## Event/idempotency storage regressions
+
+The `ebb574f` candidate is now covered by tracked tests rather than `/tmp`
+artifacts. `storage_fixture.py` applies the real first three migrations to the
+existing disposable foundation harness. `test_event_storage.py` adds four
+checks for exact event visibility, soft deletion/removal, user/key uniqueness,
+cache read isolation even after an accidental SELECT grant, scoped actor/array
+references (including NULL and historical members), app/service write and
+sequence privileges. These are storage checks, not RPC replay or mutation
+atomicity acceptance.
+
+`test_event_reference_races.py` adds four concurrency checks. Separate psql
+sessions verify REPEATABLE READ and SERIALIZABLE identity changes reject with
+40001, ordinary READ COMMITTED unreferenced deletion succeeds, and both
+READ COMMITTED event-first/delete-first orderings block then reject the losing
+operation with 23503. The tests observe `pg_stat_activity.wait_event_type=Lock`
+before committing the competing transaction, rather than assuming blocking
+from a timed sleep. The source guard's READ COMMITTED restriction remains the
+explicit spec gap documented by CODEX-A; ordinary profile and unchanged-identity
+updates are verified as allowed.
+
+Two additional PostgREST/JWT cases cover event ALL/OWNER/INVOLVED rows, same-token
+revocation, soft deletion, append-only table endpoints, and hidden cached
+responses. The SQL/race subset passed 8/8; the new HTTP subset passed 2/2.
+Run the complete supporting suite with the standard security discovery command.
+Associations: INV-05/06/07, DB-06/11, SEC-09. These do not prove idempotent RPC
+replay, atomic state/event commits, TTL cleanup, full Supabase Auth or complete
+FR/AT/gate acceptance. Migration and matching tests belong in the same PR.
+
+Latest combined storage checkpoint: 62 tests executed in 109 seconds, 62 passed
+(52 preceding checks plus four storage, four race, and two new HTTP checks).
+No RPC replay/atomicity or full Supabase/AT/gate completion is claimed.

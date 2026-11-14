@@ -1,4 +1,4 @@
-"""Direct PostgREST/JWT checks on the real foundation migration.
+"""Direct PostgREST/JWT checks on the real foundation and storage migrations.
 
 INV-07, SEC-09; database groundwork for FR-MEM-04/06, FR-EVT-06, AT-05/06/07.
 Real PostgreSQL/PostgREST; fixture auth.uid/users and locally signed JWTs.
@@ -56,6 +56,10 @@ class FoundationPostgrestTests(unittest.TestCase):
         cls.addClassCleanup(cls.backend.docker, 'network', 'rm', cls.network)
         cls.addClassCleanup(cls.backend.doClassCleanups)
         cls.backend.setUpClass()
+        storage = foundation.ROOT / 'supabase/migrations/20261114070000_event_log_idempotency.sql'
+        result = cls.backend.sql(storage.read_text())
+        if result.returncode:
+            raise RuntimeError('Storage migration bootstrap failed')
         r = cls.backend.docker('network', 'disconnect', 'none', cls.backend.container)
         if r.returncode:
             raise RuntimeError(r.stderr)
@@ -215,6 +219,59 @@ class FoundationPostgrestTests(unittest.TestCase):
         self.rows('projects', 0, [self.fixture.projects[0]])
         status, _ = self.http('POST', '/rpc/is_member', 0, {'p_project_id': self.fixture.projects[0]})
         self.assertEqual(status, 404)
+
+
+    def test_INV06_INV07_event_visibility_and_append_only_http(self):
+        """INV-06/07 / SEC-09: private event rows and writes over real JWT HTTP."""
+        f = self.fixture
+        ids = []
+        for project, visibility, member in [(0, 'ALL', None), (0, 'OWNER', None),
+                                             (0, 'INVOLVED', f.members[2]),
+                                             (0, 'INVOLVED', f.members[0]), (1, 'ALL', None)]:
+            involved = "ARRAY['%s'::uuid]" % member if member else "'{}'::uuid[]"
+            ids.append(int(f.ok("INSERT INTO public.event_log(project_id,state_version,event_type,actor_kind,visibility,involved_member_ids) VALUES ('%s',1,'FIXTURE_EVENT','SYSTEM','%s',%s) RETURNING id;" % (f.projects[project], visibility, involved)).splitlines()[0]))
+        for actor, positions in [(0, [0, 1, 2, 3]), (1, [4]), (2, [0, 2]), (3, [4]), (4, []), (5, []), (6, [])]:
+            self.rows('event_log', actor, [ids[i] for i in positions])
+        self.rows('event_log', 2, [], '&project_id=eq.' + f.projects[1])
+        for method, body in [('PATCH', {'payload': {'forbidden': True}}), ('DELETE', None)]:
+            status, error = self.http(method, '/event_log?id=eq.' + str(ids[0]), 0, body)
+            self.assertEqual(status, 403)
+            self.assertEqual(error['code'], '42501')
+        self.assertEqual(f.ok('SELECT count(*) FROM public.event_log;'), '5')
+        self.assertEqual(f.ok('SELECT payload::text FROM public.event_log WHERE id=' + str(ids[0]) + ';'), '{}')
+        token = self.token(2)
+        status, rows = self.http('GET', '/event_log?select=id&order=id', token=token)
+        self.assertEqual(status, 200)
+        self.assertEqual([row['id'] for row in rows], [ids[0], ids[2]])
+        f.ok("UPDATE public.members SET status='REMOVED' WHERE id='%s';" % f.members[2])
+        status, rows = self.http('GET', '/event_log?select=id', token=token)
+        self.assertEqual(status, 200)
+        self.assertEqual(rows, [])
+        f.ok("UPDATE public.projects SET deleted_at=now() WHERE id='%s';" % f.projects[0])
+        self.rows('event_log', 0, [])
+        self.rows('event_log', 1, [ids[4]])
+
+    def test_INV05_INV07_cache_responses_never_exposed_http(self):
+        """INV-05/07 / SEC-09: storage scope only; no RPC replay claim."""
+        f = self.fixture
+        key = str(uuid.uuid4())
+        payload = {'user_id': f.users[0], 'key': key, 'operation': 'POST /fixture',
+                   'request_hash': 'fixture-hash', 'response_status': 200, 'response_body': {}}
+        for user in (0, 2):
+            f.ok("INSERT INTO public.idempotency_keys(user_id,key,operation,request_hash,response_status,response_body) VALUES ('%s','%s','POST /fixture','fixture-hash',200,'{}');" % (f.users[user], key))
+        for actor in (0, 2, 4, 6):
+            status, error = self.http('GET', '/idempotency_keys?select=*', actor)
+            self.assertEqual(status, 403)
+            self.assertEqual(error['code'], '42501')
+        for method, body in [('POST', payload), ('PATCH', {'response_body': {'forbidden': True}}), ('DELETE', None)]:
+            status, error = self.http(method, '/idempotency_keys', 0, body)
+            self.assertEqual(status, 403)
+            self.assertEqual(error['code'], '42501')
+        self.assertEqual(f.ok('SELECT count(*) FROM public.idempotency_keys;'), '2')
+        f.ok('GRANT SELECT ON public.idempotency_keys TO authenticated;')
+        status, rows = self.http('GET', '/idempotency_keys?select=*', 0)
+        self.assertEqual(status, 200)
+        self.assertEqual(rows, [])
 
 
 if __name__ == '__main__':

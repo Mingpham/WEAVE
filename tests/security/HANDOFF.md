@@ -135,3 +135,30 @@ Combined verification checkpoint: the full security discovery command executed
 52 tests in 82 seconds, all passed. This includes 25 original supporting checks,
 19 foundation SQL checks and eight direct PostgREST/JWT checks. Supabase Auth
 and complete FR/AT/gate acceptance remain unverified.
+
+## Event/idempotency storage candidate validation
+
+LEADER-B collected permanent coverage for `ebb574f`: `storage_fixture.py`,
+`test_event_storage.py`, `test_event_reference_races.py`, and two additional
+PostgREST cases. No migration file was changed. The eight SQL/race checks and
+two new HTTP checks passed independently; combined-suite verification follows.
+This supersedes reliance on A's temporary precheck/race scripts.
+
+The isolation guard now has permanent tests for REPEATABLE READ/SERIALIZABLE
+DELETE and rekey, allowed READ COMMITTED unreferenced deletion, and both lock
+orderings. Lock waits are observed in pg_stat_activity. Historical references,
+NULL/foreign array members, same-project actor FK, no write/sequence privileges,
+cache PK scope, accidental-read-grant defense, private event visibility and
+same-token removal are checked. No actionable defect was found in the candidate
+by these checks. Preserve A's isolation/purge-order spec-gap note in the PR.
+
+Next handoff from A: exact canonical mutation/RPC signatures and error contract.
+Do not count the `(user_id,key)` primary key as completed mutation idempotency:
+replay/hash-conflict, version conflict, event/state atomic rollback and closed
+project behavior require those real entry points. B will implement their tests
+without editing migration/RPC code. Full SEC-09 and full Supabase acceptance
+remain outstanding.
+
+Latest combined storage checkpoint: 62 tests executed in 109 seconds, 62 passed
+(52 preceding checks plus four storage, four race, and two new HTTP checks).
+No RPC replay/atomicity or full Supabase/AT/gate completion is claimed.
