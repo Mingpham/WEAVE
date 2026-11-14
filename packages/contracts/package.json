@@ -11,9 +11,14 @@
     "./policy": "./src/policy.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --pool=forks --maxWorkers=1 --no-file-parallelism"
   },
   "dependencies": {
     "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
   }
 }

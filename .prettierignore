@@ -13,3 +13,6 @@ supabase/migrations
 supabase/.temp
 apps/mobile/android
 apps/mobile/.expo
+
+apps/mobile
+tests/fixtures/mobile

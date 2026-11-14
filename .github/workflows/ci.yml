@@ -7,7 +7,7 @@ on:
   push:
     branches: ['**']
   pull_request:
-    branches: [main]
+    branches: [main, fix-main]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -31,6 +31,7 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm typecheck:ai
+      - run: pnpm typecheck:engine
       - run: pnpm lint
       - run: pnpm test
       - name: INV-11 no hardcoded reference scenario
@@ -67,3 +68,22 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  mobile:
+    name: Mobile types, lint and unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: apps/mobile/pnpm-lock.yaml
+      - run: pnpm install --ignore-workspace --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test

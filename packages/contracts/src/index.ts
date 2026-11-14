@@ -17,3 +17,14 @@ export * from './api/membership.ts';
 export * from './api/registry.ts';
 export * from './ai/index.ts';
 export { IncidentTypeSchema } from './primitives.ts';
+export { CreateProjectRequest, CreateProjectResponse } from './create-project.ts';
+// Keep DB RPC schemas distinct from public API endpoint adapters.
+export {
+  InviteCode as DbInviteCode,
+  InviteActionRequest,
+  ResolveInviteRequest,
+  JoinInviteRequest,
+  InviteActionResponse,
+  ResolveInviteResponse,
+  JoinInviteResponse,
+} from './invite-join.ts';

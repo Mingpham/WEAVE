@@ -25,6 +25,8 @@
     "supabase/functions/ai-worker/index.ts",
     "tests/ai-evals/live-smoke.ts",
     "node_modules",
-    "**/node_modules"
+    "**/node_modules",
+    "apps/**",
+    "tests/fixtures/mobile/**"
   ]
 }
