@@ -2,8 +2,9 @@
 
 **Status:** Proposed stack freeze for implementation, pending Day-1 smoke tests  
 **Date:** 2026-11-14  
-**Baseline:** `WEAVE_4_0_Comprehensive_Product_Technical_Design.md`  
-**Delivery window:** 2026-11-14 to 2026-12-11 (4 weeks)  
+**Product specification:** `docs/WEAVE_MVP_Specification.md` — authoritative for product behaviour, data model, API, AI contracts and the build plan. This ADR remains authoritative for the stack and library versions only. Where the two conflict (see Appendix A of the specification), the specification wins.  
+**Superseded parts of this ADR:** the 4-week delivery window and §7 weekly schedule (the MVP has no fixed schedule), iOS as an acceptance target (Android only), the seven AI module names in §4 (now four), and the per-incident AI limits in the sample configuration.  
+**Earlier design baseline:** `WEAVE_4_0_Comprehensive_Product_Technical_Design.md` was removed from the repository; it remains in git history at commit `d657cc6`.  
 **Audience:** Mobile, Backend/Security, AI/Evaluation, Product/QA
 
 ## 1. Executive Decision
