@@ -68,6 +68,10 @@ class FoundationPostgrestTests(unittest.TestCase):
         result = cls.backend.sql(resource.read_text())
         if result.returncode:
             raise RuntimeError('Resource migration bootstrap failed')
+        plan = foundation.ROOT / 'supabase/migrations/20261114100000_plan_storage.sql'
+        result = cls.backend.sql(plan.read_text())
+        if result.returncode:
+            raise RuntimeError('Plan storage migration bootstrap failed')
         r = cls.backend.docker('network', 'disconnect', 'none', cls.backend.container)
         if r.returncode:
             raise RuntimeError(r.stderr)
@@ -331,6 +335,47 @@ class FoundationPostgrestTests(unittest.TestCase):
         self.assertEqual(status,401)
         self.assertEqual(f.ok('SELECT count(*) FROM public.resources;'),'1')
         self.assertEqual(f.ok('SELECT count(*) FROM public.resources WHERE notes IS NOT NULL;'),'0')
+
+
+    def test_INV07_plan_storage_http_owner_only_and_revocation(self):
+        """INV-07 / FR-PLAN-01 groundwork: plan drafts/messages are owner-only."""
+        f=self.fixture
+        ids=[(str(uuid.uuid4()),str(uuid.uuid4())) for _ in range(2)]
+        for project,(draft,message) in enumerate(ids):
+            f.ok("INSERT INTO public.plan_drafts(id,project_id,draft) VALUES ('%s','%s','{}'); INSERT INTO public.plan_messages(id,project_id,draft_id,role,text) VALUES ('%s','%s','%s','ORGANIZER','HTTP fixture');"%(draft,f.projects[project],message,f.projects[project],draft))
+        for table,index in [('plan_drafts',0),('plan_messages',1)]:
+            for actor,project in [(0,0),(1,1),(2,None),(3,None),(4,None),(5,None),(6,None)]:
+                self.rows(table,actor,[] if project is None else [ids[project][index]])
+            self.rows(table,0,[],'&project_id=eq.'+f.projects[1])
+            status,_=self.http('GET','/'+table+'?select=id');self.assertEqual(status,401)
+        token=self.token(0)
+        status,rows=self.http('GET','/plan_drafts?select=id',token=token)
+        self.assertEqual(status,200);self.assertEqual([row['id'] for row in rows],[ids[0][0]])
+        f.ok("UPDATE public.members SET role='PARTICIPANT',status='REMOVED' WHERE id='%s';"%f.members[0])
+        for table in ('plan_drafts','plan_messages'):
+            status,rows=self.http('GET','/'+table+'?select=id',token=token)
+            self.assertEqual(status,200);self.assertEqual(rows,[])
+        f.ok("UPDATE public.members SET role='OWNER',status='APPROVED' WHERE id='%s';"%f.members[0])
+        self.rows('plan_drafts',0,[ids[0][0]])
+        f.ok("UPDATE public.projects SET deleted_at=now() WHERE id='%s';"%f.projects[0])
+        for table,index in [('plan_drafts',0),('plan_messages',1)]:
+            self.rows(table,0,[]);self.rows(table,1,[ids[1][index]])
+
+    def test_DB06_plan_storage_http_write_denial(self):
+        """DB-06 / INV-06: owner JWT cannot mutate draft/message table endpoints."""
+        f=self.fixture
+        draft,message=str(uuid.uuid4()),str(uuid.uuid4())
+        f.ok("INSERT INTO public.plan_drafts(id,project_id,draft) VALUES ('%s','%s','{}'); INSERT INTO public.plan_messages(id,project_id,draft_id,role,text) VALUES ('%s','%s','%s','AI','Immutable fixture');"%(draft,f.projects[0],message,f.projects[0],draft))
+        rows={'plan_drafts':(draft,{'project_id':f.projects[1],'draft':{}},{'revision':2}),
+              'plan_messages':(message,{'project_id':f.projects[0],'draft_id':draft,'role':'AI','text':'Forbidden'},{'text':'Forbidden'})}
+        for table,(identity,insert,update) in rows.items():
+            self.rows(table,0,[identity])
+            for method,path,body in [('POST','/'+table,insert),('PATCH','/'+table+'?id=eq.'+identity,update),('DELETE','/'+table+'?id=eq.'+identity,None)]:
+                status,error=self.http(method,path,0,body)
+                self.assertEqual(status,403);self.assertEqual(error['code'],'42501')
+            self.assertEqual(f.ok('SELECT count(*) FROM public.'+table+';'),'1')
+        self.assertEqual(f.ok("SELECT text FROM public.plan_messages WHERE id='%s';"%message),'Immutable fixture')
+        self.assertEqual(f.ok("SELECT revision FROM public.plan_drafts WHERE id='%s';"%draft),'1')
 
 
 if __name__ == '__main__':

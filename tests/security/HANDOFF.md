@@ -185,3 +185,28 @@ Latest private-framework checkpoint: full security discovery executed 74 tests
 in 130 seconds; 74 passed (the preceding 62 plus eleven private-framework
 cases and one HTTP nonexposure case). No full public-RPC, Supabase Auth, FR/AT
 or gate acceptance is claimed.
+
+## WP-0 plan-storage targeted handoff
+
+Implementation: `867a1f1` (migration `20261114100000_plan_storage.sql`), tested
+on B branch based on integrated `0a81896`. Test commit: the commit adding this
+entry; A records integrated SHA after collection. Associations: FR-PLAN-01/05/06/07
+storage groundwork, INV-06/07, DB-06/11.
+
+Changed files: `test_plan_storage.py`, `test_foundation_postgrest.py`, this handoff.
+Five SQL checks cover table RLS, exact owner-only rows in both projects,
+participant/pending/removed/outsider denial, owner removal and soft deletion,
+project uniqueness/defaults/bounds, scoped draft FK, role values, referenced-draft
+deletion restriction, and no app/service direct writes including after accidental
+grants. Two HTTP/JWT checks add real owner positive reads, cross-project and anon
+denial, same-token revocation and direct table POST/PATCH/DELETE denial with
+unchanged rows. Independent source review found no actionable defect in scope.
+
+Executed in isolated disposable PostgreSQL17/PostgREST16.5 with fixture auth:
+`python3 tests/security/test_plan_storage.py -v` -> 5/5 passed;
+`python3 tests/security/test_foundation_postgrest.py FoundationPostgrestTests.test_INV07_plan_storage_http_owner_only_and_revocation FoundationPostgrestTests.test_DB06_plan_storage_http_write_denial -v` -> 2/2 passed;
+`git diff --check` -> passed. No B full-suite rerun under the two-leader workflow.
+A: collect once and run full regression on final integration SHA. No migration
+changes by B, hosted apply, full FR/AT/gate or Supabase Auth acceptance. Draft
+JSON validation, version/transition semantics and compose/publish remain future
+real contract/RPC tests. No further decision needed for this storage slice.
