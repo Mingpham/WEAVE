@@ -1,7 +1,7 @@
 # DB Core handoff — WP-0-DB
 
 Baseline: `caa79f7`, specification v0.3, ADR stack only. No gate is signed.
-Branch: `db/wp-0-local-foundation`. No migration is supplied in this slice.
+Branch: `database` (renamed at user request). No migration is supplied in this slice.
 
 ## Local configuration
 
@@ -101,3 +101,26 @@ using `opencode/glm-5.3-flash-free`; no files were delegated for editing. Review
 follow-ups: verify runtime provider settings; leave Google disabled pending real
 credentials; keep each agent's project ID, ports and auth fixtures independent.
 The review is not runtime evidence. No change to CODEX-B's worktree was made.
+
+
+## Hosted project setup (user requested)
+
+Target project ref: `qjfiaynqszghzwpxshfe`. Use CLI 3.1.0 from this worktree:
+
+```sh
+npx --yes supabase@3.1.0 login --agent no --output-format text
+npx --yes supabase@3.1.0 link --project-ref qjfiaynqszghzwpxshfe
+```
+
+Initialization is already complete: `supabase init` reports that config.toml
+exists. Do not use `--force` to replace the reviewed local configuration.
+The initial link attempt failed with `AccessTokenRequiredError`; account login
+must complete first. A publishable API key is not a CLI account access token.
+Interactive login is awaiting browser verification; remote linking is not yet
+verified. No remote migrations or configuration changes have been applied.
+Local CLI link metadata, env files and AGENTS.md are excluded through the
+shared `.git/info/exclude`; they must never be staged with `git add -f`.
+
+CODEX-B's catalog handoff has since been incorporated in commit `776fd9c`.
+Further security-test edits found in the current worktree are pre-existing and
+are deliberately excluded from this setup commit.
