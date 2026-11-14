@@ -6,16 +6,7 @@
   "snapshot": {
     "event_kind": "neighborhood book exchange",
     "now": "2026-11-14T00:00:00Z",
-    "aliases": [
-      "T1",
-      "M1",
-      "R1",
-      "A1",
-      "C1",
-      "I1",
-      "K1",
-      "P1"
-    ]
+    "aliases": ["T1", "M1", "R1", "A1", "C1", "I1", "K1", "P1"]
   },
   "output": {
     "claims": [
@@ -25,9 +16,7 @@
         "key": "resource.condition",
         "value": "OK",
         "statement": "The table is stable.",
-        "media_refs": [
-          "P1"
-        ],
+        "media_refs": ["P1"],
         "contradicts_claim_refs": []
       }
     ],
@@ -36,9 +25,7 @@
         "criterion_ref": "K1",
         "verdict": "SUPPORTED",
         "explanation": "Books are on the table.",
-        "media_refs": [
-          "P1"
-        ]
+        "media_refs": ["P1"]
       }
     ],
     "incident_signal": null,

@@ -6,6 +6,8 @@ it.each(modules)('%s fixtures match recorded structural expectations', (module) 
   for (const name of ['smoke', 'invalid'] as const) {
     const fixture = loadEvalCase(module, name);
     expect(fixture.module).toBe(module);
-    expect(outputSchemas[module].safeParse(fixture.output).success).toBe(fixture.expected.schema_valid);
+    expect(outputSchemas[module].safeParse(fixture.output).success).toBe(
+      fixture.expected.schema_valid,
+    );
   }
 });

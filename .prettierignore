@@ -1,0 +1,13 @@
+node_modules
+pnpm-lock.yaml
+skills-lock.json
+.agents
+.superpowers
+.worktrees
+AGENTS.md
+docs
+WEAVE_4_0_Stack_Lock_ADR.md
+supabase/migrations
+supabase/.temp
+apps/mobile/android
+apps/mobile/.expo

@@ -6,25 +6,14 @@
   "snapshot": {
     "event_kind": "neighborhood book exchange",
     "now": "2026-11-14T00:00:00Z",
-    "aliases": [
-      "T1",
-      "M1",
-      "R1",
-      "A1",
-      "C1",
-      "I1",
-      "K1",
-      "P1"
-    ]
+    "aliases": ["T1", "M1", "R1", "A1", "C1", "I1", "K1", "P1"]
   },
   "output": {
     "headline": "Book exchange concluded",
     "went_well": [
       {
         "text": "The team resolved the table issue.",
-        "refs": [
-          "I1"
-        ]
+        "refs": ["I1"]
       }
     ],
     "went_wrong": [],

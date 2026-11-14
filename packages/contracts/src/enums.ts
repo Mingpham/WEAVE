@@ -270,7 +270,9 @@ export type UnknownSource = z.infer<typeof UnknownSource>;
 
 /** Legacy tuple consumers share the canonical Zod enums; values are never declared twice. */
 export const ENUMS = Object.freeze(
-  Object.fromEntries(Object.entries(DB_ENUMS).map(([name, schema]) => [name, Object.freeze([...schema.options])])),
+  Object.fromEntries(
+    Object.entries(DB_ENUMS).map(([name, schema]) => [name, Object.freeze([...schema.options])]),
+  ),
 ) as { readonly [Name in keyof typeof DB_ENUMS]: readonly z.infer<(typeof DB_ENUMS)[Name]>[] };
 export type DomainEnumName = keyof typeof DB_ENUMS;
 export type DomainEnumValue<Name extends DomainEnumName> = z.infer<(typeof DB_ENUMS)[Name]>;

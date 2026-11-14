@@ -1,0 +1,22 @@
+{
+  "description": "Names, places and text of the reference scenario (spec §4). INV-11: none of these may appear in apps/, packages/ or supabase/functions/. Matched case-sensitively as whole words. Two-letter names (An, Chi) are left out because they collide with ordinary words; reviewers check those by hand.",
+  "terms": [
+    "Saigon Build Day",
+    "Scanner A",
+    "Scanner B",
+    "Spare scanner",
+    "Lobby Wi-Fi",
+    "4G hotspot",
+    "Gate A",
+    "Gate B",
+    "Main Hall",
+    "Workshop Room",
+    "Storage Room",
+    "Bao",
+    "Linh",
+    "Minh",
+    "Khoa",
+    "won't turn on",
+    "can't load tickets"
+  ]
+}

@@ -1,7 +1,6 @@
 export default {
   test: {
     include: [
-      'packages/contracts/src/**/*.test.ts',
       'packages/contracts/tests/**/*.test.ts',
       'packages/engine/tests/**/*.test.ts',
       'supabase/functions/_shared/ai/tests/**/*.test.ts',

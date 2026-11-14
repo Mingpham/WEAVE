@@ -6,16 +6,7 @@
   "snapshot": {
     "event_kind": "neighborhood book exchange",
     "now": "2026-11-14T00:00:00Z",
-    "aliases": [
-      "T1",
-      "M1",
-      "R1",
-      "A1",
-      "C1",
-      "I1",
-      "K1",
-      "P1"
-    ]
+    "aliases": ["T1", "M1", "R1", "A1", "C1", "I1", "K1", "P1"]
   },
   "output": {
     "summary": "The optional book display is delayed.",
@@ -34,13 +25,9 @@
     "ranking": [
       {
         "option_key": "ai_1",
-        "tradeoffs": [
-          "The display will open later."
-        ],
+        "tradeoffs": ["The display will open later."],
         "assumptions": [],
-        "evidence_claim_refs": [
-          "C1"
-        ]
+        "evidence_claim_refs": ["C1"]
       }
     ],
     "recommended_option_key": "ai_1",

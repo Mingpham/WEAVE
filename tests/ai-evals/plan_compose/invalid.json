@@ -6,16 +6,7 @@
   "snapshot": {
     "event_kind": "neighborhood book exchange",
     "now": "2026-11-14T00:00:00Z",
-    "aliases": [
-      "T1",
-      "M1",
-      "R1",
-      "A1",
-      "C1",
-      "I1",
-      "K1",
-      "P1"
-    ]
+    "aliases": ["T1", "M1", "R1", "A1", "C1", "I1", "K1", "P1"]
   },
   "output": {
     "reply": "Set up a book exchange table.",
@@ -26,9 +17,7 @@
         "notes": null
       }
     ],
-    "role_tags": [
-      "setup"
-    ],
+    "role_tags": ["setup"],
     "tasks": [
       {
         "key": "task_1",
@@ -73,11 +62,7 @@
     "questions": [],
     "assumptions": [],
     "change_summary": {
-      "added": [
-        "task_1",
-        "resource_1",
-        "area_1"
-      ],
+      "added": ["task_1", "resource_1", "area_1"],
       "changed": [],
       "removed": []
     },

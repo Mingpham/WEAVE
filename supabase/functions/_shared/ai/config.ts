@@ -6,9 +6,7 @@ export type LlmConfig = Readonly<{
   maxOutputTokens: number;
 }>;
 
-export function readLlmConfig(
-  env: Readonly<Record<string, string | undefined>>,
-): LlmConfig {
+export function readLlmConfig(env: Readonly<Record<string, string | undefined>>): LlmConfig {
   const required = (name: string): string => {
     const value = env[name]?.trim();
     if (!value || /[\r\n]/.test(value)) throw new Error(`Invalid ${name}`);
@@ -23,7 +21,11 @@ export function readLlmConfig(
   const apiKey = required('LLM_API_KEY');
   const rawUrl = required('LLM_BASE_URL');
   let url: URL;
-  try { url = new URL(rawUrl); } catch { throw new Error('Invalid LLM_BASE_URL'); }
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    throw new Error('Invalid LLM_BASE_URL');
+  }
   if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash) {
     throw new Error('Invalid LLM_BASE_URL');
   }

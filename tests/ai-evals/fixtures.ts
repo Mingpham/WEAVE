@@ -11,7 +11,14 @@ export type EvalCase = {
   expected: { schema_valid: boolean };
 };
 export function loadEvalCase(module: ModuleName, name: 'smoke' | 'invalid'): EvalCase {
-  return JSON.parse(readFileSync(new URL(`./${module}/${name}.json`, import.meta.url), 'utf8')) as EvalCase;
+  return JSON.parse(
+    readFileSync(new URL(`./${module}/${name}.json`, import.meta.url), 'utf8'),
+  ) as EvalCase;
 }
-export const modules: ModuleName[] = ['plan_compose', 'observation_analyze', 'incident_assess', 'event_summarize'];
-export const cases = modules.map(module => loadEvalCase(module, 'smoke'));
+export const modules: ModuleName[] = [
+  'plan_compose',
+  'observation_analyze',
+  'incident_assess',
+  'event_summarize',
+];
+export const cases = modules.map((module) => loadEvalCase(module, 'smoke'));

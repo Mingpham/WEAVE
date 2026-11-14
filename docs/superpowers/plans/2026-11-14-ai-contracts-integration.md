@@ -33,10 +33,10 @@
 
 **Interfaces:** Preserve upstream `Action`, `ConditionCheck`, `ProposalOption`, `DB_ENUMS`, all API exports; retain `*Schema`, `ENUMS`, `DomainEnumValue`, `./ai`, `./enums`, `./policy`. `ENUMS` is derived from canonical Zod enum options, never a second literal source.
 
-- [ ] Write/run consumer regressions: import upstream recovery values and API schemas alongside AI; offset datetimes accepted by persisted Action while ActionDraft remains UTC; rank must be positive or null; ADD_TASK retains §11.5 bounds; unexpected fields rejected. Expected RED on missing exports before adoption.
-- [ ] Adopt API-owned contract files and their tests at pinned upstream SHA; reconcile Recovery locally, share UUID/enum schemas, retain unchanged model JSON schema. Add type-only reexports to avoid JobType export collisions.
-- [ ] Run `pnpm test`, targeted upstream contracts tests, AI Node typecheck, consumer typecheck and Deno contracts/worker check. Expected all pass; compare all four model schemas with pre-change snapshots.
-- [ ] Record source attribution/decisions, review diff and commit `[WP-0-AI] Align shared contracts with fullstack consumers`.
+- [x] Write/run consumer regressions: import upstream recovery values and API schemas alongside AI; offset datetimes accepted by persisted Action while ActionDraft remains UTC; rank must be positive or null; ADD_TASK retains §11.5 bounds; unexpected fields rejected. Expected RED on missing exports before adoption.
+- [x] Adopt API-owned contract files and their tests at pinned upstream SHA; reconcile Recovery locally, share UUID/enum schemas, retain unchanged model JSON schema. Add type-only reexports to avoid JobType export collisions.
+- [x] Run `pnpm test`, targeted upstream contracts tests, AI Node typecheck, consumer typecheck and Deno contracts/worker check. Expected all pass; compare all four model schemas with pre-change snapshots.
+- [x] Record source attribution/decisions, review diff and commit `[WP-0-AI] Align shared contracts with fullstack consumers`.
 
 ### Task 2: Define readonly WP-1 engine inputs
 
@@ -44,10 +44,10 @@
 
 **Interfaces:** `EligibilityInput` contains project_id, supplied now, readonly members/tasks/assignments/presence_claims. Member/task/assignment field types come from canonical shared views/enums; explicit project scope and presence-claim metadata come from §7.3. `DraftValidationInput` carries readonly PlanDraft and project bounds. These are internal types, not a route payload or complete future engine snapshot.
 
-- [ ] Write compile-time consumers proving required availability/status/history/freshness and nested readonly fields; remove those fields or mutate arrays under `@ts-expect-error`. Expected RED before types exist.
-- [ ] Implement type-only projections; no runtime IO, new validation behavior, algorithm, or fake default for omitted data.
-- [ ] Run dedicated TypeScript assertions, engine typecheck, full tests, and Deno import check. Expected pass; document mapping to source fields and next WP-1 rules.
-- [ ] Commit `[WP-0-AI] Define readonly inputs for WP-1 engine rules`.
+- [x] Write compile-time consumers proving required availability/status/history/freshness and nested readonly fields; remove those fields or mutate arrays under `@ts-expect-error`. Expected RED before types exist.
+- [x] Implement type-only projections; no runtime IO, new validation behavior, algorithm, or fake default for omitted data.
+- [x] Run dedicated TypeScript assertions, engine typecheck, full tests, and Deno import check. Expected pass; document mapping to source fields and next WP-1 rules.
+- [x] Commit `[WP-0-AI] Define readonly inputs for WP-1 engine rules`.
 
 ### Task 3: Align tooling and verify combined consumers
 
@@ -55,8 +55,8 @@
 
 **Interfaces:** `pnpm test` discovers API/contracts/engine/AI/evals; `test:ai` remains scoped. AI project setup blocks unmocked fetch without altering API tests. `check` includes type/lint/unit/hardcode; worker/CLI Deno checks separate. Shared CI tests AI and API when the latter exists; missing real DB integration is never represented as passing.
 
-- [ ] Adopt pinned dev tool versions; install in task-local tools if system pnpm absent. Preserve Zod runtime dependency and existing package scripts/exports.
-- [ ] Configure distinct Vitest projects and Node/Deno includes; test discovery must contain upstream contracts plus every previous AI suite. Run representative failure sentinels in disposable copies to verify AI tests cannot silently disappear.
-- [ ] Run frozen install, format check, typecheck, lint, full tests, hardcode scan and offline Deno checks. Fix actual integration failures without weakening validation or ignoring owned source.
-- [ ] Build a disposable archive of upstream fullstack, overlay shared/AI changes, install using pinned tooling and run upstream API/mock tests with AI, Node checks and both Deno entrypoints. No `.env`, Git merge, hosted DB or live provider call.
+- [x] Adopt pinned dev tool versions; install in task-local tools if system pnpm absent. Preserve Zod runtime dependency and existing package scripts/exports.
+- [x] Configure distinct Vitest projects and Node/Deno includes; test discovery must contain upstream contracts plus every previous AI suite. Run representative failure sentinels in disposable copies to verify AI tests cannot silently disappear.
+- [x] Run frozen install, format check, typecheck, lint, full tests, hardcode scan and offline Deno checks. Fix actual integration failures without weakening validation or ignoring owned source.
+- [x] Build a disposable archive of upstream fullstack, overlay shared/AI changes, install using pinned tooling and run upstream API/mock tests with AI, Node checks and both Deno entrypoints. No `.env`, Git merge, hosted DB or live provider call.
 - [ ] Record exact results and pending DB/owner gates, commit, fresh final review, regression-fix important findings, then push current AI branch and verify remote SHA.

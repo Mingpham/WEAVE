@@ -18,3 +18,34 @@ Base AI commit: `6e5ccb5`. Shared upstream: `origin/fullstack` at `e85f07a`; dat
 - `DraftValidationInput` uses canonical `PlanDraft` and project time/role boundaries. Both inputs are deeply readonly. These are compile-time internal projections; they neither validate raw DB responses nor assert completeness/project isolation at runtime. Snapshot builders must enforce those boundaries when implemented.
 - RED: compile-only consumer checks failed on missing input exports. GREEN: `pnpm exec tsc --noEmit -p packages/engine/tsconfig.type-tests.json`; `pnpm typecheck:ai`; full tests 124/124; Deno check of engine entrypoint passed. Assertions cover missing availability/status/history/freshness and attempted mutations of nested windows, tags and draft criteria.
 - Next business work: §11.3 eligibility/ranking and draft validation/gaps. No algorithm, real snapshot adapter or full future engine input is claimed here.
+
+## Task 3 — Shared tooling and combined consumers
+
+- Adopted fullstack's pnpm 12.18.0, TypeScript 6.0.3, Vitest 4.1.12, ESLint and Prettier configuration, hardcode scan, and CI. Local verification used Node 26.5.0 and Deno 2.9.4; CI targets Node 24. Production dependency Zod remains 4.6.7.
+- Default Vitest now has separate `core` and `ai` projects. AI's fetch guard stays scoped to AI tests. Existing API and mock-server test globs remain enabled; scoped `test:ai` remains available. CI checks the API entrypoint when present and always checks the worker/diagnostic CLI. The latter imports code without running inference.
+- First dependency installation failed pnpm's minimum-release-age policy: the previous AI lock selected `@rolldown/pluginutils@1.1.1` and `postcss@8.5.33`, published within 24 hours. Regenerated from the pinned fullstack lock using its accepted versions 1.1.0/8.5.32. Supply-chain policy stayed enabled; subsequent frozen install passed.
+- Applied the shared formatter to AI-owned files. Comparing each previous TypeScript file after formatting against its working copy confirmed production AI/engine changes in this task are formatting only. Additional test edits make indexed accesses and compile-only assertions compatible with upstream strict typing/lint. All four generated model JSON schemas still equal their pre-integration snapshots.
+
+Commands on this AI branch (all passed):
+
+| Command | Outcome |
+|---|---|
+| `pnpm install --frozen-lockfile` | Lockfile accepted; no dependency resolution required |
+| `pnpm check` | Typecheck, lint, 124 tests in 16 files, hardcode scan passed |
+| `pnpm format:check` | All checked files formatted |
+| `pnpm typecheck:ai` | Strict AI production typecheck passed |
+| `pnpm typecheck:engine` | Readonly/required-field assertions passed |
+| `pnpm ai:check` | Worker and diagnostic CLI Deno check passed |
+| `git diff --check` | No whitespace errors |
+
+Combined-consumer verification used a temporary archive of fullstack `e85f07a` with the current shared/AI source and tooling overlaid; no `.env`, `.git`, hosted database, or live provider call. API/mock implementation files remained upstream originals. The combined workspace adds the `tools/mock-api` lock importer and its dependencies, so its lock was regenerated with `pnpm install --no-frozen-lockfile`, then verified with `pnpm install --frozen-lockfile`. A real merge must reconcile that importer too.
+
+- `pnpm check`: **149/149 tests in 18 files**, including real API/mock tests and all AI suites; types, lint and hardcode scan passed. `pnpm format:check`, `pnpm api:check`, and `pnpm ai:check` also passed. Deno required permission to download pinned dependency metadata before the checks could finish.
+- Discovery regression: a temporary failing AI sentinel made default `pnpm test` exit 1 with the sentinel failure. A second run proved AI fetch is blocked while core fetch works, using `data:` URLs only; **151/151** passed including the two probes. Probes were removed from the temporary checkout after verification. They are not production tests or evidence of a provider call.
+- Logs, schema snapshots and the overlay file manifest are preserved in the local, ignored plan workspace. Existing `AGENTS.md` and `.env` were not changed or staged.
+
+## Remaining integration gates
+
+Remote branch audit before Tasks 2 and 3: fullstack `e85f07a`, database `4829191`. Database's new JWT/security test result is reported by that lane, not rerun here. Worker RPCs and their atomic lease/budget/commit behavior remain unavailable; the real adapter, DB concurrency/rollback tests, hosted CI result and owner review remain pending. Temporary combined tests do not constitute a merge or full MVP acceptance.
+
+Next AI & Engine implementation: WP-1 eligibility/ranking and plan-draft validation/gaps, followed by `plan_compose` snapshot/validators with fake model fixtures. Implement the real worker adapter when reviewed RPC signatures and DB integration fixtures exist.

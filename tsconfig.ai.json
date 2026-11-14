@@ -1,5 +1,11 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["packages/contracts/src/**/*.ts", "packages/engine/src/**/*.ts", "supabase/functions/_shared/ai/**/*.ts", "supabase/functions/ai-worker/**/*.ts"],
+  "compilerOptions": { "lib": ["ES2023", "DOM"], "exactOptionalPropertyTypes": true },
+  "include": [
+    "packages/contracts/src/**/*.ts",
+    "packages/engine/src/**/*.ts",
+    "supabase/functions/_shared/ai/**/*.ts",
+    "supabase/functions/ai-worker/**/*.ts"
+  ],
   "exclude": ["**/tests/**", "supabase/functions/ai-worker/index.ts"]
 }
