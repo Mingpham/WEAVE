@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts", "./ai": "./src/ai/index.ts" },
-  "dependencies": { "zod": "4.6.7" }
+  "exports": {
+    ".": "./src/index.ts",
+    "./ai": "./src/ai/index.ts",
+    "./enums": "./src/enums.ts",
+    "./policy": "./src/policy.ts"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
+  }
 }

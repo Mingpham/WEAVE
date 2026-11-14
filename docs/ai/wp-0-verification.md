@@ -36,3 +36,11 @@ DB worker RPC signatures and canonical shared domain definitions remain unprovid
 | EventSummarizeOutput | §10.6 |
 | AnalysisJob | §7.1/7.3, lifecycle §8.8; nullable revision preserved |
 | POL | Appendix B, no tuned values |
+
+## Task 3 — Pure checks, scoped aliases and validation pipeline
+
+- Pre-task audit: database advanced to `8d9c1ee`, including prerequisite `cd57f3b` with canonical ENUMS/POL; fullstack remains baseline. Read the prerequisite and migration handoff; no business tables/RPC yet.
+- Adopted exact enums/policy and existing parity/type tests from `cd57f3b` into the same contracts package; retained our AI exports/Zod and root test tooling. No merge/rebase/cherry-pick. Shared ownership review still required.
+- RED: three new test suites failed on missing modules. GREEN: `pnpm test` — 46/46; Node typecheck, engine typecheck, upstream consumer-type assertions and Deno checks passed.
+- Pipeline requires all three post-schema hooks; absent hooks return MODULE_NOT_READY. No production module validator was registered. Stage failures do not echo exception payloads; wrong aliases stop the entire response.
+- Primitive condition aggregation is not complete recovery validation. Empty conditions are rejected. Alias generation is deterministic, project-scoped and leaves its input unchanged.
