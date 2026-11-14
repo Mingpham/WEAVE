@@ -90,3 +90,5 @@ Remote verification: `31ad69ca8031e5b2792937217a346340079385cd` is present on `o
 ## Pre-merge resource quantity correction
 
 Against database `0a81896`, FR-RES-01 / §7.3 require ITEM quantity to be null. Added engine business validation `INVALID_RESOURCE_QUANTITY`, preserving model schema/prompt and locked-object restoration. Three regressions failed before the fix; 66 focused cases then passed. Full `pnpm check`: **244/244**, 21 files; format, engine types, AI Deno and diff checks passed. The [new offline evaluation](./plan-compose-quantity-eval.json) contains 36 passing plan-compose cases, zero live calls. No production dependency, SQL, prompt or model-output schema change.
+
+[Pre-merge rehearsal and integration patch](./premerge-verification.md): latest four-lane source tree passed 268 root tests and static checks after documented conflict/config resolution. Root frozen install passed. Mobile dependency downloads repeatedly failed at the registry; mobile checks remain unverified, not passed.
