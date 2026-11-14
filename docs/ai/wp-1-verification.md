@@ -43,3 +43,11 @@ Real worker DB integration remains pending. DB worker RPCs are absent at the aud
 - RED: module/worker tests failed before implementation. The first GREEN attempt exposed a full-project-versus-projection mismatch; explicit `projectForDraft` fixed that boundary without relaxing engine validation. GREEN: **31 focused tests**, full `pnpm check` **223/223 in 21 files**, format/diff and Deno worker/module/CLI checks passed. Existing fixture handlers were updated only to forward the newly supplied claimed job argument.
 - [Versioned offline evaluation](./plan-compose-wp1-eval.json) records prompt source hash, all case names/results and **zero live inference calls**. This establishes business-rule and worker behavior with synthetic data; it does not establish live model quality, RPC atomicity or publication acceptance.
 - Formatting follow-up: the final format process returned one snapshot-builder chain-layout warning after the first task commit/push. Compared formatter output (whitespace only), applied the second pass and reran `pnpm format:check` successfully before proceeding to Task 5. The initial format result was not a pass; the successful follow-up supersedes it.
+
+## Task 5 — Real database adapter dependency audit
+
+After Task 4 and its formatting follow-up were pushed, fetched again: fullstack `b18271d`, database `4a1603a`, mobile `078f9f3` unchanged. Inspected every migration function and the DB runbook. Four migrations provide enums, membership, event/idempotency storage and private member mutation helpers. The runbook explicitly excludes worker actor paths. No real worker RPC signatures, queue operations, lease state, budget reservation or plan-result transaction are available.
+
+**Task 5 is blocked by that dependency, not complete.** No SQL names were invented and no production store was bound. The user was asked whether an additional branch/commit contains the missing contracts while independent review/combined verification continued.
+
+Required handoff remains the WorkerStore table in [AI/DB contracts](./2026-11-14-ai-engine-handoff.md), supplemented with the WP-1 plan delta below. Local engine/fake-worker success does not establish PostgreSQL transaction, RLS, concurrency, deployment, G0 or Android acceptance.

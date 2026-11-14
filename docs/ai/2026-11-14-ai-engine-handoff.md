@@ -76,6 +76,20 @@ Quyết định thực thi WP-0: sau ba lần project version conflict, worker g
 
 ## 6. Tiêu chí bàn giao và nguồn tham chiếu
 
+### Bổ sung WP-1 — plan composition và dependency adapter
+
+Checkpoint sau triển khai WP-1: database `4a1603a` chưa có worker RPC. Các helper member mutation tại `3a20a02` không được dùng thay worker actor path. `planComposeHandler` đã có kiểm thử với model/store giả; production registry và store vẫn chưa được gắn.
+
+`DerivedChanges` hiện bổ sung union nội bộ `kind: 'PLAN_DRAFT'` với `draft_id`, `expected_revision`, `status: 'EDITING'`, `draft: PlanDraft`, `reply`, `change_summary`, `prompt_version`. Đây là đề xuất payload TypeScript, chưa phải chữ ký SQL được DB duyệt. Không có thao tác publish/approve trong delta.
+
+DB adapter cần bảo đảm cùng một transaction: kiểm tra job/project/draft, lease và revision; ghi draft đã kiểm tra, tăng revision, đưa trạng thái về EDITING, append lời đáp/tóm tắt vào plan_messages, kết thúc job, ghi inference log/event, tăng state_version đúng một lần. Stale hoặc mất lease không được ghi draft. Terminal failure giữ draft cũ và mở lại đường sửa tay. Retry cùng job không tạo thêm user turn; số `ai_turns_used` cung cấp cho handler là số lượt đã dùng trước job đó, tối đa 12 lượt gồm job hiện tại.
+
+Snapshot nội bộ cho module: project gồm ID/status và các trường sự kiện §10.3, `draft_id`, `revision`, `ai_turns_used`, `mode`, `draft`, `messages: {role,text}[]`; `JobContext` cung cấp state_version/basis_revision/now. Handler đối chiếu project/draft/revision với job đã claim. Chỉ snapshot tối thiểu đã loại ID/trợ cấp/người giữ được gửi model; SQL phải tự kiểm tra project scope của mọi custodian/reference trước ghi.
+
+Trước khi bind thật phải có test local DB cho tất cả operation trong bảng WorkerStore: receive/peek/claim, reserveInference, loadContext, appendInferenceLog/commitResult, retry/failure/ack/recoverExpired. Bao gồm hai worker cạnh tranh, rollback sau lỗi ghi event/log, stale revision, lease fencing, giới hạn attempt và ngân sách. Chưa có bằng chứng này thì trả `INTEGRATION_PENDING`, không dùng in-memory store ở runtime.
+
+### Bằng chứng và giới hạn
+
 Một báo cáo WP-0 cần tách test local, tích hợp Supabase local, live smoke và nghiệm thu Android. Chưa có dữ liệu thì ghi `NOT_RUN`/`INTEGRATION_PENDING`, không đánh dấu đạt. Không mặc định đạt 51 AT từ bộ unit test.
 
 Kiểm tra công khai khi lập kế hoạch, không phải benchmark WEAVE:
