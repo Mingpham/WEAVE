@@ -19,10 +19,10 @@ export function NewIncident({ types, subjects, tasks, offline, onCreate, demo }:
     <Field label={copy.title} value={draft.title} onChangeText={title => update({title})} disabled={action.pending} maxLength={200} />
     <Field label={copy.description} value={draft.description} onChangeText={description => update({description})} disabled={action.pending} multiline />
     <Heading>{copy.type}</Heading>{types.map(item => <Choice key={item.key} label={item.label} selected={draft.typeKey === item.key} disabled={action.pending} onPress={() => update({typeKey: item.key})} />)}
-    <Heading>{copy.subject}</Heading>{subjects.map(item => <Choice key={item.key} label={item.label} selected={draft.subjectKey === item.key} disabled={action.pending} onPress={() => update({subjectKey: item.key})} />)}
-    <Heading>{copy.affected}</Heading>{tasks.map(item => <Choice key={item.key} label={item.label} selected={draft.affectedKeys.includes(item.key)} disabled={action.pending}
+    <Heading>{copy.subject}</Heading>{subjects.map(item => <Choice key={item.key} label={item.label} selected={draft.subjectKey === item.key} disabled={action.pending} onPress={() => update({subjectKey: draft.subjectKey === item.key ? undefined : item.key})} />)}
+    <Heading>{copy.affected}</Heading>{tasks.map(item => <Choice multiple key={item.key} label={item.label} selected={draft.affectedKeys.includes(item.key)} disabled={action.pending}
       onPress={() => update({affectedKeys: draft.affectedKeys.includes(item.key) ? draft.affectedKeys.filter(key => key !== item.key) : [...draft.affectedKeys, item.key]})} />)}
-    <Choice label={copy.blocking} selected={draft.blocking} disabled={action.pending} onPress={() => update({blocking: !draft.blocking})} />
+    <Choice multiple label={copy.blocking} selected={draft.blocking} disabled={action.pending} onPress={() => update({blocking: !draft.blocking})} />
     {!onCreate && <Notice>{en.unavailableAction}</Notice>}{action.error && <Notice danger>{action.error}</Notice>}{action.acknowledged && <Notice>{demo ? en.demoAck : en.sent}</Notice>}
     <Button label={copy.create} pending={action.pending} disabled={offline || !onCreate || !draft.title.trim() || !draft.typeKey || action.acknowledged} onPress={() => onCreate && void action.run(() => onCreate(draft))} />
   </>;
@@ -64,7 +64,8 @@ export function ManualDecision({ kinds, maxActions, versionKey, offline, demo, o
       {kinds.map(kind => <Choice key={kind.key} label={kind.label} selected={draft.kindKey === kind.key} disabled={busy}
         onPress={() => change(drafts.map(item => item.localKey === draft.localKey ? {...item, kindKey: kind.key, values: {}} : item))} />)}
       {kinds.find(item => item.key === draft.kindKey)?.fields.map(field => <View key={field.key} style={s.stack}>
-        {field.choices ? <><Copy>{field.label}</Copy>{field.choices.map(choice => <Choice key={choice.key} label={choice.label} selected={draft.values[field.key] === choice.key} disabled={busy}
+        {field.choices ? <><Copy>{field.label}</Copy>{!field.required && <Choice label={en.noSelection} selected={!draft.values[field.key]} disabled={busy}
+          onPress={() => change(drafts.map(item => item.localKey === draft.localKey ? {...item, values: {...item.values, [field.key]: ''}} : item))} />}{field.choices.map(choice => <Choice key={choice.key} label={choice.label} selected={draft.values[field.key] === choice.key} disabled={busy}
           onPress={() => change(drafts.map(item => item.localKey === draft.localKey ? {...item, values: {...item.values, [field.key]: choice.key}} : item))} />)}</>
           : <Field label={field.label} value={draft.values[field.key] ?? ''} disabled={busy} onChangeText={value => change(drafts.map(item => item.localKey === draft.localKey ? {...item, values: {...item.values, [field.key]: value}} : item))} />}
       </View>)}
@@ -82,9 +83,9 @@ export function ManualDecision({ kinds, maxActions, versionKey, offline, demo, o
     {(action.error || checkAction.error) && <Notice danger>{action.error ?? checkAction.error}</Notice>}{action.acknowledged && <Notice>{demo ? en.demoAck : en.sent}</Notice>}
     {!onCheck || !onApply ? <Notice>{en.unavailableAction}</Notice> : null}
     {confirming ? <Card><Heading>{copy.confirmation}</Heading><Copy>{copy.confirmationCopy}</Copy>
-      <Button label={copy.apply} pending={action.pending} disabled={offline || busy || !result?.canApply || action.acknowledged || (uncertain && !note.trim()) || !onApply}
+      <Button label={copy.apply} pending={action.pending} disabled={offline || busy || !result?.canApply || action.acknowledged || !onApply}
         onPress={() => onApply && void exclusively(() => action.run(() => onApply(drafts, note)))} /><Button label={copy.cancel} disabled={busy} variant="secondary" onPress={() => setConfirming(false)} /></Card>
-      : <Button label={copy.apply} disabled={offline || busy || !result?.canApply || action.acknowledged || (uncertain && !note.trim()) || !onApply} onPress={() => setConfirming(true)} />}
+      : <Button label={copy.apply} disabled={offline || busy || !result?.canApply || action.acknowledged || !onApply} onPress={() => setConfirming(true)} />}
   </>;
 }
 
@@ -98,7 +99,7 @@ export function AskProbe({ recipients, questionContext, offline, demo, onSend }:
   return <><PageTitle eyebrow={en.ask} title={copy.waiting} subtitle={copy.waitingCopy} /><Notice>{questionContext}</Notice><Heading>{copy.recipient}</Heading>
     {recipients.map(item => <Choice key={item.key} label={item.label} selected={recipientKey === item.key} disabled={action.pending} onPress={() => {action.reset(); setRecipientKey(item.key);}} />)}
     <Field label={copy.question} value={question} maxLength={200} multiline disabled={action.pending} onChangeText={text => {action.reset(); setQuestion(text);}} />
-    <Choice label={copy.allowPhoto} selected={allowPhoto} disabled={action.pending} onPress={() => {action.reset(); setAllowPhoto(!allowPhoto);}} />
+    <Choice multiple label={copy.allowPhoto} selected={allowPhoto} disabled={action.pending} onPress={() => {action.reset(); setAllowPhoto(!allowPhoto);}} />
     {action.error && <Notice danger>{action.error}</Notice>}{action.acknowledged && <Notice>{demo ? en.demoAck : en.sent}</Notice>}{!onSend && <Notice>{en.unavailableAction}</Notice>}
     <Button label={copy.send} pending={action.pending} disabled={offline || !onSend || !recipientKey || !question.trim() || action.acknowledged}
       onPress={() => onSend && void action.run(() => onSend({recipientKey, question, allowPhoto}))} />

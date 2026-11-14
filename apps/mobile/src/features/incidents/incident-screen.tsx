@@ -40,7 +40,7 @@ export function Incident({ model, actions, offline = false, demo = false }: {mod
   const option = model.options.find(item => item.key === selected);
   const blocked = approvalBlock({stale: model.stale || action.stale, revisionMatches: model.revisionMatches,
     canApprove: model.canManage && model.canDecide && !!option?.canApprove && !model.safety, offline});
-  const disabled = offline || action.pending || action.acknowledged;
+  const disabled = offline || action.pending || action.acknowledged || recheck.pending;
   return <><PageTitle eyebrow={en.decision} title={model.title} trailing={<Badge tone="warning">{model.severityLabel}</Badge>} />
     <View style={s.row}><Badge>{model.statusLabel}</Badge><Badge>{model.readinessLabel}</Badge>{model.ai && <Badge>{en.ai}</Badge>}</View>
     {model.safety && <Notice danger>{en.emergency}</Notice>}
