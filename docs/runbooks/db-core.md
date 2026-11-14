@@ -400,3 +400,43 @@ Auth, so these are not full product AT/G0 results. Final SQL review found no
 remaining actionable issue. Existing tracked tests do not replace B's pending
 permanent framework regressions: keep this local candidate out of a migration PR
 until that test handoff is collected. No public write route was exposed.
+
+
+## Collected framework/security checkpoint and resources candidate
+
+LEADER-B commit `65bef8d` is already on database; do not cherry-pick it again.
+It supplies eleven permanent helper cases and one additional HTTP nonexposure
+case, with a reported combined 74/74 pass. Together with `4a1603a`, the earlier
+storage/framework candidates now have paired tracked regressions. This is still
+supporting SQL/PostgREST validation with fixture auth, not full Supabase Auth,
+public mutation RPC, TTL/special lifecycle-path or FR/AT/G0 acceptance.
+
+Next schema dependency slice: `20261114090000_resources.sql` adds the §7.3
+resources table using existing projects/areas/members and canonical enums. It
+provides project-scoped area/custodian FKs and indexes, category lookup index,
+version/default constraints and approved-live-membership SELECT policy. Direct
+app/service writes and TRUNCATE are revoked; no application write policy exists.
+Condition and location remain stored projections; no inference trigger is added.
+
+Quantity interpretation: §7.3 declares a nullable integer usable only for SUPPLY.
+Accordingly unknown SUPPLY quantity remains NULL, known quantity is nonnegative,
+and ITEM quantity must be NULL. Historical same-project custodians remain valid
+references; no current approval restriction is invented for this nullable FK.
+Resource names are not unique: multiple separately tracked items can share one.
+Area deletion is prevented by the FK while a resource still references it.
+
+The missing-RLS-table assertion failed (0 rather than 1) before implementation.
+Five targeted local tests then passed: exact role/project IDs and revocation,
+quantity/defaults, scoped FK positives/negatives, area deletion and write denial.
+Independent SQL review found no actionable issue. The final full-chain command is
+`python3 /tmp/weave-resources-check.py /path/to/WEAVE`; result: 24/24 passed (19
+foundation plus five resource checks), using disposable PostgreSQL 17 with minimal
+auth fixtures. These local artifacts are not B's permanent resource test suite.
+
+A queued the exact schema/test contract to LEADER-B before writing SQL and
+provided the isolated migration path and local artifact. New resource SQL/HTTP
+tests remain B-owned. Keep this local resource candidate out of a migration PR
+until those tests are paired; no hosted migration or public write RPC was run.
+Scope supports FR-RES-01/03/06 and INV-01/07/DB-11 groundwork only. No full FR,
+AT or gate completion is claimed. Future write RPCs enforce row/project versions,
+limits and authorized projection deltas through the existing private framework.
