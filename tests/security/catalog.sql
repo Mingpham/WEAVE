@@ -28,6 +28,10 @@ BEGIN
                AND (rolsuper OR rolbypassrls)) THEN
       problems := array_append(problems, role_name || ' bypasses RLS');
     END IF;
+    IF EXISTS (SELECT FROM pg_roles r WHERE (r.rolsuper OR r.rolbypassrls)
+               AND pg_has_role(role_name, r.oid, 'SET')) THEN
+      problems := array_append(problems, role_name || ' can SET ROLE to bypass RLS');
+    END IF;
   END LOOP;
 
   FOREACH table_name IN ARRAY business_tables LOOP
@@ -41,21 +45,38 @@ BEGIN
                      AND relrowsecurity) THEN
       problems := array_append(problems, table_name || ': RLS disabled or not a table');
     END IF;
-    -- Check inherited and PUBLIC policies as well as explicit role policies.
-    IF EXISTS (
-      SELECT FROM pg_policy p
-      WHERE p.polrelid = relation_oid AND p.polcmd IN ('a', 'w', 'd', '*')
-        AND EXISTS (
-          SELECT FROM unnest(p.polroles) AS r(role_oid)
-          WHERE CASE WHEN r.role_oid = 0 THEN true
-                ELSE pg_has_role('authenticated', r.role_oid, 'MEMBER') END
-        )
-    ) THEN
-      problems := array_append(problems, table_name || ': authenticated write policy (12.1)');
-    END IF;
     FOREACH role_name IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+      -- USAGE means inherited privileges; SET covers explicitly reachable roles.
+      -- MEMBER alone also includes unusable INHERIT FALSE / SET FALSE grants.
+      IF EXISTS (
+        SELECT FROM pg_policy p
+        WHERE p.polrelid = relation_oid AND p.polcmd IN ('a', 'w', 'd', '*')
+          AND EXISTS (
+            SELECT FROM unnest(p.polroles) AS r(role_oid)
+            WHERE CASE WHEN r.role_oid = 0 THEN true
+                  ELSE pg_has_role(role_name, r.role_oid, 'USAGE')
+                    OR pg_has_role(role_name, r.role_oid, 'SET') END
+          )
+      ) THEN
+        problems := array_append(problems, table_name || ': ' || role_name || ' write policy (12.1)');
+      END IF;
+      IF table_name = ANY(ARRAY['analysis_jobs', 'ai_inference_logs',
+                               'idempotency_keys', 'push_tokens']) AND EXISTS (
+        SELECT FROM pg_policy p
+        WHERE p.polrelid = relation_oid AND p.polcmd IN ('r', '*')
+          AND p.polpermissive
+          AND EXISTS (
+            SELECT FROM unnest(p.polroles) AS r(role_oid)
+            WHERE CASE WHEN r.role_oid = 0 THEN true
+                  ELSE pg_has_role(role_name, r.role_oid, 'USAGE')
+                    OR pg_has_role(role_name, r.role_oid, 'SET') END
+          )
+      ) THEN
+        problems := array_append(problems, table_name || ': ' || role_name || ' SELECT policy on service-only table');
+      END IF;
       IF EXISTS (SELECT FROM pg_class c WHERE c.oid = relation_oid
-                 AND pg_has_role(role_name, c.relowner, 'MEMBER')) THEN
+                 AND (pg_has_role(role_name, c.relowner, 'USAGE')
+                      OR pg_has_role(role_name, c.relowner, 'SET'))) THEN
         problems := array_append(problems, table_name || ': application role owns table');
       END IF;
       IF has_table_privilege(role_name, relation_oid, 'TRUNCATE') THEN
