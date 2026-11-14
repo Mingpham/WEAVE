@@ -16,7 +16,7 @@ Branch: `ai/wp-0-foundation`. Plan approved for inline execution; commit each ta
 
 ## Dependencies still pending
 
-DB worker RPC signatures and canonical shared domain definitions remain unprovided at this checkpoint. The plan's handoff lists required interfaces; proposed ports are not deployed SQL functions. Task 6 database integration must remain pending until actual contracts are available.
+DB worker RPC signatures and complete engine input projections remain unprovided at this checkpoint. API read-model schemas arrived during Task 6; they are not the full engine snapshot. The plan's handoff lists required interfaces; proposed ports are not deployed SQL functions. Task 6 database integration must remain pending until actual contracts are available.
 
 ## Task 2 — Recovery/AI contracts and fixtures
 
@@ -60,3 +60,12 @@ DB worker RPC signatures and canonical shared domain definitions remain unprovid
 - Additional checks pin three computation attempts and original alias identity across reloads. No re-call to model on unrelated version changes.
 - Port ruling: successful/stale result and inference log must commit atomically. Lost workers only append audit. After three unrelated version conflicts, worker requests manual recovery; this conservative worker behavior needs DB/product review.
 - Production module registry remains empty; no fake handler is registered. Test store is not a database implementation and proves no PostgreSQL atomicity.
+
+## Task 6 — Private handler; database integration pending
+
+- Pre-task audit: database advanced to `e4f5bd1` (three-table membership foundation/RLS); fullstack advanced to `ab18bf4` (tooling, contracts, API shell, mock API and CI). Inspected commit lists, shared contract files, package/config differences, DB handoff and migration. No worker queue, budget, lease or result-commit RPC exists in those commits.
+- RED: handler suite failed on missing `handler.ts`. GREEN: handler 12/12; full `pnpm test` 90/90; `pnpm typecheck:ai` and `deno check --config supabase/functions/ai-worker/deno.json supabase/functions/ai-worker/index.ts` passed.
+- Missing/wrong internal bearer and user JWT are rejected before store access. Strict control body only accepts `mode`; failures expose safe codes. The separate `AI_WORKER_SECRET` is documented in `.env.example`; the real `.env` was untouched.
+- Entrypoint deliberately has no production store binding and returns `503 INTEGRATION_PENDING` to authorized calls. No dummy successful adapter, invented RPC names, migration, Cron registration or gateway configuration was added.
+- Local Supabase integration/bundle checks NOT RUN: reviewed DB interfaces and an integrated shared configuration are absent. Task 6 is partial, not complete; worker deploy is not ready. Queue-only sweep is explicitly labeled and does not implement R1–R5.
+- Integration follow-up: reconcile root package/lockfile/TypeScript/Vitest configuration with fullstack; retain the AI test target because upstream excludes `tests/ai-evals`. Reconcile `recovery.ts` value exports (`Action`, `ConditionCheck`, `ProposalOption` upstream vs `*Schema` here), rank positivity, and datetime/bounds policy. API read models must not be substituted for full engine input without review. No merge/rebase or upstream overwrite performed.
