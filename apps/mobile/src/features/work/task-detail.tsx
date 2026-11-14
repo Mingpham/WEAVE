@@ -10,6 +10,7 @@ export type TaskDetailView = {
   versionKey: string; title: string; description: string; statusLabel: string; areaLabel: string; assigneeLabel: string; dueLabel: string;
   riskLabel?: string; riskReasons: string[]; criteria: {key: string; text: string; statusLabel?: string; critical: boolean; photoExpected: boolean}[];
   metadata?: {label: string; value: string}[];
+  terminal?: boolean; stale?: boolean; readOnlyReason?: string;
   evidenceSuggestion?: string;
   dependencies: {key: string; title: string; relationLabel: string; detail: string; onOpen: () => void}[];
   resources: {key: string; title: string; detail: string; onOpen: () => void}[];
@@ -30,12 +31,21 @@ export function TaskDetail({model, actions, offline, demo}: TaskDetailProps) {
   const action = useAcknowledgedAction(model.versionKey);
   const [confirmation, setConfirmation] = useState<Confirmation>();
   const [reasonMode, setReasonMode] = useState<'decline' | 'release'>();
+  const [reasonVersion, setReasonVersion] = useState(model.versionKey);
   const [declineReason, setDeclineReason] = useState('');
   const [releaseReason, setReleaseReason] = useState('');
-  const disabled = offline || action.pending || action.acknowledged || action.stale;
+  const locked = action.pending || action.acknowledged || action.stale || model.stale || model.terminal || !!model.readOnlyReason;
+  const disabled = offline || locked;
+  const hasActions = Object.values(actions).some(callback => typeof callback === 'function');
+  const releaseValid = model.releaseReasons.some(item => item.key === releaseReason);
   const confirm = (label: string, consequence: string, actionKey: ConfirmedAction) => setConfirmation({versionKey: model.versionKey, label, consequence, actionKey});
   return <><PageTitle eyebrow={w.task} title={model.title} subtitle={model.areaLabel} />
     <View style={s.row}><Badge>{model.statusLabel}</Badge>{model.riskLabel && <Badge tone="warning">{model.riskLabel}</Badge>}</View>
+    {model.terminal && <Notice>{w.terminalTask}</Notice>}
+    {model.readOnlyReason && <Notice>{model.readOnlyReason}</Notice>}
+    {model.stale && <Notice danger>{w.stale}</Notice>}
+    {!hasActions && !model.terminal && !model.readOnlyReason && <Copy small>{w.noTaskActions}</Copy>}
+    {offline && <Notice>{w.offlineActions}</Notice>}
     <Card><Copy small>{w.assignee}</Copy><Heading>{model.assigneeLabel}</Heading><Copy small>{`${w.due} · ${model.dueLabel}`}</Copy></Card>
     {!!model.metadata?.length && <Card>{model.metadata.map(item => <View key={item.label} style={s.stack}><Copy small>{item.label}</Copy><Copy>{item.value}</Copy></View>)}</Card>}
     <Card><Heading>{w.description}</Heading><Copy>{model.description}</Copy></Card>
@@ -49,17 +59,18 @@ export function TaskDetail({model, actions, offline, demo}: TaskDetailProps) {
       <Card key={item.key}><Heading>{item.title}</Heading><Copy>{item.detail}</Copy><Button label={w.openRelated} onPress={item.onOpen} variant="secondary" /></Card>)}
     {model.startBlockedReason && <Notice>{`${w.waitingOn}: ${model.startBlockedReason}`}</Notice>}
     {actions.onAccept && <Button label={w.accept} disabled={disabled} pending={action.pending} onPress={() => void action.run(actions.onAccept!)} />}
-    {actions.onDecline && <Button label={w.decline} disabled={disabled} onPress={() => setReasonMode('decline')} variant="secondary" />}
+    {actions.onDecline && <Button label={w.decline} disabled={disabled} onPress={() => {setReasonVersion(model.versionKey); setReasonMode('decline');}} variant="secondary" />}
     {actions.onStart && <Button label={w.start} disabled={disabled || !!model.startBlockedReason} onPress={() => void action.run(actions.onStart!)} />}
-    {actions.onSubmit && <Button label={w.submit} disabled={action.pending || action.acknowledged || action.stale} onPress={actions.onSubmit} />}
+    {actions.onSubmit && <Button label={w.submit} disabled={locked} onPress={actions.onSubmit} />}
     {model.evidenceSuggestion && <Card><Badge>{w.aiSuggestion}</Badge><Copy>{model.evidenceSuggestion}</Copy>
-      {actions.onAddEvidence && <Button label={w.addEvidence} disabled={action.pending || action.acknowledged || action.stale} onPress={actions.onAddEvidence} variant="secondary" />}</Card>}
-    {actions.onRelease && <Button label={w.release} disabled={disabled} onPress={() => setReasonMode('release')} variant="secondary" />}
-    {reasonMode && <Card><Heading>{reasonMode === 'release' ? w.release : w.decline}</Heading>
-      {reasonMode === 'release' ? <><Copy>{w.releaseConsequence}</Copy><Heading>{w.chooseReason}</Heading>{model.releaseReasons.map(item =>
-        <Choice key={item.key} label={item.label} selected={releaseReason === item.key} disabled={disabled} onPress={() => setReleaseReason(item.key)} />)}</>
+      {actions.onAddEvidence && <Button label={w.addEvidence} disabled={locked} onPress={actions.onAddEvidence} variant="secondary" />}</Card>}
+    {actions.onRelease && <Button label={w.release} disabled={disabled} onPress={() => {setReasonVersion(model.versionKey); setReasonMode('release');}} variant="secondary" />}
+    {reasonMode && reasonVersion === model.versionKey && (reasonMode === 'release' ? actions.onRelease : actions.onDecline) && <Card><Heading>{reasonMode === 'release' ? w.release : w.decline}</Heading>
+      {reasonMode === 'release' ? <><Copy>{w.releaseConsequence}</Copy><Heading>{w.chooseReason}</Heading><View accessibilityRole="radiogroup" accessibilityLabel={w.chooseReason} style={s.stack}>{model.releaseReasons.map(item =>
+        <Choice key={item.key} label={item.label} selected={releaseReason === item.key} disabled={disabled} onPress={() => setReleaseReason(item.key)} />)}</View>
+        {!releaseValid && <Notice>{w.releaseReasonRequired}</Notice>}</>
         : <Field label={w.optionalReason} value={declineReason} onChangeText={setDeclineReason} disabled={disabled} multiline />}
-      <Button label={w.confirm} disabled={disabled || (reasonMode === 'release' && !releaseReason)} onPress={() => void action.run(async () => {
+      <Button label={w.confirm} disabled={disabled || (reasonMode === 'release' && !releaseValid)} onPress={() => void action.run(async () => {
         if (reasonMode === 'release' && actions.onRelease) await actions.onRelease(releaseReason);
         else if (reasonMode === 'decline' && actions.onDecline) await actions.onDecline(declineReason.trim());
         else throw {code: 'FORBIDDEN'};
