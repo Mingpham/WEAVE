@@ -49,7 +49,8 @@ if ($LASTEXITCODE -ne 0) {throw 'Expo prebuild failed.'}
 $variant = if ($Mode -eq 'development') {'Debug'} else {'Release'}
 Push-Location -LiteralPath (Join-Path $mobileRoot 'android')
 try {
-  $tasks = if ($Mode -eq 'development') { @(':app:assembleDebug') } else { @(':app:createBundleReleaseJsAndAssets', '--rerun', ':app:assembleRelease') }
+  # Keep a one-task result as an array: PowerShell otherwise splats its characters.
+  [string[]]$tasks = if ($Mode -eq 'development') { @(':app:assembleDebug') } else { @(':app:createBundleReleaseJsAndAssets', '--rerun', ':app:assembleRelease') }
   # Environment mode is not an input of the React Native bundle task. Always rebundle
   # for standalone builds so a cached demo bundle cannot enter the live APK.
   & ./gradlew.bat @tasks ('-PreactNativeArchitectures=' + $Architecture) ('-Dorg.gradle.jvmargs=-Xmx' + $GradleHeapMb + 'm -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8') --max-workers=2 --no-parallel --no-daemon --console=plain
