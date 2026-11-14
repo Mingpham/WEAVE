@@ -1,0 +1,216 @@
+{
+  "capturedAt": "2026-11-14T08:54:29.923Z",
+  "source": "http://127.0.0.1:8081",
+  "platform": "Actual running React Native Web app, NOT Android device screenshots",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "note": "No prototype images or fabricated data. Project routes were probed with the placeholder not-connected because no authenticated project was available. A redirected/blocked capture is NOT an image of its intended component. This is a complete capture of the requested route states, not complete UI acceptance.",
+  "captures": [
+    {
+      "screen": "SCR-01",
+      "file": "SCR-01-Welcome.png",
+      "status": "Visible: Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-02",
+      "file": "SCR-02-My-Events.png",
+      "status": "Blocked: Unable to connect",
+      "sha256": "4f9ced750eef262155d739484d74ee4b4b6ce1d63b2df049ac66ddb9ce0e80cf"
+    },
+    {
+      "screen": "SCR-03",
+      "file": "SCR-03-Join-Code-BLOCKED.png",
+      "status": "Visible: Join Code; service unavailable",
+      "sha256": "8a430755ead172dbfd069a732a44ccf8d411666ee92f3080293ec53bf7774479"
+    },
+    {
+      "screen": "SCR-04",
+      "file": "SCR-04-Consent.png",
+      "status": "Blocked: Unable to connect",
+      "sha256": "544f161d60110bc78a01d16341dc12bc04d2d6b5fd1fca65af280d8945951cfe"
+    },
+    {
+      "screen": "SCR-05",
+      "file": "SCR-05-Join-Profile.png",
+      "status": "Blocked: Unable to connect",
+      "sha256": "0ac21d551f85604e181e1c87be53cbb1cfbdb6f3d7976d73e204525e53e7d0c2"
+    },
+    {
+      "screen": "SCR-06",
+      "file": "SCR-06-Waiting-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-07",
+      "file": "SCR-07-Create-Event.png",
+      "status": "Blocked: Unable to connect",
+      "sha256": "7efd37b5b9fe585853647fba09886971b5a55ec317df5d620b2e4536f5dbef1d"
+    },
+    {
+      "screen": "SCR-08",
+      "file": "SCR-08-Plan-Studio-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-09",
+      "file": "SCR-09-Draft-Editor-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-10",
+      "file": "SCR-10-Plan-Review-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-11",
+      "file": "SCR-11-Command-Center-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-12",
+      "file": "SCR-12-Task-Board-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-13",
+      "file": "SCR-13-Task-Detail-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-14",
+      "file": "SCR-14-Assign-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-15",
+      "file": "SCR-15-Resources-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-16",
+      "file": "SCR-16-People-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-17",
+      "file": "SCR-17-Timeline-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-18",
+      "file": "SCR-18-Settings-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-19",
+      "file": "SCR-19-Close-Report-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-20",
+      "file": "SCR-20-Settlement-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-21",
+      "file": "SCR-21-Submission-Review-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-22",
+      "file": "SCR-22-Incident-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-23",
+      "file": "SCR-23-Manual-Decision-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-24",
+      "file": "SCR-24-New-Incident-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-25",
+      "file": "SCR-25-Participant-Home-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-26",
+      "file": "SCR-26-Inbox-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-27",
+      "file": "SCR-27-Me-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-28",
+      "file": "SCR-28-Composer-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-29",
+      "file": "SCR-29-Report-Problem-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-30",
+      "file": "SCR-30-Answer-Probe-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-31",
+      "file": "SCR-31-Resource-Report-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-32",
+      "file": "SCR-32-Offer-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "SCR-33",
+      "file": "SCR-33-Evidence-Detail-BLOCKED.png",
+      "status": "Blocked: no authenticated project; redirected to Welcome",
+      "sha256": "6ebb450bd9e5c588582d45a3e88b03a911c67bf64efea47b074b45b258995031"
+    },
+    {
+      "screen": "Supporting Sign In",
+      "file": "SCR-34-Sign-In-BLOCKED.png",
+      "status": "Visible: Sign In; service unavailable",
+      "sha256": "b9d2d0ae49b3f97fce441247c49d9a88f05135af5869908d6cd837fcd7237682"
+    }
+  ]
+}

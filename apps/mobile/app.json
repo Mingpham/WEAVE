@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "WEAVE",
+    "slug": "weave",
+    "version": "0.1.0",
+    "scheme": "weave",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": ["android", "web"],
+    "web": { "bundler": "metro", "output": "single" },
+    "android": { "package": "com.weave.mobile" },
+    "plugins": ["expo-router", "expo-font", "expo-notifications", "expo-secure-store", "expo-web-browser", ["expo-camera", {"recordAudioAndroid": false}], ["expo-image-picker", {"microphonePermission": false}]],
+    "experiments": { "typedRoutes": true }
+  }
+}

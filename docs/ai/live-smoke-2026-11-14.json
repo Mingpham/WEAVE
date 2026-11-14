@@ -1,0 +1,59 @@
+{
+  "commit_at_run": "d29303da2f705d1fd11eb8451d0bc39a34538f70",
+  "dirty_at_run": true,
+  "dirty_scope": "uncommitted Task 7 smoke runner/tests/fixture; pre-existing untracked AGENTS.md",
+  "runtime": {
+    "node": "26.5.0",
+    "deno": "2.9.4",
+    "pnpm": "10.28.2",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0",
+    "zod": "4.6.7"
+  },
+  "runs": [
+    {
+      "case": "text-schema",
+      "recorded_at": "2026-11-14T05:05:59.049Z",
+      "requested_model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "wp0-smoke-v1",
+      "schema_version": "wp0-smoke-v1",
+      "fixture_sha256": "7757df491d08a4ff7f1238cd939114b4c6a9932d6c214a9019efc7b879989b7e",
+      "max_calls": 1,
+      "max_output_tokens": 256,
+      "timeout_ms": 35000,
+      "cost": null,
+      "status": "PASS",
+      "error_code": null,
+      "http_status": null,
+      "actual_model": "anthropic/claude-haiku-5.5",
+      "request_id": "gen-1794632760-jldoetEFbotootUvQHhk",
+      "usage": {
+        "inputTokens": 233,
+        "outputTokens": 9
+      },
+      "latency_ms": 3386
+    },
+    {
+      "case": "image-schema",
+      "recorded_at": "2026-11-14T05:06:33.997Z",
+      "requested_model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "wp0-smoke-v1",
+      "schema_version": "wp0-smoke-v1",
+      "fixture_sha256": "ca96adb50da6a5f6cbfe03c9c5eb8ad8f1a6c88f526b8a4b9d9d7d3b9ef90157",
+      "max_calls": 1,
+      "max_output_tokens": 256,
+      "timeout_ms": 35000,
+      "cost": null,
+      "status": "PASS",
+      "error_code": null,
+      "http_status": null,
+      "actual_model": "anthropic/claude-haiku-5.5",
+      "request_id": "gen-1794632795-H9mSCrRwr9GOFhdbohXq",
+      "usage": {
+        "inputTokens": 281,
+        "outputTokens": 10
+      },
+      "latency_ms": 3608
+    }
+  ]
+}

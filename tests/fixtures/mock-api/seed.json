@@ -1,0 +1,323 @@
+{
+  "users": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "token": "mock-organizer",
+      "is_anonymous": false,
+      "email": "organizer@example.com"
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "token": "mock-participant",
+      "is_anonymous": true,
+      "email": null
+    },
+    {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "token": "mock-guest",
+      "is_anonymous": true,
+      "email": null
+    },
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "token": "mock-pending",
+      "is_anonymous": true,
+      "email": null
+    }
+  ],
+  "projects": [
+    {
+      "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "owner_user_id": "11111111-1111-4111-8111-111111111111",
+      "title": "Fixture Community Meetup",
+      "brief": "A one-day community meetup with an entrance desk, one main hall and a small volunteer team.",
+      "venue_name": "Fixture Hall",
+      "starts_at": "2026-12-05T01:00:00.000Z",
+      "ends_at": "2026-12-05T10:00:00.000Z",
+      "timezone": "Asia/Ho_Chi_Minh",
+      "expected_team_size": 6,
+      "expected_attendees": 120,
+      "currency": "VND",
+      "status": "ACTIVE",
+      "state_version": 12,
+      "role_tags": ["check-in", "logistics", "av"],
+      "settings": {
+        "ai_enabled": true,
+        "ai_probe_enabled": true,
+        "ai_recovery_enabled": true,
+        "ai_vision_enabled": true,
+        "auto_approve_members": false
+      },
+      "closed_at": null
+    },
+    {
+      "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "owner_user_id": "11111111-1111-4111-8111-111111111111",
+      "title": "Fixture Planning Draft",
+      "brief": "An event still being planned, used to show the Plan Studio entry point on My Events.",
+      "venue_name": null,
+      "starts_at": "2026-12-20T02:00:00.000Z",
+      "ends_at": "2026-12-20T08:00:00.000Z",
+      "timezone": "Asia/Ho_Chi_Minh",
+      "expected_team_size": 4,
+      "expected_attendees": null,
+      "currency": "VND",
+      "status": "DRAFT",
+      "state_version": 1,
+      "role_tags": [],
+      "settings": {
+        "ai_enabled": true,
+        "ai_probe_enabled": true,
+        "ai_recovery_enabled": true,
+        "ai_vision_enabled": true,
+        "auto_approve_members": false
+      },
+      "closed_at": null
+    }
+  ],
+  "members": [
+    {
+      "id": "0a000000-0000-4000-8000-000000000001",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "nickname": "Morgan",
+      "role": "OWNER",
+      "status": "APPROVED",
+      "role_tags": [],
+      "presence": "ON_SITE",
+      "current_area_id": null,
+      "availability": { "whole_event": true },
+      "consent_at": "2026-11-14T03:00:00.000Z",
+      "consent_version": "2026-11-14.1",
+      "version": 1,
+      "requested_at": "2026-11-14T03:00:00.000Z"
+    },
+    {
+      "id": "0a000000-0000-4000-8000-000000000002",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "user_id": "22222222-2222-4222-8222-222222222222",
+      "nickname": "Sam",
+      "role": "PARTICIPANT",
+      "status": "APPROVED",
+      "role_tags": ["check-in"],
+      "presence": "ON_SITE",
+      "current_area_id": "0c000000-0000-4000-8000-000000000001",
+      "availability": { "whole_event": true },
+      "consent_at": "2026-11-14T04:00:00.000Z",
+      "consent_version": "2026-11-14.1",
+      "version": 3,
+      "requested_at": "2026-11-14T04:00:00.000Z"
+    },
+    {
+      "id": "0a000000-0000-4000-8000-000000000003",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "user_id": "44444444-4444-4444-8444-444444444444",
+      "nickname": "Riley",
+      "role": "PARTICIPANT",
+      "status": "PENDING",
+      "role_tags": ["logistics"],
+      "presence": "NOT_ARRIVED",
+      "current_area_id": null,
+      "availability": {
+        "windows": [{ "from": "2026-12-05T01:00:00.000Z", "to": "2026-12-05T05:00:00.000Z" }]
+      },
+      "consent_at": "2026-11-14T05:00:00.000Z",
+      "consent_version": "2026-11-14.1",
+      "version": 1,
+      "requested_at": "2026-11-14T05:00:00.000Z"
+    },
+    {
+      "id": "0a000000-0000-4000-8000-000000000004",
+      "project_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "user_id": "11111111-1111-4111-8111-111111111111",
+      "nickname": "Morgan",
+      "role": "OWNER",
+      "status": "APPROVED",
+      "role_tags": [],
+      "presence": "NOT_ARRIVED",
+      "current_area_id": null,
+      "availability": { "whole_event": true },
+      "consent_at": "2026-11-14T03:30:00.000Z",
+      "consent_version": "2026-11-14.1",
+      "version": 1,
+      "requested_at": "2026-11-14T03:30:00.000Z"
+    }
+  ],
+  "invites": [
+    {
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "code": "K7P4QX",
+      "expires_at": "2027-01-01T00:00:00.000Z",
+      "disabled": false
+    }
+  ],
+  "areas": [
+    {
+      "id": "0c000000-0000-4000-8000-000000000001",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "name": "Entrance",
+      "notes": null
+    },
+    {
+      "id": "0c000000-0000-4000-8000-000000000002",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "name": "Hall",
+      "notes": "Seats 150"
+    }
+  ],
+  "resources": [
+    {
+      "id": "0d000000-0000-4000-8000-000000000001",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "name": "Ticket scanner 1",
+      "category": "scanner",
+      "kind": "ITEM",
+      "quantity": null,
+      "inventory_state": "CONFIRMED",
+      "condition": "OK",
+      "condition_claim": null,
+      "area_id": "0c000000-0000-4000-8000-000000000001",
+      "location_claim": null,
+      "custodian_member_id": "0a000000-0000-4000-8000-000000000002",
+      "notes": null,
+      "version": 2
+    },
+    {
+      "id": "0d000000-0000-4000-8000-000000000002",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "name": "Water bottles",
+      "category": "drinks",
+      "kind": "SUPPLY",
+      "quantity": 48,
+      "inventory_state": "UNVERIFIED",
+      "condition": "UNKNOWN",
+      "condition_claim": null,
+      "area_id": null,
+      "location_claim": null,
+      "custodian_member_id": null,
+      "notes": null,
+      "version": 1
+    }
+  ],
+  "tasks": [
+    {
+      "id": "0e000000-0000-4000-8000-000000000001",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "title": "Set up entrance desk",
+      "description": "Table, chairs, signage and the scanner at the entrance.",
+      "area_id": "0c000000-0000-4000-8000-000000000001",
+      "role_tag": "check-in",
+      "role_required": false,
+      "start_at": "2026-12-05T00:00:00.000Z",
+      "due_at": "2026-12-05T00:45:00.000Z",
+      "hard_deadline": true,
+      "estimated_minutes": 30,
+      "critical": true,
+      "stipend_amount": 100000,
+      "status": "APPROVED",
+      "risk": "NONE",
+      "risk_reasons": [],
+      "origin": "PLAN",
+      "criteria": [
+        {
+          "id": "0f000000-0000-4000-8000-000000000001",
+          "position": 0,
+          "description": "Desk and sign visible from the door",
+          "critical": true,
+          "photo_expected": true,
+          "state": "MET"
+        }
+      ],
+      "depends_on": [],
+      "needs": [
+        { "resource_id": "0d000000-0000-4000-8000-000000000001", "category": null, "hard": true }
+      ],
+      "assignee_member_id": null,
+      "version": 4
+    },
+    {
+      "id": "0e000000-0000-4000-8000-000000000002",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "title": "Test ticket scanning",
+      "description": "Scan three test tickets and confirm each one is accepted.",
+      "area_id": "0c000000-0000-4000-8000-000000000001",
+      "role_tag": "check-in",
+      "role_required": true,
+      "start_at": null,
+      "due_at": "2026-12-05T01:00:00.000Z",
+      "hard_deadline": true,
+      "estimated_minutes": 15,
+      "critical": true,
+      "stipend_amount": null,
+      "status": "ACCEPTED",
+      "risk": "NONE",
+      "risk_reasons": [],
+      "origin": "PLAN",
+      "criteria": [
+        {
+          "id": "0f000000-0000-4000-8000-000000000002",
+          "position": 0,
+          "description": "Three test tickets scanned successfully",
+          "critical": true,
+          "photo_expected": true,
+          "state": "PENDING"
+        }
+      ],
+      "depends_on": [{ "task_id": "0e000000-0000-4000-8000-000000000001", "kind": "HARD" }],
+      "needs": [
+        { "resource_id": "0d000000-0000-4000-8000-000000000001", "category": null, "hard": true }
+      ],
+      "assignee_member_id": "0a000000-0000-4000-8000-000000000002",
+      "version": 2
+    },
+    {
+      "id": "0e000000-0000-4000-8000-000000000003",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "title": "Stock water at the hall",
+      "description": "Place water bottles on the side table in the hall.",
+      "area_id": "0c000000-0000-4000-8000-000000000002",
+      "role_tag": "logistics",
+      "role_required": false,
+      "start_at": null,
+      "due_at": "2026-12-05T02:00:00.000Z",
+      "hard_deadline": false,
+      "estimated_minutes": 15,
+      "critical": false,
+      "stipend_amount": null,
+      "status": "OPEN",
+      "risk": "NONE",
+      "risk_reasons": [],
+      "origin": "PLAN",
+      "criteria": [
+        {
+          "id": "0f000000-0000-4000-8000-000000000003",
+          "position": 0,
+          "description": "Bottles on the side table",
+          "critical": false,
+          "photo_expected": false,
+          "state": "PENDING"
+        }
+      ],
+      "depends_on": [],
+      "needs": [
+        { "resource_id": "0d000000-0000-4000-8000-000000000002", "category": null, "hard": false }
+      ],
+      "assignee_member_id": null,
+      "version": 1
+    }
+  ],
+  "assignments": [
+    {
+      "id": "0b000000-0000-4000-8000-000000000001",
+      "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "task_id": "0e000000-0000-4000-8000-000000000002",
+      "member_id": "0a000000-0000-4000-8000-000000000002",
+      "status": "ACCEPTED",
+      "respond_by": "2026-12-05T00:30:00.000Z",
+      "responded_at": "2026-11-14T06:00:00.000Z",
+      "is_recovery": false,
+      "version": 2
+    }
+  ],
+  "incidents": []
+}

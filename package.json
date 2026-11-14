@@ -1,0 +1,39 @@
+{
+  "name": "weave",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:ai": "vitest run --config vitest.ai.config.ts",
+    "typecheck:ai": "tsc --noEmit -p tsconfig.ai.json",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:hardcode": "node scripts/check-hardcode.mjs",
+    "api:check": "deno check --config supabase/functions/api/deno.json supabase/functions/api/index.ts",
+    "api:serve": "supabase functions serve api --no-verify-jwt",
+    "mock-api": "pnpm --filter @weave/mock-api start",
+    "check": "pnpm typecheck && pnpm typecheck:ai && pnpm lint && pnpm test && pnpm check:hardcode",
+    "typecheck:engine": "tsc --noEmit -p packages/engine/tsconfig.type-tests.json",
+    "ai:check": "deno check --config supabase/functions/ai-worker/deno.json supabase/functions/ai-worker/index.ts supabase/functions/_shared/ai/plan-compose.ts tests/ai-evals/live-smoke.ts"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "5.1.0",
+    "@eslint/js": "10.0.1",
+    "@supabase/supabase-js": "2.118.0",
+    "@types/node": "24.19.2",
+    "eslint": "10.14.0",
+    "globals": "17.13.0",
+    "hono": "4.13.14",
+    "prettier": "3.9.10",
+    "typescript-eslint": "8.72.1",
+    "zod": "4.6.7"
+  }
+}

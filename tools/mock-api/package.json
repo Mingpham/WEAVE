@@ -1,0 +1,16 @@
+{
+  "name": "@weave/mock-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "In-memory WEAVE API for building screens without a real backend (spec §15.5). Serves the same routes, schemas and envelope as supabase/functions/api.",
+  "scripts": {
+    "start": "node src/main.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.5",
+    "@weave/contracts": "workspace:*",
+    "hono": "4.13.14",
+    "zod": "4.6.7"
+  }
+}

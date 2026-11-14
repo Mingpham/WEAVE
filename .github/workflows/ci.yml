@@ -1,0 +1,89 @@
+# CI for every push and PR (spec §15.6: main is protected; CI must pass before merge).
+# Integration + security tests on local Supabase (SEC-09) and the staging deploy job are added
+# once the DB lane's first migrations land.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main, fix-main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Format, types, lint, unit tests, hardcode grep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm typecheck:ai
+      - run: pnpm typecheck:engine
+      - run: pnpm lint
+      - run: pnpm test
+      - name: INV-11 no hardcoded reference scenario
+        run: pnpm check:hardcode
+
+  edge-functions:
+    name: Deno type-check of Edge Functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Install pinned workspace dependencies for AI shared contracts
+        uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: API entrypoint (when API lane is present)
+        if: ${{ hashFiles('supabase/functions/api/index.ts') != '' }}
+        run: pnpm api:check
+      - name: AI worker and diagnostic CLI imports (no inference)
+        run: pnpm ai:check
+
+  secrets:
+    name: Secret scan (SEC-01)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  mobile:
+    name: Mobile types, lint and unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: apps/mobile/pnpm-lock.yaml
+      - run: pnpm install --ignore-workspace --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test

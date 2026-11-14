@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["ES2023", "DOM"],
+    "isolatedModules": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/tests/**/*.ts",
+    "tools/*/src/**/*.ts",
+    "supabase/functions/api/**/*.ts",
+    "supabase/functions/_shared/ai/**/*.ts",
+    "supabase/functions/ai-worker/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts",
+    "vitest.ai.config.ts"
+  ],
+  "exclude": [
+    "supabase/functions/api/index.ts",
+    "supabase/functions/ai-worker/index.ts",
+    "tests/ai-evals/live-smoke.ts",
+    "node_modules",
+    "**/node_modules",
+    "apps/**",
+    "tests/fixtures/mobile/**"
+  ]
+}
