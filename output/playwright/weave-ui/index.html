@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="vi">
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><title>
+    WEAVE — ảnh giao diện thực tế</title
+  ><style>
+    body {
+      font: 16px system-ui;
+      background: #f3f6f3;
+      color: #17352c;
+      margin: 24px;
+    }
+    h1 {
+      font-size: 28px;
+    }
+    .note {
+      max-width: 1000px;
+      line-height: 1.7;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 390px));
+      gap: 24px;
+      align-items: start;
+    }
+    article {
+      background: white;
+      border: 1px solid #d4dfd5;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    h2,
+    p {
+      padding: 0 16px;
+    }
+    h2 {
+      font-size: 17px;
+    }
+    article p {
+      font-size: 13px;
+      color: #626b63;
+    }
+    img {
+      width: 100%;
+      display: block;
+    }
+    summary {
+      cursor: pointer;
+      padding: 24px 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+  </style>
+  <h1>WEAVE — ảnh chụp app web đang chạy</h1>
+  <p class="note">
+    34 ảnh: 33 đường dẫn theo đặc tả và màn đăng nhập bổ sung, khung 390×844. Đây là ảnh thật của
+    bản web đang chạy, không phải prototype hoặc ảnh dựng. Hiện chỉ Welcome, Join Code và Sign In
+    hiện được nội dung UI; các màn khác đang bị chặn bởi phiên/dữ liệu/provider. Ảnh chuyển về
+    Welcome không phải ảnh của màn đích. Chưa có bộ ảnh Android native.
+  </p>
+  <div class="grid">
+    <article>
+      <h2>SCR-01 — Welcome</h2>
+      <p>Visible: Welcome</p>
+      <a href="SCR-01-Welcome.png"
+        ><img src="SCR-01-Welcome.png" loading="lazy" alt="Visible: Welcome"
+      /></a>
+    </article>
+    <article>
+      <h2>SCR-03 — Join-Code</h2>
+      <p>Visible: Join Code; service unavailable</p>
+      <a href="SCR-03-Join-Code-BLOCKED.png"
+        ><img
+          src="SCR-03-Join-Code-BLOCKED.png"
+          loading="lazy"
+          alt="Visible: Join Code; service unavailable"
+      /></a>
+    </article>
+    <article>
+      <h2>Supporting Sign In — Sign-In</h2>
+      <p>Visible: Sign In; service unavailable</p>
+      <a href="SCR-34-Sign-In-BLOCKED.png"
+        ><img
+          src="SCR-34-Sign-In-BLOCKED.png"
+          loading="lazy"
+          alt="Visible: Sign In; service unavailable"
+      /></a>
+    </article>
+  </div>
+  <details>
+    <summary>Xem 31 ảnh trạng thái bị chặn / chuyển hướng</summary>
+    <div class="grid">
+      <article>
+        <h2>SCR-02 — My-Events</h2>
+        <p>Blocked: Unable to connect</p>
+        <a href="SCR-02-My-Events.png"
+          ><img src="SCR-02-My-Events.png" loading="lazy" alt="Blocked: Unable to connect"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-04 — Consent</h2>
+        <p>Blocked: Unable to connect</p>
+        <a href="SCR-04-Consent.png"
+          ><img src="SCR-04-Consent.png" loading="lazy" alt="Blocked: Unable to connect"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-05 — Join-Profile</h2>
+        <p>Blocked: Unable to connect</p>
+        <a href="SCR-05-Join-Profile.png"
+          ><img src="SCR-05-Join-Profile.png" loading="lazy" alt="Blocked: Unable to connect"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-06 — Waiting</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-06-Waiting-BLOCKED.png"
+          ><img
+            src="SCR-06-Waiting-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-07 — Create-Event</h2>
+        <p>Blocked: Unable to connect</p>
+        <a href="SCR-07-Create-Event.png"
+          ><img src="SCR-07-Create-Event.png" loading="lazy" alt="Blocked: Unable to connect"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-08 — Plan-Studio</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-08-Plan-Studio-BLOCKED.png"
+          ><img
+            src="SCR-08-Plan-Studio-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-09 — Draft-Editor</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-09-Draft-Editor-BLOCKED.png"
+          ><img
+            src="SCR-09-Draft-Editor-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-10 — Plan-Review</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-10-Plan-Review-BLOCKED.png"
+          ><img
+            src="SCR-10-Plan-Review-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-11 — Command-Center</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-11-Command-Center-BLOCKED.png"
+          ><img
+            src="SCR-11-Command-Center-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-12 — Task-Board</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-12-Task-Board-BLOCKED.png"
+          ><img
+            src="SCR-12-Task-Board-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-13 — Task-Detail</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-13-Task-Detail-BLOCKED.png"
+          ><img
+            src="SCR-13-Task-Detail-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-14 — Assign</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-14-Assign-BLOCKED.png"
+          ><img
+            src="SCR-14-Assign-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-15 — Resources</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-15-Resources-BLOCKED.png"
+          ><img
+            src="SCR-15-Resources-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-16 — People</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-16-People-BLOCKED.png"
+          ><img
+            src="SCR-16-People-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-17 — Timeline</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-17-Timeline-BLOCKED.png"
+          ><img
+            src="SCR-17-Timeline-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-18 — Settings</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-18-Settings-BLOCKED.png"
+          ><img
+            src="SCR-18-Settings-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-19 — Close-Report</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-19-Close-Report-BLOCKED.png"
+          ><img
+            src="SCR-19-Close-Report-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-20 — Settlement</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-20-Settlement-BLOCKED.png"
+          ><img
+            src="SCR-20-Settlement-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-21 — Submission-Review</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-21-Submission-Review-BLOCKED.png"
+          ><img
+            src="SCR-21-Submission-Review-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-22 — Incident</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-22-Incident-BLOCKED.png"
+          ><img
+            src="SCR-22-Incident-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-23 — Manual-Decision</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-23-Manual-Decision-BLOCKED.png"
+          ><img
+            src="SCR-23-Manual-Decision-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-24 — New-Incident</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-24-New-Incident-BLOCKED.png"
+          ><img
+            src="SCR-24-New-Incident-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-25 — Participant-Home</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-25-Participant-Home-BLOCKED.png"
+          ><img
+            src="SCR-25-Participant-Home-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-26 — Inbox</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-26-Inbox-BLOCKED.png"
+          ><img
+            src="SCR-26-Inbox-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-27 — Me</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-27-Me-BLOCKED.png"
+          ><img
+            src="SCR-27-Me-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-28 — Composer</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-28-Composer-BLOCKED.png"
+          ><img
+            src="SCR-28-Composer-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-29 — Report-Problem</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-29-Report-Problem-BLOCKED.png"
+          ><img
+            src="SCR-29-Report-Problem-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-30 — Answer-Probe</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-30-Answer-Probe-BLOCKED.png"
+          ><img
+            src="SCR-30-Answer-Probe-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-31 — Resource-Report</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-31-Resource-Report-BLOCKED.png"
+          ><img
+            src="SCR-31-Resource-Report-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-32 — Offer</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-32-Offer-BLOCKED.png"
+          ><img
+            src="SCR-32-Offer-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+      <article>
+        <h2>SCR-33 — Evidence-Detail</h2>
+        <p>Blocked: no authenticated project; redirected to Welcome</p>
+        <a href="SCR-33-Evidence-Detail-BLOCKED.png"
+          ><img
+            src="SCR-33-Evidence-Detail-BLOCKED.png"
+            loading="lazy"
+            alt="Blocked: no authenticated project; redirected to Welcome"
+        /></a>
+      </article>
+    </div>
+  </details>
+  <p>Chi tiết và SHA-256: <a href="manifest.json">manifest.json</a>.</p>
+</html>

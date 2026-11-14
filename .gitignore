@@ -24,3 +24,5 @@ apps/mobile/android/
 *.aab
 *.keystore
 *.jks
+# Local browser automation session cache
+.playwright-cli/
