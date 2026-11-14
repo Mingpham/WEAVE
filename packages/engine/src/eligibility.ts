@@ -34,7 +34,10 @@ export type EligibilityEvaluation = Readonly<{
   validity: OptionValidity;
   score: number;
 }>;
-export type AssignmentSuggestion = EligibilityEvaluation;
+export type AssignmentSuggestion = Readonly<{
+  task_id: string;
+  candidates: readonly EligibilityEvaluation[];
+}>;
 
 const scope = { project_id: Uuid };
 const inputSchema = z.strictObject({
@@ -168,11 +171,12 @@ function evaluate(
     )
     .sort((a, b) => compare(a.id, b.id));
   const present: ConditionResult =
-    member.presence === 'UNAVAILABLE'
+    member.presence === 'UNAVAILABLE' ||
+    fresh.some((c) => c.status === 'CONFIRMED' && c.value === 'UNAVAILABLE')
       ? 'FALSE'
       : member.presence === 'NOT_ARRIVED' &&
           window.start <= now + POL.URGENT_WINDOW_MIN * 60_000 &&
-          fresh.length === 0
+          (fresh.length === 0 || fresh.some((c) => c.value !== 'ON_SITE'))
         ? 'UNKNOWN'
         : 'TRUE';
   const roleMatch = task.role_tag !== null && member.role_tags.includes(task.role_tag);
@@ -187,7 +191,7 @@ function evaluate(
     {
       code: 'MEMBER_PRESENT',
       result: present,
-      message: 'Member must be available; urgent arrival needs fresh evidence.',
+      message: 'Member must be available; urgent arrival needs consistent fresh ON_SITE evidence.',
       claim_ids: fresh.map((c) => c.id),
     },
     {
@@ -293,9 +297,10 @@ export function suggestAssignments(input: EligibilityInput): AssignmentSuggestio
   const reserved = new Map<string, EligibilityTask[]>();
   const suggestions: AssignmentSuggestion[] = [];
   for (const task of tasks) {
-    const chosen = rank(input, task, reserved)[0];
+    const candidates = rank(input, task, reserved).slice(0, 3);
+    suggestions.push({ task_id: task.id, candidates });
+    const chosen = candidates[0];
     if (!chosen) continue;
-    suggestions.push(chosen);
     reserved.set(chosen.member_id, [...(reserved.get(chosen.member_id) ?? []), task]);
   }
   return suggestions;

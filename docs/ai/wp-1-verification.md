@@ -15,7 +15,7 @@ Approved scope: remaining tasks in the progress report, executed inline on `ai/w
 
 - After Task 1 push, fullstack/DB remained unchanged; inspected mobile `7ebf1c7` and `078f9f3` (native build configuration and blocker handoff), with no engine-interface change.
 - Added pure `evaluateEligibility`, `rankCandidates` and `suggestAssignments` exports. Seven §11.3 checks return TRUE/FALSE/UNKNOWN, explanatory messages and presence evidence IDs. Ranking follows +3 role, +2 area, +2 ON_SITE, minus active assignment count; nickname then ID gives deterministic ties.
-- Greedy suggestions consider OPEN tasks, critical first then due time, and reserve each selected member's load/critical window before the next task. UNKNOWN remains visible as PENDING_VERIFICATION; only FALSE excludes a candidate. Inputs are never mutated.
+- Greedy suggestions consider OPEN tasks, critical first then due time, and reserve each selected member's load/critical window before the next task. Each OPEN task retains up to three ranked candidates, including an empty list when none qualify. Only the first candidate reserves provisional load. UNKNOWN remains visible as PENDING_VERIFICATION; only FALSE excludes a candidate (final-review correction below). Inputs are never mutated.
 - Runtime guards reject malformed projections, project mismatch, duplicate IDs and missing referenced tasks/members. They cannot prove that a caller omitted historical rows; complete server snapshots remain required.
 - Boundary decisions: half-open intervals allow adjacent tasks; adjacent availability windows may jointly cover a task; null area IDs earn no location bonus; claim expiry is exclusive and future observations are not fresh; an already-started task remains urgent for NOT_ARRIVED members. Nickname sorting uses deterministic code-point order, with ID only breaking equal nicknames. These decisions need owner review if product expects a locale-specific ordering or different time boundaries.
 - RED: targeted suite failed before the implementation module existed. GREEN: **37 focused tests**, full `pnpm check` **163/163 in 18 files**, `pnpm typecheck:engine`, `pnpm format:check`, Deno check of engine exports and `git diff --check` passed. Frozen fixtures prove inputs remain unchanged. No API route or persistent assignment is created by suggestions.
@@ -50,4 +50,37 @@ After Task 4 and its formatting follow-up were pushed, fetched again: fullstack 
 
 **Task 5 is blocked by that dependency, not complete.** No SQL names were invented and no production store was bound. The user was asked whether an additional branch/commit contains the missing contracts while independent review/combined verification continued.
 
-Required handoff remains the WorkerStore table in [AI/DB contracts](./2026-11-14-ai-engine-handoff.md), supplemented with the WP-1 plan delta below. Local engine/fake-worker success does not establish PostgreSQL transaction, RLS, concurrency, deployment, G0 or Android acceptance.
+Required handoff remains the WorkerStore table in [AI/DB contracts](./2026-11-14-ai-engine-handoff.md), supplemented with the WP-1 plan delta in that handoff. Local engine/fake-worker success does not establish PostgreSQL transaction, RLS, concurrency, deployment, G0 or Android acceptance.
+
+## Final review and database history audit
+
+A fresh read-only reviewer inspected `709c784..cc74889`. No Critical or Minor findings; two Important findings were confirmed and fixed in one regression pass:
+
+1. Task 2's original one-result-per-task plan conflicted with FR-TASK-04 / endpoint #22. `suggestAssignments` now returns `{ task_id, candidates }` for every OPEN task, retaining up to three ranked evaluations and empty lists. Only the first candidate reserves load/clashes before the next task. Four regression assertions failed on the old behavior; all 38 eligibility cases passed after the first fix.
+2. Literal fresh-claim existence could turn a confirmed UNAVAILABLE claim into positive arrival evidence. Conservative precedence now makes explicit member UNAVAILABLE or fresh CONFIRMED UNAVAILABLE FALSE. For urgent NOT_ARRIVED members, only consistent fresh ON_SITE values establish TRUE; negative/mixed evidence remains UNKNOWN. Expired/future/inactive claims still cannot establish readiness. Nine new assertions failed before the fix; all **48 eligibility cases passed** afterward. This tightens the ambiguous §11.3 wording; future claim projection integration must preserve or explicitly revise this precedence.
+
+Following the user's instruction, fetched the entire `database` history again. HEAD advanced to `ac537fa` via `65bef8d` (private-helper regressions), `d6514a3` (resource table) and `ac537fa` (storage history tests). Inspected those commits and scanned all **22 reachable revisions**, including historical SQL paths. Exactly five migration paths and nine private helper functions exist in that history; none provides worker queue/claim/lease/budget/context/result RPCs. Searching history for the worker operations and queue/job identifiers also found no implementation. The new HANDOFF still explicitly requires dedicated worker contracts and denies service_role EXECUTE on the member mutation helpers. Fullstack `b18271d` and mobile `078f9f3` remain unchanged. Task 5 remains dependent on DB contracts; no historical RPC was overlooked or substituted with a private member helper.
+
+Reviewer exclusions and executor rulings:
+
+| Area | Decision and remaining cost |
+|---|---|
+| RPC atomicity, RLS, fencing, deployment | Pending actual adapter/local DB tests; fake-store results cannot support a production claim. |
+| Live model and snapshot truncation quality | Defer to versioned live evaluation; synthetic tests cannot establish semantic quality or context sufficiency. |
+| Resource quantities/alternatives | Keep documented conservative contention warnings; feasible allocations may still be flagged. |
+| Omitted assignment history/custodian scope | Authoritative snapshot and persistence must supply/check them; incomplete input could mislead the engine. |
+| Wording equivalence | FINALIZE structural guards stand; changed prose still needs organizer review and quality evaluation. |
+| IDs/secrets embedded in free text | Structured identifiers/secrets are excluded; arbitrary user-authored text is not semantically redacted, so text voluntarily supplied can reach the provider. |
+
+Temporary combined fullstack verification before review fixes passed **248/248 tests in 23 files**, format, API/AI Deno checks and engine compile assertions. Initial offline install could not find cached packages and rebuilt dependencies while checks were running; those format/Deno failures were environmental. Restored both checkouts sequentially with `pnpm install --frozen-lockfile --ignore-scripts`, then reran all affected checks successfully. No source/lock change or new dependency was required. Latest pre-fix remote `cc74889` passed all three [CI jobs](https://github.com/lh6104/WEAVE/actions/runs/43566860797), including secret scan.
+
+
+Post-review verification on the final source tree:
+
+- `pnpm exec vitest run packages/engine/tests/eligibility.test.ts`: **48/48**.
+- `pnpm check`: **234/234 tests, 21 files**, types, AI types, lint and hardcode scan passed.
+- `pnpm format:check`, `pnpm typecheck:engine`, `pnpm ai:check`, `git diff --check`: passed.
+- Temporary fullstack `b18271d` plus final shared/AI sources: `pnpm check` **259/259 tests, 23 files**; `pnpm format:check` and `pnpm ai:check` passed. API Deno check and frozen install had already passed on the same unchanged API/dependency sources.
+- Final diff contains only eligibility implementation/regressions, plan correction and this evidence. `AGENTS.md` and `.env` remain untouched. No extra live call, SQL migration, merge or deployment was performed.
+
+The two Important findings are covered by failing-then-passing regressions; no second review was requested. Four implementation tasks are delivered. The fifth task's audit/review is done, but its real adapter remains blocked on DB-owned worker RPCs. G0/G1/G2 and production acceptance are not claimed.

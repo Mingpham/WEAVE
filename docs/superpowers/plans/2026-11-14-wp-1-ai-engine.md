@@ -42,10 +42,10 @@
 
 **Files:** `packages/engine/src/{eligibility,index}.ts`, `packages/engine/tests/{eligibility.test,eligibility-fixtures}.ts`.
 
-**Interfaces:** `evaluateEligibility(input: EligibilityInput, taskId: string, memberId: string): EligibilityEvaluation`; `rankCandidates(input, taskId): EligibilityEvaluation[]`; `suggestAssignments(input): AssignmentSuggestion[]`. Results carry task/member IDs, seven typed checks, aggregate validity and numeric score; suggestions choose one candidate per OPEN task with provisional load updated.
+**Interfaces:** `evaluateEligibility(input: EligibilityInput, taskId: string, memberId: string): EligibilityEvaluation`; `rankCandidates(input, taskId): EligibilityEvaluation[]`; `suggestAssignments(input): AssignmentSuggestion[]`. Results carry task/member IDs, seven typed checks, aggregate validity and numeric score; suggestions retain every OPEN task with up to three ranked candidates and reserve only the first candidate for the next task (final review correction to match FR-TASK-04 / endpoint #22).
 
 - [x] Tests: approved participant only; UNAVAILABLE false, urgent NOT_ARRIVED without fresh claim unknown; role match; availability union covers window; active load <2; overlapping critical assignment; any DECLINED/RELEASED history; score +3/+2/+2 minus active load, nickname tie; critical/due task order and provisional clashes. Reject wrong scope, dangling/duplicate IDs and invalid windows. Freeze fixtures. Expected RED before functions exist.
-- [x] Implement pure functions; half-open overlap permits adjacent tasks, active assignment statuses OFFERED/ACCEPTED on unfinished tasks, no wall clock. Reject unknown IDs/scope rather than filtering incomplete data silently. Empty suggestion list is valid.
+- [x] Implement pure functions; half-open overlap permits adjacent tasks, active assignment statuses OFFERED/ACCEPTED on unfinished tasks, no wall clock. Reject unknown IDs/scope rather than filtering incomplete data silently. An empty candidate list is valid; only no OPEN tasks yields an empty suggestion list.
 - [x] Run focused tests, engine compile assertions, full `pnpm check` and Deno check. Expected pass; record spec-gap interpretations.
 - [x] Commit/push `[WP-1-AI] Implement eligibility and assignment suggestions`; fetch before Task 3.
 

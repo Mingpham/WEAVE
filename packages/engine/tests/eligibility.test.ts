@@ -17,7 +17,9 @@ it('§11.3 evaluates seven conditions and literal ranking score without mutating
   });
   expect(evaluate(input).checks).toHaveLength(7);
   expect(evaluate(input).checks.every((c) => c.result === 'TRUE')).toBe(true);
-  expect(suggestAssignments(input)).toMatchObject([{ task_id: id(10), member_id: id(2) }]);
+  expect(suggestAssignments(input)).toMatchObject([
+    { task_id: id(10), candidates: [{ member_id: id(2) }] },
+  ]);
   expect(input.assignments).toEqual([]);
 });
 
@@ -84,6 +86,60 @@ it.each<Partial<PresenceClaim>>([
       'MEMBER_PRESENT',
     ),
   ).toBe('UNKNOWN');
+});
+it.each([
+  ['REPORTED', 'UNAVAILABLE', 'UNKNOWN'],
+  ['SUPPORTED', 'UNAVAILABLE', 'UNKNOWN'],
+  ['CONFIRMED', 'UNAVAILABLE', 'FALSE'],
+  ['REPORTED', 'NOT_ARRIVED', 'UNKNOWN'],
+  ['SUPPORTED', 'NOT_ARRIVED', 'UNKNOWN'],
+  ['CONFIRMED', 'NOT_ARRIVED', 'UNKNOWN'],
+] as const)(
+  'negative %s %s evidence cannot establish urgent readiness',
+  (status, value, expected) => {
+    const input = scenario({
+      members: [member(2, { presence: 'NOT_ARRIVED' })],
+      presence_claims: [presence({ status, value })],
+    });
+    expect(check(input, 'MEMBER_PRESENT')).toBe(expected);
+    expect(evaluate(input).validity).not.toBe('VALID');
+  },
+);
+it.each(['UNAVAILABLE', 'NOT_ARRIVED'] as const)(
+  'mixed fresh ON_SITE and %s evidence keeps urgent arrival uncertain',
+  (value) => {
+    const input = scenario({
+      members: [member(2, { presence: 'NOT_ARRIVED' })],
+      presence_claims: [presence(), presence({ id: id(41), value })],
+    });
+    expect(check(input, 'MEMBER_PRESENT')).toBe('UNKNOWN');
+  },
+);
+it('confirmed unavailability overrides stored ON_SITE, but expired confirmation does not', () => {
+  const input = scenario({
+    now: '2026-11-14T09:00:00Z',
+    presence_claims: [
+      presence({
+        status: 'CONFIRMED',
+        value: 'UNAVAILABLE',
+        observed_at: '2026-11-14T08:50:00Z',
+      }),
+    ],
+  });
+  expect(check(input, 'MEMBER_PRESENT')).toBe('FALSE');
+  expect(rankCandidates(input, id(10))).toEqual([]);
+  expect(check({ ...input, now: '2026-11-14T09:50:00Z' }, 'MEMBER_PRESENT')).toBe('TRUE');
+});
+it('fresh arrival evidence cannot override explicit member unavailability', () => {
+  expect(
+    check(
+      scenario({
+        members: [member(2, { presence: 'UNAVAILABLE' })],
+        presence_claims: [presence({ status: 'CONFIRMED' })],
+      }),
+      'MEMBER_PRESENT',
+    ),
+  ).toBe('FALSE');
 });
 it('ROLE_MATCH enforces required tags but permits optional roles without granting a match score', () => {
   expect(check(scenario({ members: [member(2, { role_tags: [] })] }), 'ROLE_MATCH')).toBe('FALSE');
@@ -205,7 +261,35 @@ it('suggestions prioritize critical then due and reserve load/clashes without ov
       ],
     }),
   );
-  expect(suggestAssignments(input).map((c) => c.task_id)).toEqual([id(11), id(13)]);
+  const suggestions = suggestAssignments(input);
+  expect(suggestions.map((c) => c.task_id)).toEqual([id(11), id(10), id(12), id(13)]);
+  expect(suggestions.map((c) => c.candidates.map((candidate) => candidate.member_id))).toEqual([
+    [id(2)],
+    [],
+    [],
+    [id(2)],
+  ]);
+  expect(input.assignments).toEqual([]);
+});
+it('FR-TASK-04 returns up to three ranked alternatives and reserves only the first for later tasks', () => {
+  const input = freeze(
+    scenario({
+      members: [
+        member(2, { nickname: 'Ada' }),
+        member(3, { nickname: 'Bea' }),
+        member(4, { nickname: 'Cora' }),
+        member(5, { nickname: 'Dora' }),
+      ],
+      tasks: [task(10), task(11, { due_at: '2026-11-14T11:00:00Z' })],
+    }),
+  );
+  const suggestions = suggestAssignments(input);
+  expect(suggestions.map((s) => s.candidates.map((c) => c.member_id))).toEqual([
+    [id(2), id(3), id(4)],
+    [id(3), id(4), id(5)],
+  ]);
+  expect(suggestions[0]?.candidates.map((c) => c.score)).toEqual([7, 7, 7]);
+  expect(suggestions[0]?.candidates.every((c) => c.checks.length === 7)).toBe(true);
   expect(input.assignments).toEqual([]);
 });
 it.each([
@@ -218,8 +302,11 @@ it.each([
 ])('INV-07 refuses invalid, incomplete or cross-project eligibility inputs', (input) => {
   expect(() => evaluate(input)).toThrow();
 });
-it('rejects missing requested IDs and gives no suggestions for an empty eligible set', () => {
+it('rejects missing requested IDs and retains OPEN tasks with an empty eligible set', () => {
   expect(() => evaluateEligibility(scenario(), id(99), id(2))).toThrow();
   expect(() => evaluateEligibility(scenario(), id(10), id(99))).toThrow();
-  expect(suggestAssignments(scenario({ members: [] }))).toEqual([]);
+  expect(suggestAssignments(scenario({ members: [] }))).toEqual([
+    { task_id: id(10), candidates: [] },
+  ]);
+  expect(suggestAssignments(scenario({ tasks: [] }))).toEqual([]);
 });
