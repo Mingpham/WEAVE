@@ -22,4 +22,12 @@ Approved scope: remaining tasks in the progress report, executed inline on `ai/w
 
 ## Outstanding work
 
-Draft validation/gaps and fake-model plan composition are next. DB worker RPCs are absent at the audited SHA; private member mutation helpers do not implement WorkerStore. Production entrypoint remains `INTEGRATION_PENDING` until that dependency is satisfied and tested.
+Fake-model plan composition is next. DB worker RPCs are absent at the audited SHA; private member mutation helpers do not implement WorkerStore. Production entrypoint remains `INTEGRATION_PENDING` until that dependency is satisfied and tested.
+
+## Task 3 — Draft validation and gaps
+
+- After Task 2 push, fetched all lanes: fullstack `b18271d`, DB `4a1603a`, mobile `078f9f3` unchanged.
+- Added pure `validateDraft` and `computeDraftGaps`. Checks cover canonical field structure, cross-collection key uniqueness, area names/role tags/question IDs, references, exclusive resource/category needs, cycles across HARD and SOFT dependencies, entity caps, criteria and time windows. Missing role/area can remain a review gap; dangling non-null references cannot.
+- Due offsets include -20,160 minutes and event duration +1,440 minutes; start must precede due. Empty manual drafts remain valid. Existing gaps are ignored and all five gap kinds rebuilt from validated data without mutating the input.
+- Category-based contention is a conservative warning about possible shared allocation, not a resource-capacity optimizer; supply quantity and alternatives are not treated as an automatic reservation. Adjacent windows do not overlap. Area names are unique ignoring case after canonical trimming. Caller must still validate custodians against the complete project member snapshot/DB before persistence.
+- RED: targeted test import failed before implementation. GREEN: **29 focused tests**, full `pnpm check` **192/192 in 19 files**, format, Deno engine and diff checks passed. These are engine tests; publication transaction/route and Android review acceptance are not claimed.
