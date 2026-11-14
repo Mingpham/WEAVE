@@ -1,0 +1,16 @@
+{
+  "name": "weave",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.2",
+  "engines": { "node": "^22.12.0 || ^24.0.0 || >=26.0.0" },
+  "scripts": {
+    "test": "vitest run --config vitest.ai.config.ts",
+    "test:ai": "vitest run --config vitest.ai.config.ts",
+    "typecheck:ai": "tsc --noEmit -p tsconfig.ai.json"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

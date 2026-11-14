@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.DS_Store
+node_modules/
+.superpowers/
+.worktrees/
+coverage/
+supabase/.temp/
+supabase/.branches/
+tests/ai-evals/reports/
