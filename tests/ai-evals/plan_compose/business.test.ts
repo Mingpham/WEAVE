@@ -261,3 +261,25 @@ it('plan context rejects cross-project reloads against the original validation s
     ).ok,
   ).toBe(false);
 });
+
+it('FR-RES-01 rejects model ITEM quantities before deriving a write', () => {
+  const output = planOutput();
+  output.resources[0]!.quantity = 3;
+  expect(validate(planContext(), output)).toMatchObject({ ok: false, stage: 'business' });
+});
+it.each([null, 0, 3])('FR-RES-01 preserves model SUPPLY quantity %s', (quantity) => {
+  const output = planOutput();
+  output.resources[0]!.kind = 'SUPPLY';
+  output.resources[0]!.quantity = quantity;
+  expect(derive(planContext(), output).draft.resources[0]).toMatchObject({
+    kind: 'SUPPLY',
+    quantity,
+  });
+});
+it('FR-PLAN-03 restores locked ITEM before validating model quantity', () => {
+  const data = planContext();
+  data.draft.resources[0]!.locked = true;
+  const output = planOutput();
+  output.resources[0]!.quantity = 3;
+  expect(derive(data, output).draft.resources[0]).toEqual(data.draft.resources[0]);
+});

@@ -86,3 +86,7 @@ Post-review verification on the final source tree:
 The two Important findings are covered by failing-then-passing regressions; no second review was requested. Four implementation tasks are delivered. The fifth task's audit/review is done, but its real adapter remains blocked on DB-owned worker RPCs. G0/G1/G2 and production acceptance are not claimed.
 
 Remote verification: `31ad69ca8031e5b2792937217a346340079385cd` is present on `origin/ai/wp-0-foundation`; [post-review CI](https://github.com/lh6104/WEAVE/actions/runs/43568683478) completed successfully. Final fetch found no further commits beyond database `ac537fa`, fullstack `b18271d` and mobile `078f9f3`. Only the pre-existing untracked `AGENTS.md` remains outside Git.
+
+## Pre-merge resource quantity correction
+
+Against database `0a81896`, FR-RES-01 / §7.3 require ITEM quantity to be null. Added engine business validation `INVALID_RESOURCE_QUANTITY`, preserving model schema/prompt and locked-object restoration. Three regressions failed before the fix; 66 focused cases then passed. Full `pnpm check`: **244/244**, 21 files; format, engine types, AI Deno and diff checks passed. The [new offline evaluation](./plan-compose-quantity-eval.json) contains 36 passing plan-compose cases, zero live calls. No production dependency, SQL, prompt or model-output schema change.

@@ -204,3 +204,20 @@ it('draft gaps are deterministic under item permutation and reject invalid draft
     computeDraftGaps(draftInput(draft({ tasks: [draftTask({ area_key: 'missing' })] }))),
   ).toThrow('INVALID_DRAFT');
 });
+
+it.each([0, 3])('FR-RES-01 rejects ITEM quantity %d in manual drafts', (quantity) => {
+  expect(
+    validateDraft(draftInput(draft({ resources: [resource({ kind: 'ITEM', quantity })] }))),
+  ).toMatchObject({
+    ok: false,
+    issues: [{ code: 'INVALID_RESOURCE_QUANTITY', path: 'resources.tables.quantity' }],
+  });
+});
+it.each([null, 0, 3])('FR-RES-01 preserves valid SUPPLY quantity %s', (quantity) => {
+  expect(
+    validateDraft(draftInput(draft({ resources: [resource({ kind: 'SUPPLY', quantity })] }))),
+  ).toMatchObject({
+    ok: true,
+    draft: { resources: [{ kind: 'SUPPLY', quantity }] },
+  });
+});

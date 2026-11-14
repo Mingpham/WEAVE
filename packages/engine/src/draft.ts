@@ -12,6 +12,7 @@ export type DraftIssueCode =
   | 'DUPLICATE_ROLE'
   | 'MISSING_REFERENCE'
   | 'INVALID_RESOURCE_REQUIREMENT'
+  | 'INVALID_RESOURCE_QUANTITY'
   | 'DEPENDENCY_CYCLE'
   | 'INVALID_WINDOW';
 export type DraftIssue = Readonly<{ code: DraftIssueCode; path: string }>;
@@ -120,6 +121,10 @@ export function validateDraft(input: DraftValidationInput): DraftValidationResul
   const areas = new Set(draft.areas.map((a) => a.key));
   const resources = new Set(draft.resources.map((r) => r.key));
   const tasks = new Map(draft.tasks.map((t) => [t.key, t]));
+  for (const resource of draft.resources) {
+    if (resource.kind === 'ITEM' && resource.quantity !== null)
+      add('INVALID_RESOURCE_QUANTITY', `resources.${resource.key}.quantity`);
+  }
   for (const row of [...draft.tasks, ...draft.resources]) {
     if (row.area_key !== null && !areas.has(row.area_key))
       add('MISSING_REFERENCE', `${row.key}.area_key`);
