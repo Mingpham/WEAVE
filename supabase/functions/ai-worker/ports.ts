@@ -15,6 +15,7 @@ export type CommitInput = {
 export interface WorkerStore {
   receive(input: { limit: number; visibility_timeout_sec: number }): Promise<QueueMessage[]>;
   peekJob(input: { job_id: string }): Promise<AnalysisJob | null>;
+  /** Atomically terminalize exhausted jobs with manual fallback; never grant another inference attempt. */
   claim(input: QueueMessage): Promise<{ kind: 'CLAIMED'; job: AnalysisJob; lease: string; schema_id_failures: number } | { kind: 'BUSY' | 'TERMINAL' }>;
   reserveInference(input: { job_id: string; lease: string; attempt: number }): Promise<'ALLOWED' | 'AI_DISABLED' | 'BUDGET_EXCEEDED'>;
   loadContext(input: { job_id: string; lease: string }): Promise<JobContext>;
@@ -24,6 +25,7 @@ export interface WorkerStore {
   scheduleRetry(input: { job_id: string; lease: string; error_code: string; delay_ms: number; schema_id_failures: number }): Promise<void>;
   finishFailure(input: { job_id: string; lease: string; error_code: string; fallback_kind: ModuleName }): Promise<void>;
   ack(input: { message_id: string }): Promise<void>;
+  /** Fence old leases; attempts at the limit become DEAD with fallback, not another inference. */
   recoverExpired(input: { now: number; limit: number }): Promise<void>;
 }
 export interface ModuleHandler {

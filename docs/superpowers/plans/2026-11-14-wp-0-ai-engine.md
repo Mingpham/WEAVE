@@ -12,6 +12,8 @@
 
 **Trạng thái:** Kế hoạch đề xuất để review, chưa triển khai. Người dùng đã chốt phạm vi AI & Engine, OpenRouter và text/ảnh cho MVP; các chữ ký nội bộ dưới đây là đề xuất kỹ thuật, chưa phải hợp đồng được DB/API duyệt.
 
+**Cập nhật thực thi 2026-11-14:** Người dùng đã duyệt triển khai trực tiếp, commit sau từng task và kiểm tra nhánh team trước task tiếp theo. Task 1–5 và 7 đã thực thi; Task 6 có handler bảo vệ nhưng adapter/SQL integration còn chờ RPC. Xem [bằng chứng và quyết định thực thi](../../ai/wp-0-verification.md) cho kết quả, giới hạn và phần còn thiếu; nội dung dự kiến bên dưới được giữ làm kế hoạch gốc.
+
 ## Global Constraints
 
 - Specification ưu tiên hơn ADR về hành vi. Chỉ Android; UI và đầu ra AI bằng tiếng Anh. Video/audio thuộc mở rộng sau MVP.

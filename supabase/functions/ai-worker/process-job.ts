@@ -3,6 +3,7 @@ import { ModelError } from '../_shared/ai/openrouter.ts';
 import { validateOutput } from '../_shared/ai/validation.ts';
 import type { ModelResponse } from '../_shared/ai/types.ts';
 import { nextRetry, type RetryClass } from './retry.ts';
+import { POL } from '../../../packages/contracts/src/policy.ts';
 import type { QueueMessage, WorkerDeps, ProcessOutcome, ValidatedResult } from './ports.ts';
 
 export async function processJob(message: QueueMessage, deps: WorkerDeps): Promise<ProcessOutcome> {
@@ -19,14 +20,17 @@ export async function processJob(message: QueueMessage, deps: WorkerDeps): Promi
   if (claim.kind !== 'CLAIMED') return 'SKIPPED';
   const { job, lease } = claim;
   const identity = { job_id: job.id, lease };
-  let current = await store.loadContext(identity);
-  const prepared = handler.prepare(current);
-  if (prepared.request.module !== handler.module || prepared.context.module !== handler.module) throw new Error('INVALID_MODULE_HANDLER');
-  const budget = await store.reserveInference({ ...identity, attempt: job.attempts });
   const finish = async (code: string): Promise<ProcessOutcome> => {
     await store.finishFailure({ ...identity, error_code: code, fallback_kind: handler.module });
     await store.ack({ message_id: message.message_id }); return 'DEAD';
   };
+  // Crash recovery can deliver an exhausted job without passing through nextRetry.
+  // Use the claimed (fenced) attempt, never the non-atomic peek, to protect inference.
+  if (job.attempts > POL.JOB_MAX_ATTEMPTS) return finish('ATTEMPTS_EXHAUSTED');
+  let current = await store.loadContext(identity);
+  const prepared = handler.prepare(current);
+  if (prepared.request.module !== handler.module || prepared.context.module !== handler.module) throw new Error('INVALID_MODULE_HANDLER');
+  const budget = await store.reserveInference({ ...identity, attempt: job.attempts });
   if (budget !== 'ALLOWED') return finish(budget);
   const failed = async (code: string, kind: RetryClass, log: InferenceLog): Promise<ProcessOutcome> => {
     await store.appendInferenceLog(log);

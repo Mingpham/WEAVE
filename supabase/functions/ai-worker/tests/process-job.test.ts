@@ -3,6 +3,7 @@ import { processJob } from '../process-job.ts';
 import { productionRegistry } from '../registry.ts';
 import type { ModuleHandler, WorkerDeps } from '../ports.ts';
 import { ModelError } from '../../_shared/ai/openrouter.ts';
+import { POL } from '../../../../packages/contracts/src/policy.ts';
 import { InMemoryStore } from '../../../../tests/ai-evals/support/in-memory-store.ts';
 import { fakeModel, modelResponse } from '../../../../tests/ai-evals/support/fake-model.ts';
 
@@ -102,4 +103,26 @@ it('retains original alias identities when recomputing against a newer project v
   deps.model = fakeModel(async () => { store.contexts.get(id)!.state_version++; return modelResponse; });
   expect(await processJob(message, deps)).toBe('SUCCEEDED');
   expect(seen).toHaveLength(2); expect(seen[0]).toBe(aliases); expect(seen[1]).toBe(aliases);
+});
+it('INV-08 recovery after the final crashed attempt cannot spend budget or call the model again', async () => {
+  const { store, deps } = setup(); let calls = 0; let prepared = 0;
+  store.jobs.get(id)!.attempts = POL.JOB_MAX_ATTEMPTS - 1;
+  await store.claim(message); // Last allowed attempt crashed before durable completion.
+  store.now = 60001;
+  await store.recoverExpired({ now: store.now, limit: 1 });
+  expect(store.jobs.get(id)!.attempts).toBe(POL.JOB_MAX_ATTEMPTS);
+  deps.model = fakeModel(async () => { calls++; return modelResponse; });
+  deps.registry = { EVENT_SUMMARIZE: { ...fixtureHandler, prepare: context => { prepared++; return fixtureHandler.prepare(context); } } };
+  const budget = store.remainingBudget;
+  expect(await processJob(message, deps)).toBe('DEAD');
+  expect(calls).toBe(0); expect(prepared).toBe(0); expect(store.remainingBudget).toBe(budget);
+  expect(store.jobs.get(id)!.status).toBe('DEAD'); expect(store.fallbacks).toEqual(['ATTEMPTS_EXHAUSTED']);
+  expect(store.writes).toEqual([]); expect(store.logs).toEqual([]); expect(store.acks).toEqual([message.message_id]);
+});
+it('allows the last permitted attempt to complete normally', async () => {
+  const { store, deps } = setup(); let calls = 0;
+  store.jobs.get(id)!.attempts = POL.JOB_MAX_ATTEMPTS - 1;
+  deps.model = fakeModel(async () => { calls++; return modelResponse; });
+  expect(await processJob(message, deps)).toBe('SUCCEEDED'); expect(calls).toBe(1);
+  expect(store.jobs.get(id)!.attempts).toBe(POL.JOB_MAX_ATTEMPTS);
 });

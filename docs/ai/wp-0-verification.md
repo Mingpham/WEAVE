@@ -79,3 +79,34 @@ DB worker RPC signatures and complete engine input projections remain unprovided
 - [Machine-readable evidence](./live-smoke-2026-11-14.json) includes timestamps, commit/dirty state, tool versions, fixture hashes and request IDs. Exact reproduction commands are in [eval README](../../tests/ai-evals/README.md). Re-running spends additional calls; it is never part of unit CI.
 - Official [model catalog](https://openrouter.ai/anthropic/claude-haiku-5.5) was checked again and lists text/image inputs; actual request outcomes above provide the account-level smoke evidence.
 - Current status: `LOCAL_PASS`, `LIVE_SMOKE_PASS`, `INTEGRATION_PENDING`. Task 6 SQL integration and shared API/tooling reconciliation remain required before WP-0/G0 acceptance. No deployment or hosted database mutation occurred.
+
+## Final independent review and regression fix
+
+- Fresh reviewer inspected `caa79f7..de27891`, plan, spec, ledger decisions and offline checks. No critical/minor findings; one important defect: crash recovery could deliver a fourth attempt because only observed failures passed through the retry cap. Read-only reproduction confirmed an extra model call.
+- Pre-fix branch audit: fetched origin again; database `e4f5bd1`, fullstack `e85f07a` unchanged.
+- RED: `INV-08 recovery after the final crashed attempt cannot spend budget or call the model again` failed (`SUCCEEDED` instead of `DEAD`). The fix checks the fenced claimed attempt before snapshot preparation, budget reservation or inference; exhaustion follows the fenced terminal/fallback path. A boundary test confirms attempt three can still succeed. DB handoff now explicitly requires atomic exhaustion handling in claim/recovery.
+- GREEN: `pnpm test` — **103/103**, 14 files; `pnpm typecheck:ai`; `pnpm exec tsc --noEmit -p packages/engine/tsconfig.json`; `deno check --no-remote --node-modules-dir=manual --config supabase/functions/ai-worker/deno.json supabase/functions/ai-worker/index.ts tests/ai-evals/live-smoke.ts`; `git diff --check` — all passed. pnpm was the temporary local CLI documented in Task 1, not a global installation.
+- No second live run or second reviewer was used. Earlier two-request smoke evidence remains diagnostic only.
+- Reviewer did not judge PostgreSQL atomicity/real queue behavior, future business modules, unmerged fullstack integration, ongoing provider availability/business quality, or deployment/Android acceptance. These remain explicit scope limits; local checks establish none of them.
+- Branch and scratch verification logs are retained; no push/merge or deletion. Existing untracked `AGENTS.md` remains untouched.
+
+## Execution decisions and remaining costs
+
+| Decision made during execution | Why / remaining cost |
+|---|---|
+| Use `ai/wp-0-foundation` in the existing checkout | Matches §15.6 and preserves local env/untracked files; no concurrent writers allowed. |
+| Contribute minimal root test tooling | API scaffold was absent; owner reconciliation remains required. |
+| Commit explicit task paths after approval | Latest user instruction supersedes the plan's pre-approval no-commit notes; no push/merge authorized. |
+| Pin temporary pnpm 10 after pnpm 12 installer stalled | Enabled local checks without global changes; fullstack uses pnpm 12 and Vitest 4, requiring a shared lockfile/tooling decision. |
+| Add only Recovery/AI contracts and condition input | Complete internal engine projection was unavailable; domain snapshot work remains. |
+| Initially centralize `POL`, then adopt exact prerequisite enum/policy/parity files from `cd57f3b` | Avoid divergent constants; later fullstack Zod enum/export conventions still require reconciliation. |
+| Require atomic result plus inference-log commit; permit lost-lease audit only | Avoid a commit/log crash gap; DB adapter must implement the agreed semantics. |
+| Stop after three unrelated version conflicts with manual recovery | Avoid another model call for unrelated changes; sustained contention can require manual action. |
+| Inspect and record other branches without merging | Preserves lane ownership and authorization; shared files are not yet integration-ready. |
+| Keep Task 6 adapter/integration pending | Reviewed SQL signatures are absent; worker entrypoint remains deliberately unavailable. |
+| Keep full module rules, snapshots and R1–R5 in later WPs | Approved scope is foundation; production registry remains empty. |
+| Treat live smoke as transport evidence only | Provider availability and business accuracy require subsequent evaluation. |
+| Do not infer deploy/Android acceptance from Deno/unit checks | Supabase bundle and full-team G0 checks remain. |
+| Preserve branch and scratch logs | User requested branch commits and forbids deleting logs without approval; no integration or cleanup is implied. |
+
+No deferred minor review findings.

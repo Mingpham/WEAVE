@@ -50,6 +50,8 @@ Chưa gửi tài liệu này cho thành viên khác. Người dùng có thể d�
 
 `lease` là giá trị opaque do DB cấp, đề xuất phục vụ fencing; chưa được tự thêm cột/schema. DB cần thống nhất cách lưu lease và `schema_id_failures` vì schema hiện chưa mô tả chúng. ID/time/status lấy từ contracts canonical. Transport failure khác domain result; không bắt mọi exception rồi trả thành công.
 
+Giới hạn attempt áp dụng cả khi worker crash, không chỉ lỗi đã ghi nhận. RPC claim/recovery phải kiểm tra nguyên tử `POL.JOB_MAX_ATTEMPTS`: job đã hết lượt chuyển `DEAD` và fallback một lần, không tăng attempt hoặc cấp suất inference thứ tư. Core còn có guard trên attempt đã claim trước snapshot/budget/model để chặn adapter cũ hoặc sai; test cố ý mô phỏng adapter giao lại job quá giới hạn. `finishFailure` của guard phải có fencing như mọi lần kết thúc khác.
+
 `validated_result`/`derived_changes` phải là discriminated union theo job/module, không `Record<string, any>` hay danh sách SQL tùy ý. Mỗi module chỉ được ghi các thực thể theo §10.3–10.6; engine không cung cấp quyền tự approve task hoặc ghi payout. Union cụ thể phải chốt với phần schema canonical trước Task 6.
 
 Đối với write path có suy diễn: đọc V → tính engine → RPC với expected V. Lệch V thì đọc/tính lại tối đa 3 lần; lệch revision đối tượng làm kết quả AI stale. Không gọi lại model chỉ vì một thay đổi project không liên quan.
