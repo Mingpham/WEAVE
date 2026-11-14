@@ -8,12 +8,15 @@ import { ApiError } from './errors.ts';
 
 /** Thrown by an RPC adapter when `projects.state_version` no longer equals the expected V. */
 export class StateVersionMismatch extends Error {
-  constructor(
-    readonly expected: number,
-    readonly current: number,
-  ) {
+  // Plain fields (no parameter properties) so Node's built-in type stripping can run this file.
+  readonly expected: number;
+  readonly current: number;
+
+  constructor(expected: number, current: number) {
     super(`state_version mismatch: expected ${expected}, current ${current}`);
     this.name = 'StateVersionMismatch';
+    this.expected = expected;
+    this.current = current;
   }
 }
 

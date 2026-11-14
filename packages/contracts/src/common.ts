@@ -2,7 +2,7 @@
  * Shared primitives (spec §9.1: snake_case JSON, ISO-8601 UTC times, UUID ids).
  */
 import { z } from 'zod';
-import { LIMITS } from './policy.ts';
+import { LIMITS } from './limits.ts';
 
 export const Uuid = z.uuid();
 export type Uuid = z.infer<typeof Uuid>;

@@ -1,13 +1,17 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "isolatedModules": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": [
-    "packages/*/src/**/*.ts",
+    "packages/contracts/src/**/*.ts",
     "tools/*/src/**/*.ts",
     "supabase/functions/api/**/*.ts",
-    "tests/**/*.ts",
     "vitest.config.ts"
   ],
   "exclude": ["supabase/functions/api/index.ts", "node_modules", "**/node_modules"]

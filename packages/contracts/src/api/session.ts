@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import { Uuid } from '../common.ts';
 import { ProjectSummary } from '../entities.ts';
-import { MemberRole, MemberStatus } from '../enums.ts';
+import { MemberRole, MemberStatus } from '../enum-schemas.ts';
 import { endpoint } from './endpoint.ts';
 
 export const MeUser = z.strictObject({

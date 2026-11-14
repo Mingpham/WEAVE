@@ -36,7 +36,7 @@ Ownership per folder is in [`.github/CODEOWNERS`](.github/CODEOWNERS) (spec §15
 | Tool                         | Version                            | Notes                                |
 | ---------------------------- | ---------------------------------- | ------------------------------------ |
 | Node.js                      | 24                                 |                                      |
-| pnpm                         | 12.18 (pinned by `packageManager`) | `corepack enable pnpm`               |
+| pnpm                         | 10.28 (pinned by `packageManager`) | `corepack enable pnpm`               |
 | Docker Desktop               | running                            | needed by `supabase start`           |
 | Supabase CLI                 | 3.x                                | `brew install supabase/tap/supabase` |
 | Deno                         | 2.x                                | type-checks the Edge Functions       |
@@ -76,6 +76,7 @@ Function secrets (`supabase secrets set …`), never as `EXPO_PUBLIC_*`.
 | `pnpm typecheck` / `pnpm lint` / `pnpm format` | Types / ESLint / Prettier                                         |
 | `pnpm check:hardcode`                          | Fails if reference-scenario names appear in product code (INV-11) |
 | `pnpm api:check`                               | `deno check` of `supabase/functions/api`                          |
+| `pnpm api:serve`                               | Serve `api` on local Supabase (`supabase start` first)            |
 | `pnpm mock-api`                                | Mock API on `http://0.0.0.0:8787/functions/v1/api`                |
 
 ### Mock API

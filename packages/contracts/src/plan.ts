@@ -3,8 +3,8 @@
  */
 import { z } from 'zod';
 import { Uuid } from './common.ts';
-import { DependencyKind, InventoryState, ResourceKind } from './enums.ts';
-import { LIMITS } from './policy.ts';
+import { DependencyKind, InventoryState, ResourceKind } from './enum-schemas.ts';
+import { LIMITS } from './limits.ts';
 
 /** Stable key of a draft item; references inside the draft use keys, not database ids. */
 export const DraftKey = z

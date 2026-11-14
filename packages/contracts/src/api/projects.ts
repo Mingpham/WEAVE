@@ -2,7 +2,8 @@
 import { z } from 'zod';
 import { CurrencyCode, IsoDateTime, ProjectSettings, RoleTag, TimeZone } from '../common.ts';
 import { MemberSelf, ProjectView, Snapshot } from '../entities.ts';
-import { LIMITS, POL } from '../policy.ts';
+import { LIMITS } from '../limits.ts';
+import { POL } from '../policy.ts';
 import { endpoint } from './endpoint.ts';
 
 const HOUR_MS = 3_600_000;

@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   CreateProjectBody,
-  DB_ENUMS,
+  ENUMS,
   ENDPOINTS,
+  ProjectStatus,
+  SuggestionStatus,
+  TaskStatus,
   EventType,
   ERROR_HTTP_STATUS,
   ErrorCode,
@@ -21,15 +24,13 @@ import {
 
 const iso = (s: string) => new Date(s).toISOString();
 
-describe('enums (spec §7.2)', () => {
-  it('defines all 49 Postgres enums', () => {
-    expect(Object.keys(DB_ENUMS)).toHaveLength(49);
-  });
-
-  it('has no duplicate values inside an enum', () => {
-    for (const [name, e] of Object.entries(DB_ENUMS)) {
-      expect(new Set(e.options).size, name).toBe(e.options.length);
-    }
+describe('enum schemas (spec §7.2)', () => {
+  // Value parity with the spec itself is checked by tests/spec.test.ts (shared base).
+  it('builds a Zod schema with the same values for every shared ENUMS entry', () => {
+    expect(Object.keys(ENUMS)).toHaveLength(49);
+    expect(ProjectStatus.options).toEqual([...ENUMS.project_status]);
+    expect(TaskStatus.options).toEqual([...ENUMS.task_status]);
+    expect(SuggestionStatus.options).toEqual([...ENUMS.suggestion_status]);
   });
 });
 
