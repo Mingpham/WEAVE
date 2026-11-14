@@ -12,8 +12,8 @@ client IDs are supplied by the authentication integration; AT-02/03 are not
 claimed. PostgreSQL 17 is a local baseline choice, not an ADR version lock;
 align it with staging before the first migration acceptance run.
 
-No hosted project linking, deployment, bucket creation or cron installation is
-performed. Storage privacy and Realtime authorization still need migrations.
+Hosted project linking was subsequently authorized and completed (see below).
+No deployment, bucket creation or cron installation was performed. Storage privacy and Realtime authorization still need migrations.
 Seed execution is disabled: reference-event data must be created via API.
 Use a distinct project_id and free ports for each concurrent agent local stack.
 
@@ -116,11 +116,21 @@ Initialization is already complete: `supabase init` reports that config.toml
 exists. Do not use `--force` to replace the reviewed local configuration.
 The initial link attempt failed with `AccessTokenRequiredError`; account login
 must complete first. A publishable API key is not a CLI account access token.
-Interactive login is awaiting browser verification; remote linking is not yet
-verified. No remote migrations or configuration changes have been applied.
+Account login subsequently completed. Retrying the link command exited 0 and
+reported target kind `linked`, project ref `qjfiaynqszghzwpxshfe`, environment
+`unverified`. Local `supabase/.temp/project-ref` matches the requested project.
+This verifies the CLI link only; remote schema and acceptance checks have not
+been run. No remote migrations or configuration changes have been applied.
 Local CLI link metadata, env files and AGENTS.md are excluded through the
 shared `.git/info/exclude`; they must never be staged with `git add -f`.
 
 CODEX-B's catalog handoff has since been incorporated in commit `776fd9c`.
 Further security-test edits found in the current worktree are pre-existing and
 are deliberately excluded from this setup commit.
+
+
+Login/link completion validation: `supabase@3.1.0 link --project-ref
+qjfiaynqszghzwpxshfe` exited 0; expected project-ref metadata assertion passed;
+`git check-ignore` confirms AGENTS.md and local project-ref metadata are ignored.
+No credential or publishable key was added to the repository. Existing
+security-test edits remain outside this setup commit.
