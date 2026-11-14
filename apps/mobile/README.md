@@ -1,4 +1,4 @@
-﻿# WEAVE Android frontend
+# WEAVE Android frontend
 
 Native Expo SDK 57 / TypeScript / Expo Router / NativeWind 4.2.7 presentation for the 29 Mobile-owned screens. Product routing contains no fixture-backed preview. UI components accept typed props and server-acknowledged callbacks; the team data provider is still required to populate event screens.
 
@@ -19,7 +19,7 @@ For an installed compatible Android development client:
 pnpm run start --clear
 ```
 
-The Android development client requires Metro. Expo Go is not the target runtime. No APK was successfully produced in the last authorized native build; do not interpret a web bundle as Android acceptance.
+The Android development client requires Metro. Expo Go is not the target runtime. A development APK now builds successfully; see [DEBUG_ANDROID.md](DEBUG_ANDROID.md) for toolchain fixes, USB/Metro commands and current device evidence.
 
 Routes: `/` (Welcome), `/auth`, `/events`, `/join?code=...`, `/join/consent`, `/join/profile`, `/create-event`, and `/p/{projectId}/{screen}?item={entityId}`. Event destinations and role/pending-membership guards live in `src/features/navigation/routes.ts`. The organizer and participant tab bars share the native screen shell.
 
@@ -45,7 +45,7 @@ Metro rejects fixture imports in product bundles. The boundary checker asserts t
 
 ## Android build preparation
 
-The existing script supports these commands, but no new build was authorized or run during this UI completion task:
+The existing script supports these commands. The latest development build succeeded; preview/release have not been rebuilt:
 
 ```powershell
 ./scripts/build-android.ps1 -Mode development
@@ -55,9 +55,9 @@ The existing script supports these commands, but no new build was authorized or 
 
 `development` is a debug development client requiring Metro. Both `preview` and `release` embed the product JavaScript bundle and are intended to run without Metro. `preview` means internal APK distribution, not simulated business data. All modes use `com.weave.mobile`.
 
-Expected artifacts are `artifacts/weave-{mode}-arm64-v8a.apk` plus SHA256 files. Local non-development builds use an ignored signing key under `.cache/signing`; retain it for compatible updates. Defaults: SDK `D:/Android/Sdk`, JDK `D:/Android/Studio/jbr`, installed NDK `27.1.12297006`, arm64-v8a. Dependencies, native tools and shared lockfiles were not changed in this UI task.
+Expected artifacts are `artifacts/weave-{mode}-arm64-v8a.apk` plus SHA256 files. Local non-development builds use an ignored signing key under `.cache/signing`; retain it for compatible updates. Defaults: SDK `D:/Android/Sdk`, portable JDK 17 under `.cache/toolchains` (then `JAVA_HOME`), installed NDK `27.1.12297006`, arm64-v8a. The build fixes add SDK-matched expo-splash-screen in the Mobile manifest/lockfile and use portable JDK/Ninja tools in ignored cache. Shared workspace files are unchanged.
 
-The last native attempt failed at `:react-native-worklets:configureCMakeRelWithDebInfo[arm64-v8a]`. No APK or phone smoke-test pass exists. [BUILD_HANDOFF.md](BUILD_HANDOFF.md) preserves the exact historical error/log and final-attempt limit.
+The development build now succeeds using JDK 17, short CMake staging and portable Ninja 1.13.2. Release has not been rebuilt. [DEBUG_ANDROID.md](DEBUG_ANDROID.md) records current build/debug instructions; [BUILD_HANDOFF.md](BUILD_HANDOFF.md) preserves earlier failures.
 
 ## References
 

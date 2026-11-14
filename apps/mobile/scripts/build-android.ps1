@@ -3,11 +3,15 @@ param(
   [string]$Architecture = 'arm64-v8a',
   [int]$GradleHeapMb = 4096,
   [string]$AndroidSdk = 'D:/Android/Sdk',
-  [string]$JavaHome = 'D:/Android/Studio/jbr'
+  [string]$JavaHome = ''
 )
 $ErrorActionPreference = 'Stop'
 $mobileRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Set-Location -LiteralPath $mobileRoot
+if (-not $JavaHome) {
+  $localJdk = Get-ChildItem -LiteralPath (Join-Path $mobileRoot '.cache/toolchains') -Directory -Filter 'jdk-17*' -ErrorAction SilentlyContinue | Select-Object -First 1
+  $JavaHome = if ($localJdk) {$localJdk.FullName} elseif ($env:JAVA_HOME) {$env:JAVA_HOME} else {'D:/Android/Studio/jbr'}
+}
 $env:ANDROID_HOME = $AndroidSdk
 $env:JAVA_HOME = $JavaHome
 $env:GRADLE_USER_HOME = Join-Path $mobileRoot '.cache/gradle'
@@ -46,6 +50,17 @@ if ($Mode -ne 'development') {
 }
 & node node_modules/expo/bin/cli prebuild --platform android --no-install --no-clean
 if ($LASTEXITCODE -ne 0) {throw 'Expo prebuild failed.'}
+# Autolinking's cache does not track an app namespace changed by prebuild.
+$autolinkingFile = Join-Path $mobileRoot 'android/build/generated/autolinking/autolinking.json'
+if (Test-Path -LiteralPath $autolinkingFile) {
+  $appGradle = Get-Content -Raw -LiteralPath (Join-Path $mobileRoot 'android/app/build.gradle')
+  $namespace = [regex]::Match($appGradle, 'namespace\s+[\x22\x27]([^\x22\x27]+)').Groups[1].Value
+  $cachedPackage = (Get-Content -Raw -LiteralPath $autolinkingFile | ConvertFrom-Json).project.android.packageName
+  if ($namespace -and $cachedPackage -ne $namespace) {
+    Remove-Item -LiteralPath $autolinkingFile
+    Write-Output 'Invalidated autolinking metadata after Android namespace change.'
+  }
+}
 $variant = if ($Mode -eq 'development') {'Debug'} else {'Release'}
 Push-Location -LiteralPath (Join-Path $mobileRoot 'android')
 try {
@@ -53,8 +68,15 @@ try {
   [string[]]$tasks = if ($Mode -eq 'development') { @(':app:assembleDebug') } else { @(':app:createBundleReleaseJsAndAssets', '--rerun', ':app:assembleRelease') }
   # Environment mode is not an input of the React Native bundle task. Always rebundle
   # for standalone builds so a cached demo bundle cannot enter the live APK.
-  & ./gradlew.bat @tasks ('-PreactNativeArchitectures=' + $Architecture) ('-Dorg.gradle.jvmargs=-Xmx' + $GradleHeapMb + 'm -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8') --max-workers=2 --no-parallel --no-daemon --console=plain
-  if ($LASTEXITCODE -ne 0) {throw 'Gradle build failed.'}
+  # Windows PowerShell 5 turns redirected native stderr warnings into error records.
+  # Gradle's exit code is authoritative; keep warning output without aborting early.
+  $previousErrorAction = $ErrorActionPreference
+  try {
+    $ErrorActionPreference = 'Continue'
+    & ./gradlew.bat @tasks ('-PreactNativeArchitectures=' + $Architecture) ('-Dorg.gradle.jvmargs=-Xmx' + $GradleHeapMb + 'm -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8') --max-workers=2 --no-parallel --no-daemon --console=plain
+    $gradleExitCode = $LASTEXITCODE
+  } finally {$ErrorActionPreference = $previousErrorAction}
+  if ($gradleExitCode -ne 0) {throw ('Gradle build failed with exit code ' + $gradleExitCode + '.')}
 } finally {Pop-Location}
 $apkSource = Join-Path $mobileRoot ('android/app/build/outputs/apk/' + $variant.ToLower() + '/app-' + $variant.ToLower() + '.apk')
 $artifactDir = Join-Path $mobileRoot 'artifacts'
