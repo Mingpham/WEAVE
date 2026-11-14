@@ -3,3 +3,4 @@ export type { DomainEnumName, DomainEnumValue } from './enums.ts';
 export { POL } from './policy.ts';
 export type { PolicyName } from './policy.ts';
 export { CreateProjectRequest, CreateProjectResponse } from './create-project.ts';
+export { InviteCode, InviteActionRequest, ResolveInviteRequest, JoinInviteRequest, InviteActionResponse, ResolveInviteResponse, JoinInviteResponse } from './invite-join.ts';
