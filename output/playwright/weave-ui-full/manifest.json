@@ -1,0 +1,192 @@
+{
+  "capturedAt": "2026-11-14T09:13:16.429Z",
+  "count": 37,
+  "note": "Full native component content rendered in React Native Web at 390px width. Fixture data is visibly labelled. No live integration, Google sign-in, or Android device acceptance claim. Product auth and fixture guard are unchanged.",
+  "captures": [
+    {
+      "file": "SCR-01-Welcome.png",
+      "screen": "SCR-01",
+      "sha256": "5dff475d33c090186afa9a96c9912216980c1fb03784f3f84626b0e7a7fa4eba"
+    },
+    {
+      "file": "SCR-02-My-Events.png",
+      "screen": "SCR-02",
+      "sha256": "81720339260cedee3b9019852523402447997f147c3120e510ef4a856ea4fdaf"
+    },
+    {
+      "file": "SCR-03-Join-Code.png",
+      "screen": "SCR-03",
+      "sha256": "07771e58a61921582877292dbb74822accd5a4a61daabf2062a931c30a4f1279"
+    },
+    {
+      "file": "SCR-04-Consent.png",
+      "screen": "SCR-04",
+      "sha256": "436dd2c673c7cd7e536e5d99849f6c02da29ae56378a3504c31cdb0daaa17738"
+    },
+    {
+      "file": "SCR-05-Join-Profile.png",
+      "screen": "SCR-05",
+      "sha256": "b442ad01a9b05cc1ca505e0e6c683e7b30979ce6bbb37d9cbe6c2ea4e9fb3786"
+    },
+    {
+      "file": "SCR-06-Waiting.png",
+      "screen": "SCR-06",
+      "sha256": "d46609d3523bdaa730aee85ada46de394a6d1c68b2d85b0e4e072288c74eab79"
+    },
+    {
+      "file": "SCR-07-Create-Event.png",
+      "screen": "SCR-07",
+      "sha256": "737e9de08d2bf60636e4f49aace326d880135193e8bde8ec78c637a859638f2e"
+    },
+    {
+      "file": "SCR-08-Plan-Studio.png",
+      "screen": "SCR-08",
+      "sha256": "712dea05d3c80f647927c6efd9ef68c107cb265e8160f260ad02cb424f8cf0d0"
+    },
+    {
+      "file": "SCR-09-Draft-Item-Editor.png",
+      "screen": "SCR-09",
+      "sha256": "b1633a82b9ef0bbfa33c7c777579367f66488845da189094ac1cede6f0c7521f"
+    },
+    {
+      "file": "SCR-10-Plan-Review.png",
+      "screen": "SCR-10",
+      "sha256": "798397e721547f03e950758dc1471a3315d3cd519f011c7e1d4902088e88afc2"
+    },
+    {
+      "file": "SCR-11-Command-Center.png",
+      "screen": "SCR-11",
+      "sha256": "33711b6106bcccbed746350b6b102fe36948057c010bf5477b79b7f99f855351"
+    },
+    {
+      "file": "SCR-12-Task-Board.png",
+      "screen": "SCR-12",
+      "sha256": "3c2c3b2e9993d3cfc3940b34fd23c6e6613ff9eb2857ba1d6f98c0a880558fee"
+    },
+    {
+      "file": "SCR-13-Task-Detail.png",
+      "screen": "SCR-13",
+      "sha256": "187eeddd0a41e220e3b2fc9aae0a7bbf1c87edcf196cf3cdba3a5eabd9dec678"
+    },
+    {
+      "file": "SCR-14-Assign.png",
+      "screen": "SCR-14",
+      "sha256": "80b08563b5ff3321cdf732f30b619e2a256cc8a3ca2f32e7cafb4f47ed42e655"
+    },
+    {
+      "file": "SCR-15-Resources-and-Areas.png",
+      "screen": "SCR-15",
+      "sha256": "11dbc1cc53681ce9dfe6ef75674b661b5a0787d1de83091b19f50233ce6e7db5"
+    },
+    {
+      "file": "SCR-16-People.png",
+      "screen": "SCR-16",
+      "sha256": "a1e982a8da238f097099daa84c2f840ff27d7a8d3efc4e0d817ddf13a166d2db"
+    },
+    {
+      "file": "SCR-17-Timeline.png",
+      "screen": "SCR-17",
+      "sha256": "bb1146f18bf2d9d0ef8ab47332aa8939c209094ab1ed8060d3b67cef1acef446"
+    },
+    {
+      "file": "SCR-18-Event-Settings.png",
+      "screen": "SCR-18",
+      "sha256": "b3bbb768a05835a2dbb40f259403740052198a6337cfaadfa1234c26be3ca520"
+    },
+    {
+      "file": "SCR-19-Close-Report.png",
+      "screen": "SCR-19",
+      "sha256": "b21c0c12f713a38316d57c4bbca24eea37394a3d8427401615b3577519975ff4"
+    },
+    {
+      "file": "SCR-20-Settlement.png",
+      "screen": "SCR-20",
+      "sha256": "6e31ab3ffd32df36926234e1b466944a62e86c8d3fe4b539cca261705978680e"
+    },
+    {
+      "file": "SCR-21-Submission-Review.png",
+      "screen": "SCR-21",
+      "sha256": "26b6103e37394736804adc5c65b63e7a7e430e1c4058f20f9535fc40381cc5ab"
+    },
+    {
+      "file": "SCR-22-Incident.png",
+      "screen": "SCR-22",
+      "sha256": "f43b34115d9af01ea3bc24a46b3b7a3553d164348eb987f6f3ddd98d55dcbad1"
+    },
+    {
+      "file": "SCR-23-Manual-Decision.png",
+      "screen": "SCR-23",
+      "sha256": "9160d53fb23f30386ba26cc629d5a2ec91901e27e88b85c04a0e4e9b35263251"
+    },
+    {
+      "file": "SCR-24-New-Incident.png",
+      "screen": "SCR-24",
+      "sha256": "3ca7c0cedf5263da2ea49e049968235ee129fb093176f27a66f03491f49f482a"
+    },
+    {
+      "file": "SCR-25-Participant-Home.png",
+      "screen": "SCR-25",
+      "sha256": "10edc080e27cdf3daa4f14a5266812765e8c638c11a47c62e079c3ba4ec2990f"
+    },
+    {
+      "file": "SCR-26-Inbox.png",
+      "screen": "SCR-26",
+      "sha256": "ce9bc86c156869c7743de79b0f5dd261ee350b0360af3e7ba0f6ad6dfcf30c02"
+    },
+    {
+      "file": "SCR-27-Me.png",
+      "screen": "SCR-27",
+      "sha256": "69cd4d7e8834ea4e3690db6b73653472b7420476125e4291a2ca7808d68df45a"
+    },
+    {
+      "file": "SCR-28-Composer.png",
+      "screen": "SCR-28",
+      "sha256": "a43c311652ea0cee6aac180b52d5dc0e3b7bc19b3dec859aed122d5e7b0cf4b7"
+    },
+    {
+      "file": "SCR-29-Report-a-Problem.png",
+      "screen": "SCR-29",
+      "sha256": "6ae4a37e85a03209301fd855d110036f385ff37925a175d7b9ac5666b0f60f3f"
+    },
+    {
+      "file": "SCR-30-Answer-Probe.png",
+      "screen": "SCR-30",
+      "sha256": "1ed826b38d1461a06da3029acbddc96f3a2d2dd95eac084245e16277c8253d95"
+    },
+    {
+      "file": "SCR-31-Resource-Report.png",
+      "screen": "SCR-31",
+      "sha256": "226a4612eb2caf3fab8c6e867ed7ec97ed4801fecb7c5feee59a04effd751316"
+    },
+    {
+      "file": "SCR-32-Offer.png",
+      "screen": "SCR-32",
+      "sha256": "c0d6632dba6a7be6aa41aab6b5a05cd28a07995e157ad35cec41bb42f899c62e"
+    },
+    {
+      "file": "SCR-33-Evidence-Detail.png",
+      "screen": "SCR-33",
+      "sha256": "5acbfd4b7c285072363511de2f2150db64b31530d49d6617f4b408b5e209fe32"
+    },
+    {
+      "file": "SCR-34-Sign-In.png",
+      "screen": "SCR-34",
+      "sha256": "b911744af3322c9e13d20383679f0bfcde8d4d81e851ea016d075a2fdc8c58fe"
+    },
+    {
+      "file": "SCR-35-Task-Editor.png",
+      "screen": "SCR-35",
+      "sha256": "5ae254d2e1c5b1049b502a5fc10fc33b2dd3947fb90524a18ff59d7a2aadc220"
+    },
+    {
+      "file": "SCR-36-Ask-Probe.png",
+      "screen": "SCR-36",
+      "sha256": "a5f36aa0409617026ede64442068d2633c8cddb5d8ff513a27cc6a44b9afc51b"
+    },
+    {
+      "file": "SCR-37-Direct-Answer.png",
+      "screen": "SCR-37",
+      "sha256": "9979a403ed73a3b9a1d03d36b76c2bc439c155f35f614cc5ba857e5142049da7"
+    }
+  ]
+}

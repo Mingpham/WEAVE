@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "allowImportingTsExtensions": true,
+    "typeRoots": ["./node_modules/@types"],
     "noUncheckedIndexedAccess": true,
     "paths": {
       "zod": ["./node_modules/zod"],
