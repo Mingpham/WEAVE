@@ -210,3 +210,22 @@ A: collect once and run full regression on final integration SHA. No migration
 changes by B, hosted apply, full FR/AT/gate or Supabase Auth acceptance. Draft
 JSON validation, version/transition semantics and compose/publish remain future
 real contract/RPC tests. No further decision needed for this storage slice.
+
+## WP-0 invite storage — runnable-path checkpoint
+
+Implementation `fc0f0a4`; B test commit is the commit adding this entry.
+FR-MEM-01 storage groundwork, INV-07/DB-11. Only invite SQL/HTTP tests and this
+handoff changed by B; A owns migration/RPC/database collection.
+
+Targeted commands: `python3 tests/security/test_project_invites.py -v` (5/5),
+and `python3 tests/security/test_foundation_postgrest.py FoundationPostgrestTests.test_INV07_project_invites_http_owner_scope_and_revocation FoundationPostgrestTests.test_INV07_project_invites_http_direct_write_denial -v` (2/2).
+Actual runs used isolated PG17/PostgREST16.5 with fixture auth in a temporary tree;
+committed migration bytes were verified identical afterward. No B full-suite run.
+Code alphabet/partial uniqueness, expiry-not-releasing-code, disable/reuse,
+creator composite FK/historical refs, owner-only reads/revocation/deletion and
+DML denial passed. Focused migration review found no actionable defect.
+
+DB invite storage is validated; no app operation is yet proven runnable.
+A next: collect once and complete the guarded project/invite/join RPC contract
+for API connection, prioritizing a real Join path. No invented public signatures,
+resolve/join/TTL/rate-limit/FR/AT/G0 or full Supabase Auth completion claim.

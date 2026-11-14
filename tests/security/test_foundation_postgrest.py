@@ -72,6 +72,10 @@ class FoundationPostgrestTests(unittest.TestCase):
         result = cls.backend.sql(plan.read_text())
         if result.returncode:
             raise RuntimeError('Plan storage migration bootstrap failed')
+        invites = foundation.ROOT / 'supabase/migrations/20261114110000_project_invites.sql'
+        result = cls.backend.sql(invites.read_text())
+        if result.returncode:
+            raise RuntimeError('Project invites migration bootstrap failed')
         r = cls.backend.docker('network', 'disconnect', 'none', cls.backend.container)
         if r.returncode:
             raise RuntimeError(r.stderr)
@@ -376,6 +380,44 @@ class FoundationPostgrestTests(unittest.TestCase):
             self.assertEqual(f.ok('SELECT count(*) FROM public.'+table+';'),'1')
         self.assertEqual(f.ok("SELECT text FROM public.plan_messages WHERE id='%s';"%message),'Immutable fixture')
         self.assertEqual(f.ok("SELECT revision FROM public.plan_drafts WHERE id='%s';"%draft),'1')
+
+
+    def test_INV07_project_invites_http_owner_scope_and_revocation(self):
+        """FR-MEM-01 groundwork / INV-07: raw invite codes are owner-only rows."""
+        f=self.fixture
+        ids=[str(uuid.uuid4()),str(uuid.uuid4())]
+        for project,code in [(0,'ABCD23'),(1,'EFGH45')]:
+            f.ok("INSERT INTO public.project_invites(id,project_id,code,expires_at,created_by) VALUES ('%s','%s','%s',now()+interval '1 hour','%s');"%(ids[project],f.projects[project],code,f.members[project]))
+        for actor,expected in [(0,[ids[0]]),(1,[ids[1]]),(2,[]),(3,[]),(4,[]),(5,[]),(6,[])]:
+            self.rows('project_invites',actor,expected)
+        self.rows('project_invites',0,[],'&project_id=eq.'+f.projects[1])
+        status,rows=self.http('GET','/project_invites?select=code',0)
+        self.assertEqual(status,200);self.assertEqual(rows,[{'code':'ABCD23'}])
+        token=self.token(0)
+        status,rows=self.http('GET','/project_invites?select=id',token=token)
+        self.assertEqual(status,200);self.assertEqual([row['id'] for row in rows],[ids[0]])
+        f.ok("UPDATE public.members SET role='PARTICIPANT',status='REMOVED' WHERE id='%s';"%f.members[0])
+        status,rows=self.http('GET','/project_invites?select=code',token=token)
+        self.assertEqual(status,200);self.assertEqual(rows,[])
+        f.ok("UPDATE public.members SET role='OWNER',status='APPROVED' WHERE id='%s';"%f.members[0])
+        self.rows('project_invites',0,[ids[0]])
+        f.ok("UPDATE public.projects SET deleted_at=now() WHERE id='%s';"%f.projects[0])
+        self.rows('project_invites',0,[]);self.rows('project_invites',1,[ids[1]])
+
+    def test_INV07_project_invites_http_direct_write_denial(self):
+        """INV-07: owner JWT cannot rotate/create/remove invites via raw tables."""
+        f=self.fixture
+        identity=str(uuid.uuid4())
+        f.ok("INSERT INTO public.project_invites(id,project_id,code,expires_at) VALUES ('%s','%s','ABCD23',now()+interval '1 hour');"%(identity,f.projects[0]))
+        self.rows('project_invites',0,[identity])
+        payload={'project_id':f.projects[0],'code':'EFGH45','expires_at':'2030-01-01T00:00Z'}
+        for method,path,body in [('POST','/project_invites',payload),('PATCH','/project_invites?id=eq.'+identity,{'code':'EFGH45'}),('DELETE','/project_invites?id=eq.'+identity,None)]:
+            status,error=self.http(method,path,0,body)
+            self.assertEqual(status,403);self.assertEqual(error['code'],'42501')
+        status,_=self.http('GET','/project_invites?select=code')
+        self.assertEqual(status,401)
+        self.assertEqual(f.ok('SELECT count(*) FROM public.project_invites;'),'1')
+        self.assertEqual(f.ok("SELECT code FROM public.project_invites WHERE id='%s';"%identity),'ABCD23')
 
 
 if __name__ == '__main__':
