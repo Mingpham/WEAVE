@@ -42,3 +42,13 @@ An earlier Gradle attempt exhausted its 2 GiB JVM heap. The script now uses 4 Gi
 The current `preview` build is the final authorized attempt. If it fails, retain its error and log, hand off, and stop; do not start another environment-fix sequence. Gradle daemon logs are under `.cache/gradle/daemon/9.3.1/daemon-*.out.log`.
 
 ADB previously recognized the connected `23122PCD1G` phone as `arm64-v8a`. On success, install the standalone preview and perform only the agreed short demo/camera/force-stop/reopen smoke pass. Metro has been stopped.
+
+## Final attempt result — stopped as requested
+
+The final attempt failed after 3m 41s at `:react-native-worklets:configureCMakeRelWithDebInfo[arm64-v8a]`. Gradle reported: `WARNING: A restricted method in java.lang.System has been called`. The deeper cause has not been investigated; no further environment changes or builds were attempted.
+
+Command from `D:/Android/WEAVE/apps/mobile`: `./scripts/build-android.ps1 -Mode preview`.
+
+Log: `.cache/gradle/daemon/9.3.1/daemon-28992.out.log`. Generated report: `android/build/reports/problems/problems-report.html`.
+
+No APK was produced. Installation, demo navigation, camera, and force-stop/reopen on the connected phone were **not run**. Existing source checks remain as recorded above; they are not a native runtime pass. NDK remains installed and verified. Await the user's next decision.
