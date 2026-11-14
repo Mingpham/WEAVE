@@ -37,7 +37,7 @@ import {
   TaskOrigin,
   TaskRisk,
   TaskStatus,
-} from './enums.ts';
+} from './enum-schemas.ts';
 
 // ---------- Project ----------
 

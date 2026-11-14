@@ -5,6 +5,8 @@ skills-lock.json
 .superpowers
 .worktrees
 AGENTS.md
+# Preserve the DB-owned canonical tuple file byte-for-byte across lanes.
+packages/contracts/src/enums.ts
 docs
 WEAVE_4_0_Stack_Lock_ADR.md
 supabase/migrations

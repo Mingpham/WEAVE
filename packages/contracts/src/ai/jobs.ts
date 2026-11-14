@@ -1,5 +1,5 @@
 import { z, uuid, utcDateTime } from '../primitives.ts';
-import { JobType as CanonicalJobType, JobStatus } from '../enums.ts';
+import { JobType as CanonicalJobType, JobStatus } from '../enum-schemas.ts';
 
 export const JobTypeSchema = CanonicalJobType;
 export const JobStatusSchema = JobStatus;
@@ -18,4 +18,4 @@ export const AnalysisJobSchema = z.strictObject({
   finished_at: utcDateTime.nullable(),
 });
 export type AnalysisJob = z.infer<typeof AnalysisJobSchema>;
-export type { JobType } from '../enums.ts';
+export type { JobType } from '../enum-schemas.ts';

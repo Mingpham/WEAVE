@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Uuid } from './common.ts';
-import { IncidentType } from './enums.ts';
+import { IncidentType } from './enum-schemas.ts';
 export { z };
 export const uuid = Uuid;
 export const utcDateTime = z.iso.datetime();

@@ -1,6 +1,6 @@
 import { z, uuid, utcDateTime, alias } from './primitives.ts';
 import { IsoDateTime } from './common.ts';
-import { ConditionResult } from './enums.ts';
+import { ConditionResult } from './enum-schemas.ts';
 
 function actionSchema(
   ids: {

@@ -10,7 +10,7 @@ import {
   Uuid,
 } from '../common.ts';
 import { Invite, MemberSelf } from '../entities.ts';
-import { MemberPresence, MemberStatus } from '../enums.ts';
+import { MemberPresence, MemberStatus } from '../enum-schemas.ts';
 import { ExpectedVersion, endpoint } from './endpoint.ts';
 
 export const InviteActionBody = z.strictObject({ action: z.enum(['CREATE', 'DISABLE']) });

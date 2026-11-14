@@ -6,7 +6,7 @@ AI worker foundations, and readonly inputs for the next engine work package.
 
 ## Local checks
 
-Use Node 24 or newer, pnpm 12.18.0 (pinned in `package.json`), and Deno 2.x.
+Use Node 24 or newer, pnpm 10.28.2 (pinned in `package.json`), and Deno 2.x.
 
 ```sh
 pnpm install --frozen-lockfile
