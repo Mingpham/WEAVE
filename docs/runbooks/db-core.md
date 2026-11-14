@@ -158,9 +158,9 @@ CODEX-B handoff: the executed regression harness is available locally at
 python3 /tmp/weave-domain-enums-test.py /path/to/WEAVE
 ```
 
-Integrate this coverage into the owned test suite before a migration PR is
-submitted. The harness is not tracked in this commit to avoid changing CODEX-B's
-owned tests. Existing security-test edits were preserved. SQL review found no
+CODEX-B has now integrated this coverage as
+`tests/security/test_domain_enums.py` in commit `7237137`. The six enum checks
+are part of the tracked supporting suite. Existing security-test edits were preserved. SQL review found no
 correctness issues. Full Supabase CLI reset and hosted acceptance remain unrun.
 
 Next slice: projects/members/areas foundation, project-scoped foreign keys and
@@ -168,3 +168,43 @@ membership helpers with RLS, paired with CODEX-B's positive/negative isolation
 fixtures in the same final PR. Resolve pending-member read projection and the
 removed-author access spec gaps in the handoff before exposing reads. Do not
 implement business inference in PL/pgSQL (D-17).
+
+
+## Consolidated supporting checkpoint
+
+CODEX-B completed its current supporting package in `7237137` (enum migration
+regressions), following `117a935` (catalog audit) and `88ce73e` (local-auth tooling).
+Independent verification after collection:
+
+```sh
+python3 -m unittest discover -s tests/security -p 'test_*.py' -v
+```
+
+Actual result: 25 executed, 25 passed (18 catalog checks, six enum checks, one
+HTTP redirect safety check). These do not include the three standalone Supabase
+auth smoke cases, any RPC behavior or direct PostgREST application RLS matrix.
+No AT or gate is signed. No hosted migration was applied.
+
+### Next DB slice / CODEX-B fixture contract
+
+Implement projects, members and areas from §7.3 together, including circular
+member-area and reviewer references using composite project-scoped FKs. Use
+§7.1 UUID/timestamptz defaults, native canonical enums and row version defaults.
+Normalize nickname/area names; enforce uniqueness by project and active
+membership status as specified. Do not introduce hardcoded scenario fixtures.
+
+Membership policy helpers must avoid RLS recursion and pin their search path;
+check the session UID, approved membership and project soft deletion. Reads:
+projects and areas require approved membership; approved member rows are visible
+to approved members; other member rows are owner/self only on live projects.
+Pending membership must not expose project brief/settings via direct SELECT.
+No application INSERT/UPDATE/DELETE policies. Creation/membership mutations and
+the narrowly authorized pending-project-title read remain later RPC work.
+
+CODEX-B test handoff for that slice: positive owner/member reads; unrelated and
+cross-project denial; pending self membership versus hidden projects/areas;
+removed and soft-deleted project denial; nickname/area normalization uniqueness;
+cross-project current_area_id and decided_by FK rejection; direct write denial;
+no policy recursion. Pair these tests with the table migration in the same final
+PR. The existing 33-table catalog audit is expected to fail until full WP-0 schema
+exists and must not be weakened merely to pass an incremental slice.
