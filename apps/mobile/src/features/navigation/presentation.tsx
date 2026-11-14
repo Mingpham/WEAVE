@@ -2,8 +2,9 @@ import { createContext, createElement, useContext, type ComponentProps, type Com
 import type { ScreenState } from '@/components/screen';
 import { MyEvents, Welcome } from '../events/event-screens';
 import { CommandCenter, ParticipantHome } from '../events/dashboard-screens';
-import { SignIn, JoinCode, JoinConsent, JoinProfile, Waiting } from '../onboarding/join-screens';
+import { SignIn, JoinConsent, JoinProfile, Waiting } from '../onboarding/join-screens';
 import { CreateEvent } from '../onboarding/event-form';
+import {JoinEntry} from './join-entry';
 import { People } from '../onboarding/people-screen';
 import { EventSettings } from '../onboarding/settings-screen';
 import { Me } from '../onboarding/me-screen';
@@ -24,7 +25,7 @@ import { Offer } from '../tasks/offer-screen';
 import type { EventAccess, MobileRoute } from './routes';
 
 export const mobileViews = {
-  welcome: Welcome, events: MyEvents, auth: SignIn, 'join-code': JoinCode, 'join-consent': JoinConsent,
+  welcome: Welcome, events: MyEvents, auth: SignIn, 'join-code': JoinEntry, 'join-consent': JoinConsent,
   'join-profile': JoinProfile, waiting: Waiting, 'create-event': CreateEvent, people: People, settings: EventSettings, me: Me,
   command: CommandCenter, home: ParticipantHome, plan: PlanStudio, 'draft-item': DraftItemEditor, 'plan-review': PlanReview,
   resources: ResourcesAreas, 'resource-report': ResourceReport, tasks: TaskBoard, task: TaskDetail, 'task-editor': TaskEditor,

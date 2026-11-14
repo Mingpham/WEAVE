@@ -89,6 +89,7 @@ export const en = {
   offer: 'Your invitation', recoveryOffer: 'Recovery offer', offerTitle: 'A small step.\nA shared recovery.',
   accept: 'Accept', due: 'Due', stipend: 'Recorded allowance', offerConsent: 'You can accept or decline. The organizer will be notified after your response is saved.',
   errorCodes: {
+    SERVICE_UNAVAILABLE: 'The event service is not connected. No changes have been sent.', AUTH_UNAVAILABLE: 'Sign-in is unavailable. Please check the sign-in service and try again.', AUTH_CANCELLED: 'Sign-in was cancelled. You can try again.',
     UNAUTHENTICATED: 'Your session has expired. Sign in again.', FORBIDDEN: 'You do not have permission for this action.',
     NOT_FOUND: 'This item is no longer available.', VERSION_CONFLICT: 'This item changed. Refresh before trying again.',
     INVALID_TRANSITION: 'This action is no longer available. Refresh to see the latest state.',

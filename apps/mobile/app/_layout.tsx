@@ -10,14 +10,15 @@ import { Screen } from '@/components/screen';
 import { Copy } from '@/components/ui';
 import { en } from '@/strings/en';
 import { colors } from '@/theme';
+import {LiveMobileProvider} from '@/lib/mobile-provider';
 
 export default function Layout() {
   const [loaded, error] = useFonts({DMSans: DMSans_400Regular, DMSansBold: DMSans_700Bold, Manrope: Manrope_800ExtraBold});
-  return <SafeAreaProvider><StatusBar style="dark" />{!loaded && !error ? <Screen><Copy>{en.loading}</Copy></Screen> :
+  return <SafeAreaProvider><LiveMobileProvider><StatusBar style="dark" />{!loaded && !error ? <Screen><Copy>{en.loading}</Copy></Screen> :
     <Stack screenOptions={{headerStyle: {backgroundColor: colors.canvas}, headerTintColor: colors.forest, headerShadowVisible: false,
       headerTitleStyle: {fontFamily: 'Manrope'}, contentStyle: {backgroundColor: colors.canvas}, title: en.brand}}>
       <Stack.Screen name="index" options={{headerShown: false}} />
       <Stack.Screen name="events" options={{title: en.events}} />
       <Stack.Screen name="connection" options={{title: en.brand}} />
-    </Stack>}</SafeAreaProvider>;
+    </Stack>}</LiveMobileProvider></SafeAreaProvider>;
 }

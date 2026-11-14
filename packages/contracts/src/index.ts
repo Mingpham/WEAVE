@@ -15,6 +15,8 @@ export * from './api/session.ts';
 export * from './api/projects.ts';
 export * from './api/membership.ts';
 export * from './api/registry.ts';
+export * from './api/work.ts';
+export * from './api/planning.ts';
 export * from './ai/index.ts';
 export { IncidentTypeSchema } from './primitives.ts';
 export { CreateProjectRequest, CreateProjectResponse } from './create-project.ts';

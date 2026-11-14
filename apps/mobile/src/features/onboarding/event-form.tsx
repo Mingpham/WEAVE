@@ -48,14 +48,14 @@ export function EventFields({ value, onChange, disabled, timesEditable = true, p
       <FormField {...common} label={t.attendees} value={value.attendees} maxLength={10} keyboardType="number-pad" error={errors.attendees} onChangeText={text => change('attendees', text)} />
       <FormField {...common} label={t.currency} value={value.currency} maxLength={3} autoCapitalize="characters" hint={f.currencyHint} error={errors.currency} onChangeText={text => change('currency', text.toUpperCase())} /></Card> : null}</>;
 }
-export function CreateEvent({ initialValue, maxMembers, canCreate, onCreate, offline, demo }: {
-  initialValue?: EventForm; maxMembers: number; canCreate: boolean; onCreate?: (value: EventForm) => Promise<void>; offline?: boolean; demo?: boolean;
+export function CreateEvent({ initialValue, maxMembers, canCreate, onCreate, onSignIn, offline, demo }: {
+  initialValue?: EventForm; maxMembers: number; canCreate: boolean; onCreate?: (value: EventForm) => Promise<void>; onSignIn?: () => void; offline?: boolean; demo?: boolean;
 }) {
   const [value, setValue] = useState(() => initialValue ?? createEventForm());
   const [attempted, setAttempted] = useState(false);
   const action = useAcknowledgedAction();
   return <><PageTitle title={t.createTitle} subtitle={t.createCopy} /><EventFields value={value} onChange={setValue} disabled={offline || action.pending || action.acknowledged} showErrors={attempted} maxMembers={maxMembers} />
-    {!canCreate ? <Notice>{t.createSignIn}</Notice> : null}{!onCreate ? <Copy small>{t.unavailable}</Copy> : null}
+    {!canCreate ? <><Notice>{t.createSignIn}</Notice>{onSignIn && <Button label={t.google} onPress={onSignIn} disabled={offline || action.pending} />}</> : null}{!onCreate ? <Copy small>{t.unavailable}</Copy> : null}
     {attempted && !validEvent(value, maxMembers) ? <Notice danger>{f.fixFields}</Notice> : null}<Feedback action={action} demo={demo} />
     <Button label={t.create} pending={action.pending} disabled={!canCreate || !onCreate || offline || action.acknowledged} onPress={() => {
       setAttempted(true); if (validEvent(value, maxMembers) && onCreate) void action.run(() => onCreate(value));

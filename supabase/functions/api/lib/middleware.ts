@@ -66,6 +66,28 @@ export const idempotency: MiddlewareHandler<Env> = async (c, next) => {
     });
   }
   const key = parsed.data;
+  // create_project owns the transaction and persists its response atomically.
+  // A second outer idempotency insert would use a different hash/response shape.
+  const relativePath = c.req.path.slice(`/${c.get('deps').functionName}/v1`.length);
+  const atomic =
+    (c.req.method === 'POST' &&
+      (/^\/projects$/.test(relativePath) ||
+        /^\/projects\/[^/]+\/(invites|leave|tasks|offers|plan\/publish|plan\/compose)$/.test(
+          relativePath,
+        ) ||
+        /^\/invites\/join$/.test(relativePath) ||
+        /^\/members\/[^/]+\/(decision|remove)$/.test(relativePath) ||
+        /^\/assignments\/[^/]+\/(respond|release)$/.test(relativePath) ||
+        /^\/tasks\/[^/]+\/(start|status)$/.test(relativePath))) ||
+    (c.req.method === 'PATCH' &&
+      (/^\/projects\/[^/]+\/plan$/.test(relativePath) || /^\/members\/[^/]+$/.test(relativePath)));
+  // Fixture-backed routes retain their own outer replay store. Only wired real
+  // repositories delegate idempotency to the database transaction.
+  if (
+    atomic &&
+    (c.get('deps').supabaseConfig || (relativePath === '/projects' && c.get('deps').projects))
+  )
+    return next();
   const user = c.get('user');
   const { idempotency: store } = c.get('deps');
   const operation = `${c.req.method} ${routeTemplate(c.req.path)}`;

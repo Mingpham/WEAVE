@@ -3,6 +3,7 @@
  * environment only (INV-12, SEC-01) and wires the Supabase adapters into the pure app.
  */
 import { supabaseAuth, supabaseIdempotency, supabaseMe } from './adapters/supabase.ts';
+import { supabaseProjects } from './adapters/projects.ts';
 import type { SupabaseConfig } from './adapters/supabase.ts';
 import { createApp } from './app.ts';
 import type { Logger } from './ports.ts';
@@ -25,9 +26,11 @@ const logger: Logger = {
 };
 
 const app = createApp({
+  supabaseConfig: cfg,
   auth: supabaseAuth(cfg),
   idempotency: supabaseIdempotency(cfg),
   me: supabaseMe(cfg),
+  projects: supabaseProjects(cfg),
   logger,
   now: () => new Date(),
   functionName: 'api',

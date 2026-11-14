@@ -6,5 +6,5 @@ export default function WelcomeRoute() {
   const presentation = useMobilePresentation();
   if (presentation?.session === 'signed-in') return <Redirect href="/events" />;
   return <Screen topInset state={presentation?.session === 'loading' ? {phase: 'loading', refresh: () => {}} : undefined}>
-    <Welcome onJoin={() => router.push('/join')} onOrganize={() => router.push('/auth')} /></Screen>;
+    <Welcome onJoin={() => router.push(presentation?.session === 'signed-in' ? '/join' : '/auth?next=join')} onOrganize={() => router.push('/auth')} /></Screen>;
 }

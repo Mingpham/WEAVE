@@ -2,7 +2,7 @@
 
 Native Expo SDK 57 / TypeScript / Expo Router / NativeWind 4.2.7 presentation for the 29 Mobile-owned screens. Product routing contains no fixture-backed preview. UI components accept typed props and server-acknowledged callbacks; the team data provider is still required to populate event screens.
 
-Branch: `mob/wp-0-mobile-foundation`. Ownership remains unchanged: Mingpham supplies contracts, `src/lib`, auth/data/upload/realtime hooks and SCR-17/19/20/26. Missing services show an unavailable state, never simulated success. See [FRONTEND_STATUS.md](FRONTEND_STATUS.md) for the screen/interface inventory and [MOBILE_UI_TASKS.md](MOBILE_UI_TASKS.md) for this UI delivery.
+Branch: `fix-main`. Live integration progress and remaining gaps are tracked in [live-functional-status.md](../../docs/integration/live-functional-status.md). Ownership remains unchanged: Mingpham supplies contracts, `src/lib`, auth/data/upload/realtime hooks and SCR-17/19/20/26. Missing services show an unavailable state, never simulated success. See [FRONTEND_STATUS.md](FRONTEND_STATUS.md) for the screen/interface inventory and [MOBILE_UI_TASKS.md](MOBILE_UI_TASKS.md) for this UI delivery.
 
 ## Run
 

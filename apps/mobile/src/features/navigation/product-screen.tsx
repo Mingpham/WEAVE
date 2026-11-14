@@ -20,11 +20,12 @@ export function ProductScreen({route}: {route: MobileRoute}) {
   const projectId = 'projectId' in route ? route.projectId : undefined;
   const access = binding?.access;
   const pendingRedirect = !!projectId && !!access?.pending && route.screen !== 'waiting';
-  const needsSignIn = !!projectId && presentation?.session === 'signed-out';
+  const joinRoute = ['join-code', 'join-consent', 'join-profile'].includes(route.screen);
+  const needsSignIn = (!!projectId || joinRoute || route.screen === 'events' || route.screen === 'create-event') && presentation?.session === 'signed-out';
   useEffect(() => {
-    if (needsSignIn) router.replace('/auth');
+    if (needsSignIn) router.replace(joinRoute ? (`/auth?next=join${'code' in route && route.code ? `&invite=${encodeURIComponent(route.code)}` : ''}` as Href) : '/auth');
     else if (pendingRedirect && projectId) router.replace(eventPath(projectId, 'waiting') as Href);
-  }, [pendingRedirect, projectId, needsSignIn]);
+  }, [pendingRedirect, projectId, needsSignIn, joinRoute, route]);
   const title = navigationEn.routes[route.screen as keyof typeof navigationEn.routes] ?? en.brand;
   const navigate = (screen: EventScreen) => projectId && router.push(eventPath(projectId, screen) as Href);
   const tabs: EventScreen[] = access?.pending ? [] : access?.role === 'organizer'
@@ -52,7 +53,7 @@ export function ProductScreen({route}: {route: MobileRoute}) {
         : OwnerScreen && access ? <OwnerViewContent component={OwnerScreen} route={route} />
         : binding?.view?.screen === route.screen ? <MobileViewContent view={binding.view} offline={binding.state.offline} />
         : route.screen === 'auth' ? <SignIn />
-        : route.screen === 'join-code' ? <JoinEntry code={'code' in route ? route.code : undefined} />
+        : route.screen === 'join-code' ? <JoinEntry code={'code' in route ? route.code : undefined} onContinue={() => {}} />
         : <UnavailableScreen />}
     </Screen>
   </>;

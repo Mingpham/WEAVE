@@ -1,7 +1,13 @@
 const path = require('node:path');
+const fs = require('node:fs');
 const { getDefaultConfig } = require('expo/metro-config');
 const { withNativeWind } = require('nativewind/metro');
 const config = getDefaultConfig(__dirname);
+// Mobile deliberately has an isolated toolchain, but consumes canonical team contracts.
+const sharedContracts = path.resolve(__dirname, '../../packages/contracts');
+const rootModules = path.resolve(__dirname, '../../node_modules');
+config.watchFolders = [...(config.watchFolders ?? []), sharedContracts, ...(fs.existsSync(rootModules) ? [rootModules] : [])];
+config.resolver.nodeModulesPaths = [...(config.resolver.nodeModulesPaths ?? []), path.resolve(__dirname, 'node_modules')];
 // These folders contain toolchains and package stores, never app source.
 const existingBlocks = config.resolver.blockList;
 const escapedRoot = __dirname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

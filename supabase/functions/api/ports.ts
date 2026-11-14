@@ -2,7 +2,20 @@
  * Everything the routes need from the outside world. Production wires Supabase adapters
  * (adapters/supabase.ts); tests wire in-memory fakes. Routes never import supabase-js.
  */
-import type { MeResponse } from './contracts.ts';
+import type { MeResponse, CreateProjectBody, CreateProjectData } from './contracts.ts';
+import type { z } from 'zod';
+import type { SupabaseConfig } from './adapters/supabase.ts';
+
+export interface ProjectRepository {
+  create(
+    user: AuthUser,
+    body: z.infer<typeof CreateProjectBody>,
+    key: string,
+  ): Promise<{
+    data: z.infer<typeof CreateProjectData>;
+    stateVersion: number;
+  }>;
+}
 
 export interface AuthUser {
   id: string;
@@ -47,6 +60,8 @@ export interface Logger {
 }
 
 export interface Deps {
+  supabaseConfig?: SupabaseConfig;
+  projects?: ProjectRepository;
   auth: AuthVerifier;
   idempotency: IdempotencyStore;
   me: MeRepository;
