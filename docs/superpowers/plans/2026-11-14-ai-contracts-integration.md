@@ -59,4 +59,4 @@
 - [x] Configure distinct Vitest projects and Node/Deno includes; test discovery must contain upstream contracts plus every previous AI suite. Run representative failure sentinels in disposable copies to verify AI tests cannot silently disappear.
 - [x] Run frozen install, format check, typecheck, lint, full tests, hardcode scan and offline Deno checks. Fix actual integration failures without weakening validation or ignoring owned source.
 - [x] Build a disposable archive of upstream fullstack, overlay shared/AI changes, install using pinned tooling and run upstream API/mock tests with AI, Node checks and both Deno entrypoints. No `.env`, Git merge, hosted DB or live provider call.
-- [ ] Record exact results and pending DB/owner gates, commit, fresh final review, regression-fix important findings, then push current AI branch and verify remote SHA.
+- [x] Record exact results and pending DB/owner gates, commit, fresh final review, and regression-fix important findings (none found). Publish this reviewed branch under the standing push instruction; report the verified remote SHA separately.

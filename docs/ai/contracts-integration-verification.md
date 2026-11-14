@@ -49,3 +49,16 @@ Combined-consumer verification used a temporary archive of fullstack `e85f07a` w
 Remote branch audit before Tasks 2 and 3: fullstack `e85f07a`, database `4829191`. Database's new JWT/security test result is reported by that lane, not rerun here. Worker RPCs and their atomic lease/budget/commit behavior remain unavailable; the real adapter, DB concurrency/rollback tests, hosted CI result and owner review remain pending. Temporary combined tests do not constitute a merge or full MVP acceptance.
 
 Next AI & Engine implementation: WP-1 eligibility/ranking and plan-draft validation/gaps, followed by `plan_compose` snapshot/validators with fake model fixtures. Implement the real worker adapter when reviewed RPC signatures and DB integration fixtures exist.
+
+## Final review and concurrent branch changes
+
+An independent fresh reviewer assessed `6e5ccb5..64402b5` and found no Critical, Important or Minor findings. Its independent `pnpm check` passed 124/124 tests plus types/lint/hardcode. Runtime snapshot completeness, future business algorithms, DB atomicity, hosted CI and broad upstream endpoint acceptance were outside this review; the reviewer did not independently repeat the author's overlay/schema checks.
+
+The final fetch discovered concurrent work after the pinned baseline:
+
+- Fullstack `b18271d` moved back to pnpm 10.28.2/Vitest 5.1.0 to match the previously published AI branch. It now keeps DB-owned tuple `ENUMS`/`POL` files and builds Zod enums in `enum-schemas.ts`, with API limits in `limits.ts`. This contribution was already implemented and reviewed against `e85f07a`; its toolchain and shared module arrangement therefore still need reconciliation with that new commit before a real merge. Do not describe the latest branches as conflict-free or fully aligned.
+- The complete API/mock runtime delta in `b18271d` is two files: `write-loop.ts` removes parameter properties, and mock-api starts with Node instead of tsx. Updated both in the temporary combined checkout while retaining this contribution's shared contracts/tooling. Frozen install, `pnpm check` (**149/149**) and `pnpm api:check` passed again. This verifies latest runtime consumers against these exports, not all shared files or the other toolchain.
+- Database `4a1603a` includes private mutation/idempotency helpers from `3a20a02` plus event/storage race tests. Its handoff reports **62/62** security tests; these were not run by AI. Helpers explicitly exclude worker actor paths, so they do not unblock the worker adapter yet.
+- Mobile `1ea4289` adds a visual prototype on top of frontend preview/Android packaging `9b2a391`. Commits inspected; mobile validation was not run here.
+
+Immediate coordination item: choose one shared toolchain and enum/limits module arrangement with API/DB owners, preserving combined AI discovery and strict model schemas. The next business task remains WP-1 engine rules. Existing `.env`, `AGENTS.md`, logs and branches are preserved.
