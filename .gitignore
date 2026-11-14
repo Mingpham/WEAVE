@@ -1,0 +1,34 @@
+CLAUDE.md
+
+# Android Studio / JetBrains project settings (personal, regenerated automatically)
+.idea/
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Secrets — never commit (SEC-01, spec §16 rule 14)
+.env
+.env.*
+!.env.example
+
+# Expo / Android build output
+.expo/
+apps/mobile/android/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
+
+# Superpowers brainstorming mockups
+.superpowers/
+
+# OS / logs
+.DS_Store
+*.log

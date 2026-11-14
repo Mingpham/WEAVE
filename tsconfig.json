@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "tools/*/src/**/*.ts",
+    "supabase/functions/api/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["supabase/functions/api/index.ts", "node_modules", "**/node_modules"]
+}
