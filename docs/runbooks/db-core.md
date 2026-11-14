@@ -20,14 +20,17 @@ Use a distinct project_id and free ports for each concurrent agent local stack.
 Once Supabase CLI and Docker are available, run from this worktree:
 
 ```sh
-supabase start
-supabase db reset --local
-supabase test db
+DOCKER_CONTEXT=default npx --yes supabase@3.1.0 start
+DOCKER_CONTEXT=default npx --yes supabase@3.1.0 db reset --local
+DOCKER_CONTEXT=default npx --yes supabase@3.1.0 test db
 ```
 
-These commands have NOT passed in this environment. Docker daemon is absent
-at the configured socket. Supabase CLI was not preinstalled. TOML parsing and
-configuration assertions alone do not demonstrate working auth or database RLS.
+Full startup/reset/security tests have NOT passed yet. The selected desktop-linux
+Docker context points to an absent socket; the default context is reachable
+(Docker 29.9.3). Use the per-command context override above rather than changing
+the global context shared with other agents. CLI 3.1.0 is now available through
+npx; its parser accepted the config. Startup requires initial service-image pulls.
+TOML assertions alone do not demonstrate working auth or database RLS.
 
 ## Dependency-aware backlog
 
@@ -52,7 +55,10 @@ without waiting for route/mobile/AI implementations. WP-2–5 must support AI of
    invent a second canonical contract set or edit this API-owned path.
 2. CODEX-B: supply branch/commit or patch for tests/security in an independent
    worktree. Coordinate exact migration/RPC signatures before writing fixtures.
-   No test commit is currently available; no migration PR may be submitted yet.
+   CODEX-B commit `5cc039b8157309abc52b12945e90a9c781542747` now supplies a
+   catalog audit and handoff. Reviewed read-only; intentionally not cherry-picked:
+   its handoff requires integration with the corresponding migration. Behavioral
+   security tests and canonical RPC signatures are still required.
 3. DB next: compare canonical enums, then add first schema slice and RLS with
    CODEX-B tests. Split WP-0 into small reviewed migrations; never edit merged SQL.
 
@@ -78,3 +84,20 @@ No existing tests, migrations, RPCs, package manifests, CI or gate evidence were
 present at baseline. This slice completes configuration preparation only, not
 WP-0-DB, any FR or any AT. Security tests remain CODEX-B owned. No PR or merge
 has been performed.
+
+
+## Continuation: local startup and OpenCode review
+
+CLI 3.1.0 warned that `[auth.email]` and `[auth.sms]` `enable_signup` are
+ deprecated; both now use `enabled = false`. Global `auth.enable_signup`
+remains true for anonymous signup. A regression assertion failed before the
+change (`email: current provider-disable key missing`); seven auth assertions
+passed after it. CLI status parsing produced no deprecation warnings, but its
+runtime status must not be counted as a successful stack startup.
+
+OpenCode discovery confirmed `run --model provider/model`. A tool-free Gemini
+3.8 Flash request failed for insufficient balance. The same review completed
+using `opencode/glm-5.3-flash-free`; no files were delegated for editing. Reviewed
+follow-ups: verify runtime provider settings; leave Google disabled pending real
+credentials; keep each agent's project ID, ports and auth fixtures independent.
+The review is not runtime evidence. No change to CODEX-B's worktree was made.
