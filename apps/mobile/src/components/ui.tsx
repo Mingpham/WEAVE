@@ -32,8 +32,8 @@ export function Field({ label, value, onChangeText, placeholder, multiline = fal
     placeholder={placeholder} placeholderTextColor={colors.muted} multiline={multiline} editable={!disabled} maxLength={maxLength}
     style={[s.input, multiline && s.multiline]} /></View>;
 }
-export function Choice({ label, selected, onPress, children, disabled = false }: PropsWithChildren<{label: string; selected: boolean; onPress: () => void; disabled?: boolean}>) {
-  return <Pressable accessibilityRole="radio" accessibilityLabel={label} accessibilityState={{ checked: selected, disabled }} disabled={disabled}
+export function Choice({ label, selected, onPress, children, disabled = false, multiple = false }: PropsWithChildren<{label: string; selected: boolean; onPress: () => void; disabled?: boolean; multiple?: boolean}>) {
+  return <Pressable accessibilityRole={multiple ? 'checkbox' : 'radio'} accessibilityLabel={label} accessibilityState={{ checked: selected, disabled }} disabled={disabled}
     onPress={onPress} style={[s.choice, selected && s.selected, disabled && s.disabled]}>
     <Text style={s.body}>{selected ? '◉ ' : '○ '}{label}</Text>{children}
   </Pressable>;

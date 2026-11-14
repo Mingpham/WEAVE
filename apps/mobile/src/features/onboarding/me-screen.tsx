@@ -28,8 +28,8 @@ export function Me({ model, offline, demo, onSave, onHere, onUnavailable, onLeav
       pending={action.pending} disabled={offline || action.pending || (confirmation !== 'signout' && model.closed)} onCancel={() => setConfirmation(undefined)} onConfirm={() => {
         const send = confirmation === 'leave' ? onLeave : confirmation === 'signout' ? onSignOut : onUnavailable ? () => onUnavailable(reason) : undefined;
         if (send) void action.run(async () => { await send(); setConfirmation(undefined); });
-      }}>{confirmation === 'unavailable' ? <Field label={t.unavailableReason} value={reason} onChangeText={setReason} disabled={action.pending} multiline /> : null}</Confirm> : null}
-    <ProfileFields value={profile} onChange={value => { action.reset(); setProfile(value); }} roles={model.roles} timezone={model.timezone} disabled={disabled} />
+      }}>{confirmation === 'unavailable' ? <Field label={t.unavailableReason} value={reason} onChangeText={setReason} disabled={action.pending} multiline maxLength={200} /> : null}</Confirm> : null}
+    <ProfileFields value={profile} onChange={value => { action.reset(); setProfile(value); }} roles={model.roles} timezone={model.timezone} disabled={disabled} showErrors={attempted} />
     <Card><Heading>{t.area}</Heading><Choice label={t.noArea} selected={!area} disabled={disabled} onPress={() => setArea(undefined)} />
       {model.areas.map(option => <Choice key={option.key} label={option.label} selected={area === option.key} disabled={disabled} onPress={() => setArea(option.key)} />)}</Card>
     {attempted && !validProfile(profile) ? <Notice danger>{t.profileInvalid}</Notice> : null}

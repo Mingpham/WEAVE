@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Badge, Button, Card, Copy, Field, Heading, Notice, PageTitle } from '@/components/ui';
-import { onboardingEn as t } from '@/strings/en';
+import { onboardingEn as t, onboardingFormEn as f } from '@/strings/en';
 import { useAcknowledgedAction } from '../shared/use-acknowledged-action';
 import { EventFields, validEvent, type EventForm } from './event-form';
-import { Confirm, Feedback, Toggle, type Action } from './shared';
+import { Confirm, Feedback, FormField, Toggle, type Action } from './shared';
 
 // Form preferences; the integration layer maps these labels to canonical project settings.
 export type SettingsForm = { event: EventForm; roles: string; ai: boolean; questions: boolean; recovery: boolean; photos: boolean; autoApprove: boolean };
@@ -17,18 +17,21 @@ export function EventSettings({ model, offline, demo, onSave, onClose, onDelete 
   const [deleteName, setDeleteName] = useState('');
   const action = useAcknowledgedAction(model.revision);
   const disabled = offline || model.closed || action.pending;
+  const tags = value.roles.trim() ? value.roles.split(',').map(tag => tag.trim()) : [];
+  const validTags = tags.length <= 30 && tags.every(tag => tag.length >= 1 && tag.length <= 32 && /^[a-z0-9][a-z0-9 -]*$/.test(tag));
   const patch = (changes: Partial<SettingsForm>) => { action.reset(); setValue({ ...value, ...changes }); };
   return <><PageTitle title={t.settingsTitle} subtitle={t.settingsCopy} />{model.closed ? <><Badge>{t.closed}</Badge><Notice>{t.closedCopy}</Notice></> : null}
-    <EventFields value={value.event} onChange={event => patch({ event })} disabled={disabled} timesEditable={model.timesEditable} planningFields={false} />
-    <Card><Field label={t.roleTags} value={value.roles} disabled={disabled} onChangeText={roles => patch({ roles })} /><Copy small>{t.roleTagsHint}</Copy></Card>
+    <EventFields value={value.event} onChange={event => patch({ event })} disabled={disabled} timesEditable={model.timesEditable} planningFields={false} showErrors={attempted} maxMembers={model.maxMembers} />
+    <Card><FormField label={t.roleTags} value={value.roles} disabled={disabled} autoCapitalize="none" maxLength={1020} onChangeText={roles => patch({ roles })}
+      hint={f.roleTagsHint} error={!validTags ? f.roleTagsError : undefined} showError={attempted} /></Card>
     <Card><Heading>{t.assistance}</Heading><Toggle label={t.ai} detail={t.aiCopy} value={value.ai} disabled={disabled} onChange={ai => patch({ ai })} />
       <Toggle label={t.aiProbe} detail={t.aiProbeCopy} value={value.questions} disabled={disabled || !value.ai} onChange={questions => patch({ questions })} />
       <Toggle label={t.aiRecovery} detail={t.aiRecoveryCopy} value={value.recovery} disabled={disabled || !value.ai} onChange={recovery => patch({ recovery })} />
       <Toggle label={t.aiVision} detail={t.aiVisionCopy} value={value.photos} disabled={disabled || !value.ai} onChange={photos => patch({ photos })} /></Card>
     <Card><Toggle label={t.autoApprove} detail={t.autoApproveCopy} value={value.autoApprove} disabled={disabled} onChange={autoApprove => patch({ autoApprove })} /></Card>
-    {attempted && !validEvent(value.event, model.maxMembers) ? <Notice danger>{t.eventInvalid(model.maxMembers)}</Notice> : null}<Feedback action={action} demo={demo} />
+    {attempted && (!validEvent(value.event, model.maxMembers) || !validTags) ? <Notice danger>{f.fixFields}</Notice> : null}<Feedback action={action} demo={demo} />
     <Button label={t.save} pending={action.pending} disabled={disabled || !onSave} onPress={() => {
-      setAttempted(true); if (validEvent(value.event, model.maxMembers) && onSave) void action.run(() => onSave(value));
+      setAttempted(true); if (validEvent(value.event, model.maxMembers) && validTags && onSave) void action.run(() => onSave(value));
     }} />
     <Card><Heading>{t.lifecycle}</Heading><Button label={t.close} variant="secondary" disabled={disabled || !onClose} onPress={() => { action.reset(); setConfirmation('close'); }} />
       <Button label={t.delete} variant="danger" disabled={disabled || !onDelete} onPress={() => { action.reset(); setDeleteName(''); setConfirmation('delete'); }} /></Card>

@@ -38,8 +38,8 @@ export const nativeNotificationPermissionAdapter: NotificationPermissionAdapter 
   openSettings: () => Linking.openSettings(),
 };
 
-export function NotificationPermissions({ adapter = nativeNotificationPermissionAdapter, demo = false }: {
-  adapter?: NotificationPermissionAdapter; demo?: boolean;
+export function NotificationPermissions({ adapter = nativeNotificationPermissionAdapter, demo = false, registration = 'idle' }: {
+  adapter?: NotificationPermissionAdapter; demo?: boolean; registration?: 'idle' | 'registering' | 'registered' | 'failed';
 }) {
   const [access, setAccess] = useState<NotificationAccess>();
   const [pending, setPending] = useState(false);
@@ -85,6 +85,6 @@ export function NotificationPermissions({ adapter = nativeNotificationPermission
       {access && !allowed && access.canAskAgain ? <Button label={pending ? t.notificationsRequesting : t.notificationsAllow} disabled={pending} onPress={() => void run(true)} /> : null}
       {access && (allowed || !access.canAskAgain || access.mode === 'denied') ? <Button label={t.openSettings} variant="secondary" disabled={pending} onPress={() => void settings()} /> : null}
     </>}
-    <Notice>{t.notificationsRegistration}</Notice>
+    <Notice danger={registration === 'failed'}>{registration === 'registered' ? t.notificationsRegistered : registration === 'registering' ? t.notificationsRegistering : registration === 'failed' ? t.notificationsRegisterFailed : t.notificationsRegistration}</Notice>
   </Card>;
 }

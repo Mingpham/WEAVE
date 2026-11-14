@@ -84,7 +84,7 @@ export function JoinProfile({ invite, roles, initialProfile, consentAccepted, of
   const action = useAcknowledgedAction();
   const disabled = offline || action.pending || action.acknowledged;
   return <><PageTitle eyebrow={t.step(3)} title={t.profileTitle} subtitle={t.profileCopy} /><Badge>{invite.eventName}</Badge>
-    <ProfileFields value={profile} onChange={setProfile} roles={roles} timezone={invite.timezone} disabled={disabled} />
+    <ProfileFields value={profile} onChange={setProfile} roles={roles} timezone={invite.timezone} disabled={disabled} showErrors={attempted} />
     {!consentAccepted ? <Notice>{t.consentRequired}</Notice> : null}{attempted && !validProfile(profile) ? <Notice danger>{t.profileInvalid}</Notice> : null}
     <Feedback action={action} demo={demo} />{!onJoin ? <Copy small>{t.unavailable}</Copy> : null}
     <Button label={t.requestJoin} disabled={disabled || !onJoin || !consentAccepted} pending={action.pending} onPress={() => {
