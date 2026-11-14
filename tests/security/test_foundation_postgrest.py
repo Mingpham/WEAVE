@@ -64,6 +64,10 @@ class FoundationPostgrestTests(unittest.TestCase):
         result = cls.backend.sql(framework.read_text())
         if result.returncode:
             raise RuntimeError('Private framework migration bootstrap failed')
+        resource = foundation.ROOT / 'supabase/migrations/20261114090000_resources.sql'
+        result = cls.backend.sql(resource.read_text())
+        if result.returncode:
+            raise RuntimeError('Resource migration bootstrap failed')
         r = cls.backend.docker('network', 'disconnect', 'none', cls.backend.container)
         if r.returncode:
             raise RuntimeError(r.stderr)
@@ -293,6 +297,40 @@ class FoundationPostgrestTests(unittest.TestCase):
                 self.assertEqual(status, 404)
         self.assertEqual(self.fixture.ok('SELECT count(*) FROM public.event_log;'), '0')
         self.assertEqual(self.fixture.ok('SELECT count(*) FROM public.idempotency_keys;'), '0')
+
+
+    def test_INV07_resources_http_scope_and_same_token_revocation(self):
+        """INV-07 / FR-RES-01: direct JWT HTTP access to real resource rows."""
+        f = self.fixture
+        ids = [str(uuid.uuid4()) for _ in range(2)]
+        for project in (0, 1):
+            f.ok("INSERT INTO public.resources(id,project_id,name,category,kind,inventory_state) VALUES ('%s','%s','HTTP resource','fixture','ITEM','UNVERIFIED');" % (ids[project], f.projects[project]))
+        for actor, expected in [(0,[ids[0]]),(2,[ids[0]]),(1,[ids[1]]),(3,[ids[1]]),(4,[]),(5,[]),(6,[])]:
+            self.rows('resources', actor, expected)
+        self.rows('resources', 2, [], '&project_id=eq.' + f.projects[1])
+        token = self.token(2)
+        status, rows = self.http('GET', '/resources?select=id', token=token)
+        self.assertEqual(status,200);self.assertEqual([row['id'] for row in rows],[ids[0]])
+        f.ok("UPDATE public.members SET status='REMOVED' WHERE id='%s';" % f.members[2])
+        status, rows = self.http('GET', '/resources?select=id', token=token)
+        self.assertEqual(status,200);self.assertEqual(rows,[])
+        f.ok("UPDATE public.projects SET deleted_at=now() WHERE id='%s';" % f.projects[0])
+        self.rows('resources',0,[]);self.rows('resources',1,[ids[1]])
+
+    def test_INV01_resources_http_write_denial(self):
+        """INV-01/07: real resource table rejects owner direct DML."""
+        f = self.fixture
+        resource = str(uuid.uuid4())
+        payload = {'project_id':f.projects[0],'name':'HTTP resource','category':'fixture','kind':'ITEM','inventory_state':'UNVERIFIED'}
+        f.ok("INSERT INTO public.resources(id,project_id,name,category,kind,inventory_state) VALUES ('%s','%s','HTTP resource','fixture','ITEM','UNVERIFIED');" % (resource,f.projects[0]))
+        self.rows('resources',0,[resource])
+        for method,path,body in [('POST','/resources',payload),('PATCH','/resources?id=eq.'+resource,{'notes':'Forbidden'}),('DELETE','/resources?id=eq.'+resource,None)]:
+            status,error=self.http(method,path,0,body)
+            self.assertEqual(status,403);self.assertEqual(error['code'],'42501')
+        status,_=self.http('GET','/resources?select=id')
+        self.assertEqual(status,401)
+        self.assertEqual(f.ok('SELECT count(*) FROM public.resources;'),'1')
+        self.assertEqual(f.ok('SELECT count(*) FROM public.resources WHERE notes IS NOT NULL;'),'0')
 
 
 if __name__ == '__main__':
