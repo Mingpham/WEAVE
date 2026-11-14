@@ -116,7 +116,7 @@ is still expected to reject an enum-only database for missing business tables.
 Tables, RLS and RPC signatures remain CODEX-A's next implementation slice; API
 request/response contracts beyond enums and policy constants are still pending.
 
-## Foundation slice: paired SQL test (behavior NOT RUN)
+## Foundation slice: paired SQL test
 
 `foundation_security.sql` is prepared against the explicit projects/members/areas
 contract in `docs/runbooks/db-core.md` at `8f8dfc8` and specification §7.3/§12.2.
@@ -143,8 +143,48 @@ Requirement associations: INV-07, DB-11, FR-MEM-02/04/06, FR-EVT-06; supports
 only the database portions of AT-05/06/07. No API, JWT verification, RPC state
 transition, Storage or Realtime behavior is tested by this SQL session.
 
-Actual result on the enum-only database: prerequisite failure reproduced;
-foundation behavior NOT RUN. The standard supporting suite still passes 25/25
-and intentionally does not execute this pending manual SQL test. Do not merge
-the foundation test into main without its paired migration and a successful
-runtime run. Keep the complete 33-table catalog audit unchanged.
+Historical enum-only result: prerequisite failure reproduced; behavior was not
+run at that stage. CODEX-A subsequently supplied the real foundation migration
+in `e4f5bd1`; its harness now executes this SQL against the real migration with
+a minimal auth fixture. Independent verification passed 44/44 existing checks.
+Keep the complete 33-table catalog audit unchanged and keep the migration and
+its tests together in the same PR. Supabase Auth acceptance remains separate.
+
+## Direct foundation PostgREST/JWT validation
+
+Run `python3 tests/security/test_foundation_postgrest.py -v`, or the full
+`python3 -m unittest discover -s tests/security -p 'test_*.py' -v` suite.
+The eight HTTP tests execute the real enum/foundation migrations using the
+existing foundation fixtures. They use cached `postgres:17-alpine`,
+`public.ecr.aws/supabase/postgrest:v16.5`, and `python:3.13-slim` images with
+`--pull=never`. The Python image is only an ephemeral standard-library HTTP
+client, not a new application dependency. Docker context follows the existing
+foundation harness (`default`).
+
+Each case gets its own fixture database and PostgREST container. HTTP probes run
+inside a unique internal Docker network; no ports are published. Test JWTs are
+signed with a random, disposable key; credentials are never embedded in command
+arguments, snapshots or test output. A local `auth.users`/`auth.uid()` fixture
+reads the request claim JSON set by PostgREST. This verifies PostgREST's real
+signature checking and the actual migration's RLS, not Supabase Auth/GoTrue,
+refresh/identity linking, API routes, Storage, Realtime, RPC transitions or a full
+acceptance test. Official role/config references:
+[PostgREST 16 authentication](https://docs.postgrest.org/en/stable/references/auth.html)
+and [configuration](https://docs.postgrest.org/en/stable/references/configuration.html).
+
+Coverage: exact owner/participant row IDs in both projects; pending and removed
+self-membership only; outsider and explicit cross-project filters; immediate
+revocation with an unchanged signed token; soft-deletion hiding owner and self
+branches; rejected unsigned/forged requests; POST/PATCH/DELETE denial on all three
+tables with positive controls and unchanged admin-visible rows; private helper
+nonexposure as a REST RPC. Associations: INV-01/07, SEC-09, FR-MEM-04/06,
+FR-EVT-06, and the database/HTTP portions of AT-05/06/07.
+
+Independent runtime result: 8/8 new HTTP checks passed; combined suite contains
+52 tests. The prior foundation SQL preparation is now exercised. No full FR, AT
+or gate is signed; the rest of the §12.2 table matrix remains future work.
+
+Combined verification checkpoint: the full security discovery command executed
+52 tests in 82 seconds, all passed. This includes 25 original supporting checks,
+19 foundation SQL checks and eight direct PostgREST/JWT checks. Supabase Auth
+and complete FR/AT/gate acceptance remain unverified.

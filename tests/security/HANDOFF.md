@@ -98,3 +98,40 @@ repeated DO loop; that claim was rejected. This verifies the test technique,
 not the pending WEAVE policies. Other speculative review concerns about
 transaction-local fixtures persisting on a failed psql connection were rejected:
 all fixture writes are in a single uncommitted transaction.
+
+## Foundation review and HTTP/JWT handoff
+
+LEADER-A/B queue communication is verified. B reported its scope and active test
+files before this package and sent A the independently verified review result.
+The shared `database` branch now contains A's `e4f5bd1` migration and 19 foundation
+checks. Independent rerun passed 44/44, including B's unchanged standalone SQL.
+No actionable migration defect was found in this review; no migration source was
+changed by B. The earlier NOT RUN checkpoint is superseded for this foundation
+SQL harness only, not full Supabase acceptance.
+
+B added `test_foundation_postgrest.py`: eight direct HTTP/JWT checks against the
+real migration, all passed independently. Fixture auth schema/UID function and
+locally signed JWTs are explicit; this is real PostgREST/RLS, not Supabase Auth.
+The new client runs on a private internal network with no published ports, uses
+no hosted keys and preserves same-token revocation tests. Missing/forged JWTs
+fail, valid owner/member JWTs see exact intended IDs, all three direct table
+write endpoints deny with SQLSTATE 42501, and private helpers stay unexposed.
+
+A tool-free subordinate review was inspected. Unsupported claims about hex-token
+SQL injection, Python hmac availability and bound class-cleanup dispatch were
+rejected. The mutation test was strengthened with authorized reads before the
+write denials. An initial network-only setup failure was fixed by leaving Docker
+`none`; internal-network publishing limitations were handled by placing clients
+inside the network rather than exposing ports. These were harness issues, not
+migration defects.
+
+Next A dependency: event_log/idempotency and transactional mutation framework,
+with exact RPC signatures/error contract for idempotency, version conflict,
+closed-project refusal and atomic rollback tests. B retains tests/security
+ownership; A retains all migration/RPC ownership. Keep full SEC-09 matrix,
+Supabase local Auth integration and AT/gate acceptance explicitly outstanding.
+
+Combined verification checkpoint: the full security discovery command executed
+52 tests in 82 seconds, all passed. This includes 25 original supporting checks,
+19 foundation SQL checks and eight direct PostgREST/JWT checks. Supabase Auth
+and complete FR/AT/gate acceptance remain unverified.
