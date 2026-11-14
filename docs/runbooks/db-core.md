@@ -1,7 +1,7 @@
 # DB Core handoff — WP-0-DB
 
 Baseline: `caa79f7`, specification v0.3, ADR stack only. No gate is signed.
-Branch: `database` (renamed at user request). No migration is supplied in this slice.
+Branch: `database` (renamed at user request). An enum-only migration is now available; business tables and RPCs remain pending.
 
 ## Local configuration
 
@@ -134,3 +134,37 @@ qjfiaynqszghzwpxshfe` exited 0; expected project-ref metadata assertion passed;
 `git check-ignore` confirms AGENTS.md and local project-ref metadata are ignored.
 No credential or publishable key was added to the repository. Existing
 security-test edits remain outside this setup commit.
+
+
+## WP-0-DB: domain enum migration
+
+`supabase/migrations/20261114050000_domain_enums.sql` creates the 49 canonical
+PostgreSQL enum types from §7.2 after the contracts prerequisite commit. No table,
+policy, RPC, inference or hosted change is included. Mingpham must review the
+contracts prerequisite before dependent migration changes merge to main.
+
+Validation on disposable `postgres:17-alpine`, with no network, published ports
+or persistent data: six automated checks passed. They cover exact ordered
+catalog parity with contracts, acceptance of all canonical values, rejection of
+unknown values for every enum, application-role ALTER denial (INV-07 support),
+transaction rollback, and absence of business tables. The parity test was
+observed failing on an empty catalog before migration creation. This is WP-0
+schema groundwork; no product FR, AT or gate is claimed complete.
+
+CODEX-B handoff: the executed regression harness is available locally at
+`/tmp/weave-domain-enums-test.py`. Re-run with:
+
+```sh
+python3 /tmp/weave-domain-enums-test.py /path/to/WEAVE
+```
+
+Integrate this coverage into the owned test suite before a migration PR is
+submitted. The harness is not tracked in this commit to avoid changing CODEX-B's
+owned tests. Existing security-test edits were preserved. SQL review found no
+correctness issues. Full Supabase CLI reset and hosted acceptance remain unrun.
+
+Next slice: projects/members/areas foundation, project-scoped foreign keys and
+membership helpers with RLS, paired with CODEX-B's positive/negative isolation
+fixtures in the same final PR. Resolve pending-member read projection and the
+removed-author access spec gaps in the handoff before exposing reads. Do not
+implement business inference in PL/pgSQL (D-17).
