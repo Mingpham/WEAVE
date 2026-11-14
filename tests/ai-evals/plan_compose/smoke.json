@@ -1,0 +1,88 @@
+{
+  "module": "plan_compose",
+  "name": "smoke",
+  "schema_version": "wp0-v1",
+  "prompt_version": "fixture-only-v1",
+  "snapshot": {
+    "event_kind": "neighborhood book exchange",
+    "now": "2026-11-14T00:00:00Z",
+    "aliases": [
+      "T1",
+      "M1",
+      "R1",
+      "A1",
+      "C1",
+      "I1",
+      "K1",
+      "P1"
+    ]
+  },
+  "output": {
+    "reply": "Set up a book exchange table.",
+    "areas": [
+      {
+        "key": "area_1",
+        "name": "Reading room",
+        "notes": null
+      }
+    ],
+    "role_tags": [
+      "setup"
+    ],
+    "tasks": [
+      {
+        "key": "task_1",
+        "title": "Arrange books",
+        "description": "Place books on a stable table.",
+        "area_key": "area_1",
+        "role_tag": "setup",
+        "role_required": false,
+        "start_offset_min": -30,
+        "due_offset_min": -10,
+        "hard_deadline": false,
+        "estimated_minutes": 20,
+        "critical": false,
+        "criteria": [
+          {
+            "description": "Books are arranged on the table",
+            "critical": true,
+            "photo_expected": true
+          }
+        ],
+        "depends_on": [],
+        "needs": [
+          {
+            "resource_key": "resource_1",
+            "category": null,
+            "hard": true
+          }
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "key": "resource_1",
+        "name": "Table",
+        "category": "furniture",
+        "kind": "ITEM",
+        "quantity": 1,
+        "area_key": "area_1",
+        "reason": "Display books"
+      }
+    ],
+    "questions": [],
+    "assumptions": [],
+    "change_summary": {
+      "added": [
+        "task_1",
+        "resource_1",
+        "area_1"
+      ],
+      "changed": [],
+      "removed": []
+    }
+  },
+  "expected": {
+    "schema_valid": true
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "module": "event_summarize",
+  "name": "invalid",
+  "schema_version": "wp0-v1",
+  "prompt_version": "fixture-only-v1",
+  "snapshot": {
+    "event_kind": "neighborhood book exchange",
+    "now": "2026-11-14T00:00:00Z",
+    "aliases": [
+      "T1",
+      "M1",
+      "R1",
+      "A1",
+      "C1",
+      "I1",
+      "K1",
+      "P1"
+    ]
+  },
+  "output": {
+    "headline": "Book exchange concluded",
+    "went_well": [
+      {
+        "text": "The team resolved the table issue.",
+        "refs": [
+          "I1"
+        ]
+      }
+    ],
+    "went_wrong": [],
+    "lessons": [],
+    "readiness": "READY_FOR_APPROVAL"
+  },
+  "expected": {
+    "schema_valid": false
+  }
+}

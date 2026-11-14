@@ -1,0 +1,8 @@
+{
+  "name": "@weave/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts", "./ai": "./src/ai/index.ts" },
+  "dependencies": { "zod": "4.6.7" }
+}
