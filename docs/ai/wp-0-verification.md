@@ -51,3 +51,12 @@ DB worker RPC signatures and canonical shared domain definitions remain unprovid
 - RED: adapter and logging test imports failed before implementation. GREEN: `pnpm test` — 63/63; `pnpm typecheck:ai` and `deno check --config supabase/functions/ai-worker/deno.json supabase/functions/_shared/ai/openrouter.ts supabase/functions/_shared/ai/logging.ts` passed.
 - Fetch fixture tests verify schema routing, single attempt, HTTP/error envelopes, truncated output, missing usage, cancellation, fetch/body timeout and redirect refusal. Logs exclude raw content/error bodies and never invent cost.
 - OpenRouter request shape checked against the official chat-completions reference. Actual key access/model capabilities are still NOT RUN; no inference request was made in this task.
+
+## Task 5 — Worker orchestration with explicit store ports
+
+- Branch audit: database `8f8dfc8`, fullstack `caa79f7` unchanged.
+- RED: process/retry suites failed before implementation. GREEN: `pnpm test` — 78/78, `pnpm typecheck:ai` and Deno check of `supabase/functions/ai-worker/process-job.ts` passed.
+- Tests cover duplicate delivery, disabled/exhausted budget, bounded retry, schema retry across invocations, stale revision, unrelated version changes, commit/ack crash, unavailable durable logs, lease recovery/fencing and final-slot budget competition.
+- Additional checks pin three computation attempts and original alias identity across reloads. No re-call to model on unrelated version changes.
+- Port ruling: successful/stale result and inference log must commit atomically. Lost workers only append audit. After three unrelated version conflicts, worker requests manual recovery; this conservative worker behavior needs DB/product review.
+- Production module registry remains empty; no fake handler is registered. Test store is not a database implementation and proves no PostgreSQL atomicity.

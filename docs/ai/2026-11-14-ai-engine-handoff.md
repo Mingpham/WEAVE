@@ -42,7 +42,7 @@ Chưa gửi tài liệu này cho thành viên khác. Người dùng có thể d�
 | `reserveInference` | `{ job_id, lease, attempt }` | `ALLOWED`/`AI_DISABLED`/`BUDGET_EXCEEDED`; kiểm tra flag và giữ suất ngân sách đồng thời, không chỉ đọc counter rồi tăng sau |
 | `loadContext` | `{ job_id, lease }` | Snapshot nội bộ có project scope, settings, `state_version`, `basis_revision`, payload theo job; không trả data project khác |
 | `appendInferenceLog` | `{ job_id, attempt, module, model, prompt_version, usage, latency_ms, outcome, safe_validation_errors }` | Log append-only; thống nhất nhận dạng attempt để retry ghi log không tạo bản trùng |
-| `commitResult` | `{ job_id, lease, expected_state_version, basis_revision, validated_result, derived_changes }` | `COMMITTED`/`ALREADY_COMMITTED`/`STALE`/`VERSION_CONFLICT`; khóa/kiểm tra/ghi kết quả, job status, event/version trong một transaction |
+| `commitResult` | `{ job_id, lease, expected_state_version, basis_revision, validated_result, derived_changes, inference_log }` | `COMMITTED`/`ALREADY_COMMITTED`/`STALE`/`VERSION_CONFLICT`/`LEASE_LOST`; khóa/kiểm tra/ghi kết quả, job status, event/version và inference log trong một transaction. Conflict không append log; stale append outcome `STALE_DISCARDED`. |
 | `scheduleRetry` | `{ job_id, lease, error_code, delay_ms, schema_id_failures }` | Lưu trạng thái retry, bộ đếm lỗi schema/ID và thời điểm giao lại bền vững; claim tiếp theo trả lại bộ đếm, không chờ trong RAM worker |
 | `finishFailure` | `{ job_id, lease, error_code, fallback_kind }` | Terminal + tác động fallback/log đúng module; thực thi một lần |
 | `ack` | `{ message_id }` | Archive/delete message sau terminal; lặp lại an toàn |
@@ -69,6 +69,8 @@ Các mục này không phải quyết định nghiệp vụ đã được team d
 | GAP-07 | §10.7 yêu cầu trần snapshot cho từng danh mục nhưng chỉ một số trần đã định nghĩa; model output 1200 token có thể cắt plan | Giữ các giới hạn đã có; mỗi module đề xuất cap còn thiếu bằng dữ liệu eval. `truncated` báo rõ; không tự nâng token hoặc gọi nhiều lượt | Snapshot builder ở từng WP, trước live module eval |
 
 Crash sau khi provider nhận request nhưng trước khi worker lưu kết quả có thể dẫn đến lần gọi lặp lại và chi phí lặp lại; không hứa exactly-once inference. Atomic commit bảo vệ kết quả nghiệp vụ. Log chỉ ghi điều đã quan sát, không dựng outcome/tokens giả cho attempt mất phản hồi.
+
+Quyết định thực thi WP-0: sau ba lần project version conflict, worker ghi thất bại và chuyển đường thủ công, không gọi lại model chỉ vì project đổi không liên quan. Đây là hành vi đề xuất cho worker (API vẫn trả 409 theo §11.0). `commitResult` mang inference log để tránh khoảng trống crash giữa commit và log; worker mất lease chỉ được ghi audit cho attempt đã quan sát, không ghi nghiệp vụ hoặc ack thay lease mới. Những yêu cầu này cần DB review trước Task 6 adapter.
 
 ## 6. Tiêu chí bàn giao và nguồn tham chiếu
 
