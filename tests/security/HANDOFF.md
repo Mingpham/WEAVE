@@ -69,3 +69,32 @@ helpers with RLS. Supply actual fixture fields and RPC/read contracts before
 CODEX-B writes positive/negative cross-project, PENDING and REMOVED tests. The
 pending-member title projection and removed-author matrix gaps remain open.
 Keep contracts review by Mingpham as a prerequisite to merging into main.
+
+## Next paired package: foundation security SQL
+
+`tests/security/foundation_security.sql` is ready for CODEX-A's three-table
+foundation slice described at `8f8dfc8`. It uses no invented RPC signatures and
+creates no substitute business schema. Fixtures follow the specified columns
+and canonical enums. Positive controls precede denials, and removal is checked
+as both an initial status and an actual change after a successful read.
+
+Validation: missing-table prerequisite failure reproduced against the real enum
+migration; the remainder has NOT RUN. Existing supporting suite: 25/25 passed.
+This is test-first preparation, not migration acceptance. Do not merge to main
+without pairing with the real foundation migration and running on Supabase local.
+
+CODEX-A handoff: supply the migration commit, then run this SQL and the standard
+supporting suite. Confirm member/area normalization is automatic for inserts
+that omit normalized fields; the checkpoint explicitly requires normalization.
+The non-approved self-membership exception follows §12.2, while project/area
+rows remain protected. No pending project-title read RPC is assumed. Report any
+fixture/contract mismatch instead of weakening RLS assertions. No migration
+files were modified by CODEX-B.
+
+Review follow-up: a tool-free Antigravity review claimed SET LOCAL ROLE inside a
+DO block would not affect RLS. Disposable PostgreSQL 17 probes verified role
+switch/reset, transaction-local claim visibility and RLS filtering across a
+repeated DO loop; that claim was rejected. This verifies the test technique,
+not the pending WEAVE policies. Other speculative review concerns about
+transaction-local fixtures persisting on a failed psql connection were rejected:
+all fixture writes are in a single uncommitted transaction.

@@ -115,3 +115,36 @@ INV-07 but do not complete a product FR, AT or gate. The full-schema catalog aud
 is still expected to reject an enum-only database for missing business tables.
 Tables, RLS and RPC signatures remain CODEX-A's next implementation slice; API
 request/response contracts beyond enums and policy constants are still pending.
+
+## Foundation slice: paired SQL test (behavior NOT RUN)
+
+`foundation_security.sql` is prepared against the explicit projects/members/areas
+contract in `docs/runbooks/db-core.md` at `8f8dfc8` and specification §7.3/§12.2.
+It requires the actual foundation migration and a disposable Supabase local
+instance with real `auth.users`/`auth.uid()`; it does not create replacement
+business tables or helper functions. Run only after CODEX-A supplies that slice:
+
+```sh
+psql -X -v ON_ERROR_STOP=1 -f tests/security/foundation_security.sql
+```
+
+Connect as the local administrative role using local libpq connection settings.
+The script creates generated fixture IDs inside one transaction, seeds two
+projects, switches the role and session claims for authorization checks, and
+rolls back. It checks owner/participant positive controls, cross-project and
+outsider denial, pending self-membership only, initially removed members,
+revocation after an approved member is removed, direct INSERT/UPDATE/DELETE
+denial on all three tables, normalized uniqueness (including inactive-member
+and cross-project exceptions), project-scoped `current_area_id`/`decided_by`
+foreign keys, and soft-deletion denial even for the owner. It also exercises
+membership reads that would expose recursive policies.
+
+Requirement associations: INV-07, DB-11, FR-MEM-02/04/06, FR-EVT-06; supports
+only the database portions of AT-05/06/07. No API, JWT verification, RPC state
+transition, Storage or Realtime behavior is tested by this SQL session.
+
+Actual result on the enum-only database: prerequisite failure reproduced;
+foundation behavior NOT RUN. The standard supporting suite still passes 25/25
+and intentionally does not execute this pending manual SQL test. Do not merge
+the foundation test into main without its paired migration and a successful
+runtime run. Keep the complete 33-table catalog audit unchanged.
