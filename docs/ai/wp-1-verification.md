@@ -11,6 +11,15 @@ Approved scope: remaining tasks in the progress report, executed inline on `ai/w
 - Temporary fullstack `b18271d` archive with shared/AI sources overlaid: `pnpm check` **151/151 tests in 19 files**; format, API Deno check and frozen install passed. No `.env`, live inference, database writes or branch merge. Combined lock includes upstream mock-api importer; real integration must retain it.
 - Temporary pnpm rebuild needed `CI=true` to replace generated node_modules noninteractively; installation completed without production dependency additions. Root and owner tool versions now match. Owner review/actual merged-branch acceptance remains separate.
 
+## Task 2 — Eligibility and assignment suggestions
+
+- After Task 1 push, fullstack/DB remained unchanged; inspected mobile `7ebf1c7` and `078f9f3` (native build configuration and blocker handoff), with no engine-interface change.
+- Added pure `evaluateEligibility`, `rankCandidates` and `suggestAssignments` exports. Seven §11.3 checks return TRUE/FALSE/UNKNOWN, explanatory messages and presence evidence IDs. Ranking follows +3 role, +2 area, +2 ON_SITE, minus active assignment count; nickname then ID gives deterministic ties.
+- Greedy suggestions consider OPEN tasks, critical first then due time, and reserve each selected member's load/critical window before the next task. UNKNOWN remains visible as PENDING_VERIFICATION; only FALSE excludes a candidate. Inputs are never mutated.
+- Runtime guards reject malformed projections, project mismatch, duplicate IDs and missing referenced tasks/members. They cannot prove that a caller omitted historical rows; complete server snapshots remain required.
+- Boundary decisions: half-open intervals allow adjacent tasks; adjacent availability windows may jointly cover a task; null area IDs earn no location bonus; claim expiry is exclusive and future observations are not fresh; an already-started task remains urgent for NOT_ARRIVED members. Nickname sorting uses deterministic code-point order, with ID only breaking equal nicknames. These decisions need owner review if product expects a locale-specific ordering or different time boundaries.
+- RED: targeted suite failed before the implementation module existed. GREEN: **37 focused tests**, full `pnpm check` **163/163 in 18 files**, `pnpm typecheck:engine`, `pnpm format:check`, Deno check of engine exports and `git diff --check` passed. Frozen fixtures prove inputs remain unchanged. No API route or persistent assignment is created by suggestions.
+
 ## Outstanding work
 
-Eligibility/suggestions, draft validation/gaps and fake-model plan composition are next. DB worker RPCs are absent at the audited SHA; private member mutation helpers do not implement WorkerStore. Production entrypoint remains `INTEGRATION_PENDING` until that dependency is satisfied and tested.
+Draft validation/gaps and fake-model plan composition are next. DB worker RPCs are absent at the audited SHA; private member mutation helpers do not implement WorkerStore. Production entrypoint remains `INTEGRATION_PENDING` until that dependency is satisfied and tested.
