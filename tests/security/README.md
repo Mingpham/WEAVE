@@ -38,3 +38,62 @@ The 18 cases cover a passing baseline plus missing tables, disabled RLS, anon/au
 OpenCode supports `run --model`. Gemini 3.8 Flash failed for insufficient balance. `opencode/deepseek-v4.1-flash-free` completed a read-only review; its actionable catalog findings were reproduced with the regression tests before correction. No worker edited files.
 
 Antigravity has a separate `agy` CLI: `agy models` lists `claude-sonnet-4-6`, and `agy --model claude-sonnet-4-6 --print` completed a tool-free interpretation review. Its claim that `is_involved` was undefined was rejected: §12.1 defines it. The worker-role concern is recorded as a contract gap. Neither subordinate review constitutes runtime verification.
+
+## Isolated local Auth/PostgREST smoke
+
+`local_auth_smoke.py` checks anonymous signup, an authenticated `/user` read,
+refresh preserving user identity, runtime provider flags and PostgREST readiness.
+It deletes only the user created by its own test. It makes no application-table
+queries and proves no RLS policy, project creation permission, Google login,
+SecureStore persistence, or acceptance test. Google-disabled is a temporary local
+configuration expectation, not completion of FR-AUTH-03.
+
+Use an isolated temporary workspace with a copy of `supabase/config.toml`, a
+separate `project_id` and unused ports. Do not copy `.temp` from the linked
+production workspace. For example, this package's local probe uses project ID
+`weave-security-check` and ports 55430–55433 instead of CODEX-A's 54320–54323.
+Start the core services with the pinned CLI:
+
+```sh
+DOCKER_CONTEXT=default npx --yes supabase@3.1.0 start --workdir /path/to/isolated/workspace \
+  --exclude realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+WEAVE_SUPABASE_WORKDIR=/path/to/isolated/workspace python3 tests/security/local_auth_smoke.py -v
+```
+
+The test uses `supabase status -o json` to read local credentials in memory.
+It rejects non-loopback API URLs and HTTP redirects, never uses the hosted publishable key, and
+suppresses HTTP response bodies and CLI credential output on errors. Missing
+workspace, unavailable local services or unexpected status shapes fail setup;
+these are not silently skipped. The standalone smoke command is separate from
+the catalog regression suite so an absent Supabase stack cannot look like a
+successful integration run. Stop only this isolated project afterward:
+
+```sh
+DOCKER_CONTEXT=default npx --yes supabase@3.1.0 stop --workdir /path/to/isolated/workspace --no-backup
+```
+
+This starts a reduced core stack, not the full Supabase service set. Storage,
+Realtime, worker, migration and queue tests remain separate requirements.
+
+The redirect guard has a regression using two real local HTTP origins and
+placeholder credentials: the original client followed the redirect (test failed),
+and the corrected client returns the redirect without contacting its target.
+Run all dependency-free supporting regressions with:
+
+```sh
+python3 -m unittest discover -s tests/security -p 'test_*.py' -v
+```
+
+Latest result: 19/19 passed (18 PostgreSQL catalog cases and one HTTP-client
+security case). The three standalone Supabase smoke cases have not executed:
+local setup failed because the core stack was not ready. They are not included
+in that 19-test pass count.
+
+Local startup checkpoint (2026-11-14): the isolated core `supabase start`
+attempt timed out after 420 seconds while pulling
+`supabase/postgres:17.11.0.018`; no core container became ready.
+The standalone smoke command failed setup, executed zero test cases, and is
+reported as NOT RUN rather than passed. The HTTP-client and catalog regressions
+remain independently verified. A fresh runtime run is required after the image
+is available; full business security tests additionally require actual schema
+and canonical contracts.

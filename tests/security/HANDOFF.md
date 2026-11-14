@@ -32,3 +32,26 @@ Seed and metrics changes are deferred: there is no current schema/runtime to val
 Audit regression harness: `python3 tests/security/test_catalog.py -v`, 18/18 passing on real PostgreSQL 17. These are tests of the catalog validator with intentionally minimal isolated fixtures; they do not complete any acceptance test or DB business invariant. Docker context `default` works; the earlier desktop-linux socket failure is not evidence that Docker is unavailable.
 
 Next unblocked integration requires the API owner's canonical contracts and CODEX-A's first migration. Then run the catalog audit on Supabase local, and build the positive/negative direct PostgREST matrix against actual fixture contracts. Do not use the linked hosted production project for this test harness.
+
+## Supporting environment continuation
+
+Added `local_auth_smoke.py` for an isolated reduced Supabase stack: anonymous
+signup/user lookup/refresh, runtime provider settings and PostgREST readiness.
+Related requirements: FR-AUTH-02/03 and WP-0-DB environment preparation; none is
+claimed complete. No canonical application table, enum or RPC was invented.
+Readiness is not RLS evidence. See README for commands and actual run boundaries.
+
+The supporting regression command now passes 19/19. A real local HTTP regression
+caught automatic credential forwarding on redirects; the smoke client now
+refuses redirects (SEC-02). OpenCode's earlier catalog review and a tool-free
+Antigravity Sonnet review were inspected; the latter's speculative claim that
+local `status` contacts the hosted API was not accepted without evidence.
+
+Local startup checkpoint (2026-11-14): the isolated core `supabase start`
+attempt timed out after 420 seconds while pulling
+`supabase/postgres:17.11.0.018`; no core container became ready.
+The standalone smoke command failed setup, executed zero test cases, and is
+reported as NOT RUN rather than passed. The HTTP-client and catalog regressions
+remain independently verified. A fresh runtime run is required after the image
+is available; full business security tests additionally require actual schema
+and canonical contracts.
