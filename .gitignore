@@ -1,0 +1,26 @@
+.env
+.env.*
+!.env.example
+.DS_Store
+node_modules/
+.superpowers/
+.worktrees/
+coverage/
+supabase/.temp/
+supabase/.branches/
+tests/ai-evals/reports/
+
+# --- API & integration lane additions (fullstack) ---
+CLAUDE.md
+# Android Studio / JetBrains project settings (personal, regenerated automatically)
+.idea/
+dist/
+*.tsbuildinfo
+*.log
+# Expo / Android build output
+.expo/
+apps/mobile/android/
+*.apk
+*.aab
+*.keystore
+*.jks

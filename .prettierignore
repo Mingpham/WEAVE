@@ -1,0 +1,29 @@
+node_modules
+pnpm-lock.yaml
+skills-lock.json
+.agents
+docs
+WEAVE_4_0_Stack_Lock_ADR.md
+supabase/migrations
+supabase/.temp
+apps/mobile/android
+apps/mobile/.expo
+
+# Files owned by other lanes: kept byte-identical to their branches so merges stay clean.
+# Formatting them is a team decision, not ours to apply unilaterally.
+packages/contracts/src/enums.ts
+packages/contracts/src/policy.ts
+packages/contracts/src/primitives.ts
+packages/contracts/src/recovery.ts
+packages/contracts/src/ai
+packages/contracts/tests
+packages/contracts/tsconfig.json
+packages/engine
+supabase/functions/ai-worker
+supabase/functions/_shared
+tests/security
+tests/ai-evals
+tsconfig.base.json
+tsconfig.ai.json
+vitest.ai.config.ts
+pnpm-workspace.yaml

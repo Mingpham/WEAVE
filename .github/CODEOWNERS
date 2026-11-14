@@ -1,0 +1,43 @@
+# Ownership from spec §15.2. A PR touching a path needs a review from its owner.
+# Later rules override earlier ones, so specific paths come after general ones.
+
+# API & integration — Mingpham (backup: lh6104)
+/packages/contracts/            @Mingpham
+/supabase/functions/api/        @Mingpham
+/tools/mock-api/                @Mingpham
+/apps/mobile/src/lib/           @Mingpham
+/.github/                       @Mingpham
+/scripts/                       @Mingpham
+/README.md                      @Mingpham
+/tests/fixtures/                @Mingpham
+/package.json                   @Mingpham
+/pnpm-workspace.yaml            @Mingpham
+/pnpm-lock.yaml                 @Mingpham
+
+# DB — lh6104 (backup: TranTungDuong02082006)
+/supabase/migrations/           @lh6104
+/supabase/seed.sql              @lh6104
+/supabase/config.toml           @lh6104
+/tests/security/                @lh6104
+/docs/runbooks/metrics.sql      @lh6104
+
+# Mobile — dkozTA (backup: Mingpham); src/lib above stays with API & integration
+/apps/mobile/app/               @dkozTA
+/apps/mobile/src/features/      @dkozTA
+/apps/mobile/src/components/    @dkozTA
+/apps/mobile/src/theme/         @dkozTA
+/apps/mobile/src/strings/       @dkozTA
+/tests/e2e/                     @dkozTA
+
+# AI & Engine — TranTungDuong02082006 (backup: lh6104)
+/packages/engine/                       @TranTungDuong02082006
+/supabase/functions/ai-worker/          @TranTungDuong02082006
+/supabase/functions/_shared/ai/         @TranTungDuong02082006
+/supabase/functions/api/routes/incidents/ @TranTungDuong02082006
+/tests/ai-evals/                        @TranTungDuong02082006
+/packages/contracts/src/recovery.ts     @TranTungDuong02082006 @Mingpham
+
+# Contracts changes need Mingpham plus the owner of each lane that uses the changed part (§15.6).
+# Spec changes go through a `spec/` PR reviewed by the whole team.
+/docs/WEAVE_MVP_Specification.md  @Mingpham @lh6104 @dkozTA @TranTungDuong02082006
+/WEAVE_4_0_Stack_Lock_ADR.md      @Mingpham @lh6104 @dkozTA @TranTungDuong02082006
